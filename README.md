@@ -12,7 +12,7 @@ IMP converts Eve Online channel chat into audio visual queues, letting you obser
   * New configurations can be saved as personal themes.
 * All alerts are customizable.
   * New files can be added to imp/audio and will appear as options in the GUI.
-  * Imp can be configured to suppress redundant alerts, and alerts created by your own pilots.
+  * Imp can be configured to suppress redundant alerts and/or alerts created by your own pilots.
 * New rules can be created to fire user defined actions.
   * Rules can be configured to act upon any open channel, not just intel channels.
   * Rules use regular-expressions in every field for extreme flexibility.
