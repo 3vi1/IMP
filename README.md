@@ -2,11 +2,9 @@
   <img align="middle" src="src/graphics/impicon.png" width="100" height="100">
   <img align="middle" src="src/graphics/Imp.png" height="100">
 </p>
+---------------------------------------
 
-# IMP
-Eve Online Intelligence Management Program
-
-IMP converts channel chat into audio visual queues, letting you observe the state of Eve star systems and receive alerts in a more efficient manner.
+IMP converts Eve Online channel chat into audio visual queues, letting you observe the state of Eve star systems and receive alerts in a more efficient manner.
 
 The latest binary releases are available on [the releases page](https://github.com/3vi1/IMP/releases).
 
