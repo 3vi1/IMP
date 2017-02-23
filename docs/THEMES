@@ -1,0 +1,17 @@
+Themes are stored in different locations, depending on the type.  The default themes
+are in a subdirectory of the application, which may be updated/changed on every new
+release.  User created themes are written to IMP's application data directory (unique
+per user), where they will persist through updates.
+
+Users cannot save themes with the same name as a default theme.
+
+The user theme directories on the different operating systems, by default, are:
+
+      Linux:  ~/.local/share/EternalDusk/IMP/themes
+    Windows:  C:\Users\[User Name]\AppData\Local\EternalDusk\IMP\themes
+
+- Each theme writes to their own subdirectory within the themes folder.
+
+- When saving a theme, it copies any assets (graphics, and in the future - sounds)
+  to its own folder.  This will make it easy to share themes, since you only have
+  to zip/send the theme's subdirectory and not worry about the paths to the assets.

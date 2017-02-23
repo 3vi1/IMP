@@ -1,0 +1,17 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.5.1
+Type=Application
+Name=IMP
+GenericName=IMP
+Comment=Eve Online Intelligence Management Program
+Icon=/usr/share/imp/impicon.png
+Path=/usr/share/imp
+Exec=/usr/bin/imp                              
+StartupNotify=false
+StartupWMClass=IMP 
+Terminal=false
+OnlyShowIn=Unity;
+X-UnityGenerated=true
+Categories=Games and Amusement
+

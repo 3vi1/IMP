@@ -1,0 +1,59 @@
+0.5.1 - Added SVG support for backgrounds.
+
+        Fixed centering bug that would occur when a very large background was replaced
+        with a smaller image.
+
+        Centralized functionality to get paths to app files so it could be abstracted to
+        behave differently under different OSes and conditions.  This allows for a real
+        Linux installer to put it in the standard directories instead of just running
+        from the user's home directory.
+
+0.5.0 - Added ability to click systems and see the related messages.
+
+        Added Find|Messages option that lets you subset to messages that contain a certain
+        string.
+
+        Added the ability to set a background image, which is saved with themes.
+
+        Now doesn't occasionally reposition the map to center on your system when you
+        didn't really change systems.
+
+        Change z ordering for jumpbridges to draw on top of lines, which makes them easier
+        to follow if you're using a theme with thick system connection lines.
+
+
+0.4.0 - Converted from using massaged dotlan maps with injected XML to deconstructing them
+        on load and building my own object instances.  This improves performance and lays
+        groundwork for total system theming.
+
+        Locked system icons so that they will not be affected by rotation of map.
+
+        Made system name and time font/size configurable and is now included in themes.
+
+        Fixed a crash that would sometimes occur when switching map to other regions.
+
+        Fixed some missing logic that would cause changes to the options for map-refresh,
+        auto-follow period, and poller-refresh to not actually take effect until restart.
+
+        Added some primitive size-hinting so that longer messages get more vertical
+        space in their listview.
+
+0.3.0 - Added pilots menu and the ability to disable processing for individual pilots to
+        accomodate multi-boxers.
+
+        Additional theming updates.
+
+0.2.2 - Fix for multiboxes only seeing last logged on char.
+
+0.2.1 - Minor fixes.  First release shared with corp.
+
+0.2.0 - Added jumpbridges, basic theming, and more options.
+
+0.1.0 - First QSvgRenderer version, first Windows build.
+
+0.0.2 - Added rules, a bunch of configuration, and wasted tons of time trying to get the
+0.0.9   map working reliably with QWebEngine.  Even more wasted time trying to compile
+        QWebKit on Windows when it became clear QWebEngine was not functional enough
+        to meet the requirements at this time.
+
+0.0.1 - Original QWebKit version on Linux with working map, parser, configurable sounds.

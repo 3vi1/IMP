@@ -1,0 +1,143 @@
+Some miscellaneous questions and answers:
+
+---------------------------------------------------------------------------------------------
+
+Q:  What are the controls?
+
+A:  Currently there are only a few:
+
+         Mousewheel:  Over map it will zoom in/out.
+    Ctrl+Mousewheel:  Rotates map (make sure map has focus first - click it)
+             Ctrl+F:  Shortcut for Find System.
+
+    You can also click and drag the map around.
+
+    There's no feature to set your current system at the moment, but I haven't needed it
+    since Imp deduces your location on startup without needing to jump.
+
+    In the future, there will be some right-click context menus... as soon as I write
+    the features that need them.
+
+---------------------------------------------------------------------------------------------
+
+Q:  Can you add a feature to KOS-check everyone that enters my system?
+
+A:  No.  Nothing is currently logged when a pilot enters your system (or you enter their
+    system), and the only ways around this (hooking game memory or OCRing the screen) are
+    distinct violations of the game's TOS (I checked).
+
+---------------------------------------------------------------------------------------------
+
+Q:  What does disabling a pilot from the pilots menu do.
+
+A:  This is for people that play multiple accounts from the same computer.  Disabling a pilot
+    (who may have been seen and added to the map if they were used within the previous 24
+    hours) will remove them from the map and suppress warnings for them.  You will still get
+    the warnings other pilots should receive - even if they're in the same system.
+
+---------------------------------------------------------------------------------------------
+
+Q:  When I change regions, [something] doesn't work.
+
+A:  That's because I never tested other regions.  I'm a madman like that.  I've only just
+    added regions and never flown outside of Providence.  I'll fix it... soon (tm).
+
+---------------------------------------------------------------------------------------------
+
+Q:  Where's the "Always on Top" option?
+
+A:  That's a feature that should be part of your window manager, rather than re-implemented
+    in every app's UI.  On Linux, right-click the title bar and click "Always on Top".  On
+    Windows, there are some third-party apps that will allow you set the flag for any app.
+
+    Nothing's off the table though.  I might even add a feature I don't believe is needed
+    if Isk is thrown at Khasm Kaotiqa.  :)
+
+---------------------------------------------------------------------------------------------
+
+Q:  Where are the transparency options?
+
+A:  That's a feature that should be part of your desktop compositor, rather than
+    re-implemented in every app's UI.  On Linux, the Compiz, KWin, and other compositors
+    give you options to do this for each app.  On Windows, I know there are some third-
+    party apps that allow you to do it.
+
+    Again... nothing's off the table.  :)
+
+---------------------------------------------------------------------------------------------
+
+Q:  Where's the tray icon?
+
+A:  I found that I never used the tray icon when running Vintel because the main feature
+    (the map) is useless when you have this sort of app minimized to the tray.  Also, this
+    is not something you really want sitting in your tray all the time - consuming resources
+    when you're not playing the game.
+
+    I'm not saying I *won't* add a tray icon and minimize to tray feature... but it's way
+    down the list of priorities until I can think of a real benefit.
+
+---------------------------------------------------------------------------------------------
+
+Q:  I've created a rule, but it's not triggering!
+
+A:  There are several possible causes:
+
+    1) Do you have the channel the rule applies to open in the game?  For a rule to work,
+       your Eve client must be writing the logs.  It won't do that if you're not in the
+       channel.
+
+    2) If your rule uses a regular expression, double check that it is correct.
+
+    3) Could be a bug in my code.  I'm adding a rule debugging feature in the near
+       future to help troubleshoot these situations.
+
+---------------------------------------------------------------------------------------------
+
+Q:  How do I add my own sounds?
+
+A:  For now, you just add them to the "audio" subdirectory of the application, then you
+    will see them as options in the dropdowns, and may use them with the 'play' action for
+    rules.  In the future there may be the ability to choose sounds in other directories,
+    but it is a low-priority wishlist item.
+
+---------------------------------------------------------------------------------------------
+
+Q:  Is this a fork of Vintel?
+
+A:  No.  But, it was inspired by it.  I contributed some code to Vintel previously, but
+    Imp was written from scratch in C++.  They are visually similar only in that they
+    both use the same DOTLAN maps and Qt.
+
+---------------------------------------------------------------------------------------------
+
+Q:  Why make this when Vintel already exists?
+
+A:  I had not programmed with C++ or Qt in many years, nor had I used Qt Creator for
+    anything non-trivial.  I also wanedt to add features that might not end up being
+    very performant with Vintel's current architecture, so a re-write that
+    compiles natively seemed like a good way to do this and have fun re-familiarizing
+    myself with C++/Qt at the same time.
+
+---------------------------------------------------------------------------------------------
+
+Q:  Why not use Python like Vintel?
+
+A:  A) We already have an intel program written in Python - it's called Vintel.
+
+    B) Python is a fine language, which I use for many other projects, but my opinion is
+       that it's usually not the best solution when you go beyond making anything that's
+       more than a simple tool meant for developers or system administrators.  It is great
+       for just-in-time solutions and prototyping, but suffers in performance and size when
+       you are distributing packaged apps for non-technical users.  But maybe I'm just
+       biased from time spent fighting PyInstaller vs. Win10 bugs.
+
+---------------------------------------------------------------------------------------------
+
+Q:  Can you add jump-bridges, like Vintel?
+
+A:  This is the feature that will trigger the 1.0 release.  I hope to have ready one month
+    after the initial 0.1 release.  It won't take that long to write, but I assume I'll be
+    fixing a lot of bugs in that same timeframe (and I only spend a couple of hours a week
+    working on this - since I have a family, a real job, and I'd rather be playing the game
+    too).
+

@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>graphics/blue_circle_100.svg</file>
+        <file>graphics/Imp.png</file>
+        <file>graphics/load3.svg</file>
+        <file>graphics/systems.svg</file>
+        <file>graphics/triangle_orange.svg</file>
+        <file>graphics/volume-icon.png</file>
+        <file>graphics/impicon.png</file>
+    </qresource>
+</RCC>
