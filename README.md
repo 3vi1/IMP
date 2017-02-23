@@ -1,3 +1,8 @@
+<p align="center">
+  <img align="middle" src="src/graphics/impicon.png" width="100" height="100">
+  <img align="middle" src="src/graphics/Imp.png" height="100">
+</p>
+
 # IMP
 Eve Online Intelligence Management Program
 
