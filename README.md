@@ -18,6 +18,17 @@ IMP converts Eve Online channel chat into audio visual queues, letting you obser
   * Rules use regular-expressions in every field for extreme flexibility.
   * Rules can play their own user-definable sounds or launch external apps.
 
+<p align="center">
+  <img align="middle" src="http://eternaldusk.com/imp/screenshots/IMP_082.png" width="400">
+  <img align="middle" src="http://eternaldusk.com/imp/screenshots/IMP_083.png" width="400">
+</p>
+<p align="center">
+  <img align="middle" src="http://eternaldusk.com/imp/screenshots/IMP_085.png" width="400">
+  <img align="middle" src="http://eternaldusk.com/imp/screenshots/IMP_086.png" width="400">
+</p>
+
+
+
 The latest binary releases are available on [the releases page](https://github.com/3vi1/IMP/releases).
 
 Linux installation packages are in progress.  Until then, you can download the source and build by following the instructions in the INSTALL.md file.
