@@ -6,6 +6,8 @@
 
 IMP converts Eve Online channel chat into audio visual queues, letting you observe the state of Eve star systems and receive alerts in a more efficient manner.  
 
+The latest binary releases are available on [the releases page](https://github.com/3vi1/IMP/releases).
+
 * IMP automatically detects your pilots and moves the map as they change star systems.
 * IMP's map is themeable and rotatable.
   * Colors, shapes, fonts, etc. can be changed.
@@ -29,10 +31,10 @@ IMP converts Eve Online channel chat into audio visual queues, letting you obser
   <img align="middle" src="http://eternaldusk.com/imp/screenshots/IMP_085.png" width="400">
   <img align="middle" src="http://eternaldusk.com/imp/screenshots/IMP_086.png" width="400">
 </p>
-
-
-
-The latest binary releases are available on [the releases page](https://github.com/3vi1/IMP/releases).
+<p align="center">
+  <img align="middle" src="http://eternaldusk.com/imp/screenshots/Options_088.png" width="400">
+  <img align="middle" src="http://eternaldusk.com/imp/screenshots/Options_089.png" width="400">
+</p>
 
 Linux installation packages are in progress.  Until then, you can download the source and build by following the instructions in the INSTALL.md file.
 
