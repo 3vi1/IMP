@@ -19,6 +19,9 @@ The latest binary releases are available on [the releases page](https://github.c
   * Rules can be configured to act upon any open channel, not just intel channels.
   * Rules use regular-expressions in every field for extreme flexibility.
   * Rules can play their own user-definable sounds or launch external apps.
+* Find
+  * Find systems in current region by partial name.
+  * Find all messages containing a substring.
 
 <p align="center">
   <img align="middle" src="http://eternaldusk.com/imp/screenshots/IMP_082.png" width="400">
