@@ -39,4 +39,17 @@ Info::~Info()
 void Info::on_okayButton_accepted()
 {
     hide();
+    music->stop();
+}
+
+void Info::reject()
+{
+    hide();
+    music->stop();
+}
+
+void Info::startMusic(ImpAudio *audio)
+{
+    music = audio->playLocalFile("info/1 dont kn0w.wav");
+    music->setLoopCount(QSoundEffect::Infinite);
 }

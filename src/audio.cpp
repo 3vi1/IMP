@@ -30,14 +30,14 @@ ImpAudio::ImpAudio(QObject *parent) : QObject(parent)
 {
 }
 
-void ImpAudio::playLocalFile(const QString& fileName)
+QSoundEffect* ImpAudio::playLocalFile(const QString& fileName)
 {
     QString path = appFilesPath() + "/audio/" + fileName;
 
     qDebug() << "Playing " << path;
 
 
-    effect = new QSoundEffect(this);
+    QSoundEffect* effect = new QSoundEffect(this);
     effect->setSource(QUrl::fromLocalFile(path));
 
     qDebug() << "Setting volume on effect to " << QString::number(volume, 'g', 2);
@@ -45,6 +45,8 @@ void ImpAudio::playLocalFile(const QString& fileName)
     effect->play();
 
     connect(effect, SIGNAL(playingChanged()), this, SLOT(playingChanged()));
+
+    return effect;
 }
 
 void ImpAudio::playingChanged()

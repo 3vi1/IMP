@@ -23,6 +23,8 @@
 
 #include <QDialog>
 
+#include "audio.h"
+
 namespace Ui {
 class Info;
 }
@@ -35,11 +37,17 @@ public:
     explicit Info(QWidget *parent = 0);
     ~Info();
 
+    void startMusic(ImpAudio* audio);
+    void reject();
+
+
 private slots:
     void on_okayButton_accepted();
 
 private:
     Ui::Info *ui;
+
+    QSoundEffect* music;
 };
 
 #endif // INFO_H

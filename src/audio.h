@@ -31,7 +31,7 @@ class ImpAudio : public QObject
 public:
     explicit ImpAudio(QObject *parent = 0);
 
-    void playLocalFile(const QString& fileName);
+    QSoundEffect* playLocalFile(const QString& fileName);
     void setVolume(int i);
 
 signals:
@@ -40,7 +40,6 @@ public slots:
     void playingChanged();
 
 private:
-    QSoundEffect* effect;
     qreal volume = 1.0f;
 };
 

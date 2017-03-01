@@ -40,6 +40,11 @@ QString appFilesPath()
 #endif
 
     // Running from its own program directory on *nux, or any unhandled OS.
+
+#ifdef QT_DEBUG
+    return "/usr/share/imp";
+#endif
+
     qDebug() << "Defaulting to appPath" << QCoreApplication::applicationDirPath();
     return appDirPath;
 }

@@ -765,6 +765,12 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
             {
 
             case MessageFlag::CLEAR:
+                if (!options.getIntelChannels().contains(message.logInfo->channel))
+                {
+                    // Only accept clear messages from intel channels.
+                    break;
+                }
+
                 // Someone may respond to a status message without naming the system
                 // i.e. "soandso > clr"
                 if(message.systems.length() == 0 && message.text.count(" ") == 0)
@@ -1066,6 +1072,7 @@ void MainWindow::addMessage(const MessageInfo& message)
 void MainWindow::on_actionAbout_triggered()
 {
     info.show();
+    info.startMusic(&audio);
 }
 
 void MainWindow::on_actionOptions_triggered()
@@ -1545,10 +1552,7 @@ bool MainWindow::pilotIsEnabled(QString pilotName)
     {
         if(action->text() == pilotName)
         {
-            if(action->isChecked())
-                return true;
-            else
-                return false;
+            return action->isChecked();
         }
     }
 

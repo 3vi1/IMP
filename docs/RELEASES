@@ -1,3 +1,5 @@
+0.5.2 - Clear messages were unintentionally being accepted from any channel.
+
 0.5.1 - Added SVG support for backgrounds.
 
         Fixed centering bug that would occur when a very large background was replaced
