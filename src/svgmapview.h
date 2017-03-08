@@ -99,8 +99,8 @@ public slots:
     void gotSystemColor(const QString& name, QColor color);
 
     // Theme Changes
-    void gotBackColor(const QColor& c);
-    void gotLineColor(const QColor& c);
+    //void gotBackColor(const QColor& c);
+    //void gotLineColor(const QColor& c);
 
     void gotPilotLocation(const QString &pilotName, const QString &systemName);
 
@@ -125,6 +125,9 @@ private:
     void handleShape(MapShape* shape,
                      const QString &member,
                      QVariant& data);
+
+    //template <class T>
+    //void repositionBackground(T* background);
 
     void setTextPosition(QGraphicsTextItem *ti, QPointF pos, QPointF offset);
 
@@ -170,7 +173,41 @@ private:
     QPointF timeOffset = QPointF(0, +4);
 
     QRectF savedSceneRect;
-    QGraphicsPixmapItem* mapBackground = NULL;
+    QGraphicsPixmapItem* backPixmap = NULL;
+    QGraphicsSvgItem* backSvg = NULL;
+    qreal backgroundOpacity = 1.0;
+    qreal backgroundScale = 1.0;
+    qreal backgroundZ = -10;
+    QPointF backgroundOffset = QPointF(0, 0);
+
+    template<class T>
+    void inline removeBackground(T* background)
+    {
+        if(background != NULL)
+        {
+            if(mapScene.items().contains(background))
+            {
+                mapScene.removeItem(background);
+            }
+            delete background;
+            background = NULL;
+        }
+    }
+
+    template <class T>
+    void inline repositionBackground(T* background)
+    {
+        background->setPos(
+                    ((
+                        (sceneRect().bottomRight() + sceneRect().topLeft())
+                        * 0.5f
+                    ) -
+                    (background->boundingRect().bottomRight() * 0.5f)
+                    * backgroundScale )
+                    + backgroundOffset
+                );
+    }
+
 };
 
 #endif

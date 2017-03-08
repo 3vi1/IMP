@@ -122,7 +122,7 @@ void MapShape::setPos(const QPointF& point)
     qreal newY = realPosition.y() - (boundingRect().height() * 0.5f * scale());
 
     // Set position relative to offsets
-    QGraphicsSvgItem::setPos(newX - xOffset, newY - yOffset);
+    QGraphicsSvgItem::setPos(newX + xOffset, newY + yOffset);
 }
 
 void MapShape::setScale(qreal scale)

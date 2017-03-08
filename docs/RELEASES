@@ -1,3 +1,10 @@
+0.6.0 - Unified theme customization dialog.
+
+        Added ability to use real SVG's for background, instead of converting them to
+        pixmaps at load time.
+
+        Additonal theme customization parameters.
+
 0.5.3 - Updated info dialog and added some additional sounds.
 
 0.5.2 - Clear messages were unintentionally being accepted from any channel.

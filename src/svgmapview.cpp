@@ -365,20 +365,6 @@ void SvgMapView::clearShapes()
     systemShapes.clear();
 }
 
-void SvgMapView::gotLineColor(const QColor& color)
-{
-    _linesColor = color;
-    foreach(QGraphicsLineItem* line, lines)
-    {
-        line->setPen(QPen(color));
-    }
-}
-
-void SvgMapView::gotBackColor(const QColor& color)
-{
-    setBackgroundBrush(color);
-}
-
 void SvgMapView::findLocation(const QString &systemName)
 {
     if(!m_map->contains(systemName))
@@ -502,6 +488,8 @@ void SvgMapView::handleLine(QGraphicsLineItem *line,
         line->setPen(pen);
     }
 }
+
+
 void SvgMapView::receiveThemeUpdate(ThemeStorage& ts)
 {
     switch(ts.objType)
@@ -517,6 +505,94 @@ void SvgMapView::receiveThemeUpdate(ThemeStorage& ts)
         foreach(QGraphicsLineItem* line, lines)
         {
             handleLine(line, ts.member, ts.data);
+        }
+        break;
+    case MAP:
+        if(ts.name == "back")
+        {
+            if(ts.member == "color")
+            {
+                setBackgroundBrush(ts.data.value<QColor>());
+            }
+            else if(ts.member == "graphic")
+            {
+                removeBackground(backSvg);
+                removeBackground(backPixmap);
+
+                QString data = ts.data.toString();
+                if(data.length() > 0)
+                {
+                    /* The scene rectangle will grow if a large background had previously
+                     * been added, but it does not shrink when the item is removed.  So,
+                     * we should reset the sceneRect so that centering is not
+                     * miscalculated.
+                     */
+                    if(savedSceneRect.width() != 0)
+                        setSceneRect(savedSceneRect);
+                    else
+                        savedSceneRect = sceneRect();
+
+                    backSvg = new QGraphicsSvgItem(data);
+                    if(backSvg->boundingRect().width() == 0)
+                    {
+                        backPixmap = new QGraphicsPixmapItem(QPixmap(data));
+                        backPixmap->setZValue(backgroundZ);
+                        repositionBackground(backPixmap);
+                        mapScene.addItem(backPixmap);
+                    } else
+                    {
+                        backSvg->setZValue(backgroundZ);
+                        repositionBackground(backSvg);
+                        mapScene.addItem(backSvg);
+                    }
+                }
+            }
+            else if(ts.member == "opacity")
+            {
+                backgroundOpacity = ts.data.toDouble();
+                if(backSvg != NULL)
+                    backSvg->setOpacity(backgroundOpacity);
+                if(backPixmap != NULL)
+                    backPixmap->setOpacity(backgroundOpacity);
+            }
+            else if(ts.member == "scale")
+            {
+                backgroundScale = ts.data.toDouble();
+                if(backSvg != NULL)
+                {
+                    backSvg->setScale(backgroundScale);
+                    repositionBackground(backSvg);
+                }
+                if(backPixmap != NULL)
+                {
+                    backPixmap->setScale(backgroundScale);
+                    repositionBackground(backPixmap);
+                }
+            }
+            else if(ts.member == "xOffset")
+            {
+                backgroundOffset.setX(ts.data.toDouble());
+                if(backSvg != NULL)
+                    repositionBackground(backSvg);
+                if(backPixmap != NULL)
+                    repositionBackground(backPixmap);
+            }
+            else if(ts.member == "yOffset")
+            {
+                backgroundOffset.setY(ts.data.toDouble());
+                if(backSvg != NULL)
+                    repositionBackground(backSvg);
+                if(backPixmap != NULL)
+                    repositionBackground(backPixmap);
+            }
+            else if(ts.member == "z")
+            {
+                backgroundZ = ts.data.toDouble();
+                if(backSvg != NULL)
+                    backSvg->setZValue(backgroundZ);
+                if(backPixmap != NULL)
+                    backPixmap->setZValue(backgroundZ);
+            }
         }
         break;
     case PILOT:
@@ -537,42 +613,6 @@ void SvgMapView::receiveThemeUpdate(ThemeStorage& ts)
             else if(ts.member == "time")
             {
                 setTimeFont(QFont(fontAttributes[0], fontAttributes[1].toInt()));
-            }
-        }
-        else if(ts.member == "background")
-        {
-            if(mapBackground != NULL)
-            {
-                if(mapScene.items().contains(mapBackground))
-                {
-                    mapScene.removeItem(mapBackground);
-                }
-                delete mapBackground;
-                mapBackground = NULL;
-            }
-
-            if(ts.data.toString().length() > 0)
-            {
-                /* The scene rectangle will grow if a large background had previously
-                 * been added, but it does not shrink when the item is removed.  So,
-                 * we should reset the sceneRect so that centering is not
-                 * miscalculated.
-                 */
-                if(savedSceneRect.width() != 0)
-                    setSceneRect(savedSceneRect);
-                else
-                    savedSceneRect = sceneRect();
-
-                qDebug() << "sceneRect=" << sceneRect();
-
-                mapBackground = new QGraphicsPixmapItem(QPixmap(ts.data.toString()));
-                mapBackground->setZValue(-10);
-
-                mapBackground->setPos(
-                            ( (sceneRect().bottomRight() +
-                               sceneRect().topLeft()) * 0.5f) -
-                        (mapBackground->boundingRect().bottomRight() * 0.5f));
-                mapScene.addItem(mapBackground);
             }
         }
         break;
@@ -614,7 +654,6 @@ void SvgMapView::gotSystem(const QString& mixedName, QPointF position, const QSt
                                          systemClass +  "RectExterior");
     systemOutlines.insert(name, shape2);
     systemOutlines[name]->setPos(position);
-    //systemOutlines[name]->setZValue(5);
     systemOutlines[name]->lockRotation(true);
     mapScene.addItem(systemOutlines[name]);
 

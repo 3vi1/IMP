@@ -24,9 +24,43 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QMap>
 #include <QMessageBox>
 #include <QStandardPaths>
 
+const QMap<QString,QVariant> defaults = {
+    {"backColor", QColor(Qt::white)},
+    {"backGraphic", ""},
+    {"backOpacity", 1.0},
+    {"backScale", 1.0},
+    {"backXOffset", 0},
+    {"backYOffset", 0},
+    {"backZ", -10.0},
+
+    {"findGraphic", ":/graphics/triangle_orange.svg"},
+    {"findOpacity", 0.7},
+    {"findScale", 1.0},
+    {"findXOffset", 0},
+    {"findYOffset", 0},
+    {"findZ", -0.5},
+
+    {"lineColor", QColor(Qt::black)},
+    {"lineOpacity", 1.0},
+    {"lineWidth", 1.0},
+    {"lineXOffset", 0},
+    {"lineYOffset", 0},
+    {"lineZ", -1},
+
+    {"pilotGraphic", ":/graphics/blue_circle_100.svg"},
+    {"pilotOpacity", 1.0},
+    {"pilotScale", 0.2},
+    {"pilotXOffset", 0},
+    {"pilotYOffset", 0},
+    {"pilotZ", -0.5},
+
+    {"defaultNameFont", QStringList({"Tahoma", QString::number(4)}) },
+    {"defaultTimeFont", QStringList({"Arial", QString::number(4)}) }
+};
 
 Theme::Theme(QObject *parent) : QObject(parent)
 {
@@ -56,32 +90,42 @@ void Theme::load(const QString& name, ThemeType themeType)
         dir = m_userDir;
     }
 
-    setBackColor(Qt::white);
-    setLineColor(Qt::black);
+    //setBackColor(Qt::white);
+    //setLineColor(Qt::black);
+
+    // Background/Map attributes
+    setAttribute("backColor",   MAP, "back", "color", defaults["backColor"]);
+    setAttribute("backGraphic", MAP, "back", "graphic",  defaults["backGraphic"]);
+    setAttribute("backOpacity", MAP, "back", "opacity", defaults["backOpacity"]);
+    setAttribute("backScale",   MAP, "back", "scale",  defaults["backScale"]);
+    setAttribute("backXOffset", MAP, "back", "xOffset",  defaults["backXOffset"]);
+    setAttribute("backYOffset", MAP, "back", "yOffset", defaults["backYOffset"]);
+    setAttribute("backZ",       MAP, "back", "z", defaults["backZ"]);
+
+    setAttribute("findGraphic", FIND, "find", "graphic", defaults["findGraphic"]);
+    setAttribute("findOpacity", FIND, "find", "opacity", defaults["findOpacity"]);
+    setAttribute("findScale",   FIND, "find", "scale", defaults["findScale"]);
+    setAttribute("findXOffset", FIND, "find", "xOffset", defaults["findXOffset"]);
+    setAttribute("findYOffset", FIND, "find", "yOffset", defaults["findYOffset"]);
+    setAttribute("findZ",       FIND, "find", "z", defaults["findZ"]);
+
+    setAttribute("lineColor",   LINES, "line", "color",  defaults["lineColor"]);
+    setAttribute("lineOpacity", LINES, "line", "opacity", defaults["lineOpacity"]);
+    setAttribute("lineWidth",   LINES, "line", "width", defaults["lineWidth"]);
+    setAttribute("lineXOffset", LINES, "line", "xOffset", defaults["lineXOffset"]);
+    setAttribute("lineYOffset", LINES, "line", "yOffset", defaults["lineYOffset"]);
+    setAttribute("lineZ",       LINES, "line", "z", defaults["lineZ"]);
 
     // Set default attributes
-    setAttribute("pilotGraphic",    PILOT, "", "graphic",
-                 ":/graphics/blue_circle_100.svg");
-    setAttribute("pilotOpacity",    PILOT, "", "opacity", 1.0);
-    setAttribute("pilotScale",      PILOT, "", "scale", 0.2);
-    setAttribute("pilotZ",          PILOT, "", "z", -0.5);
-    setAttribute("pilotXOffset",    PILOT, "", "xOffset", -0.0);
-    setAttribute("pilotYOffset",    PILOT, "", "yOffset", -0.0);
+    setAttribute("pilotGraphic",    PILOT, "pilot", "graphic", defaults["pilotGraphic"]);
+    setAttribute("pilotOpacity",    PILOT, "pilot", "opacity", defaults["pilotOpacity"]);
+    setAttribute("pilotScale",      PILOT, "pilot", "scale", defaults["pilotScale"]);
+    setAttribute("pilotXOffset",    PILOT, "pilot", "xOffset", defaults["pilotXOffset"]);
+    setAttribute("pilotYOffset",    PILOT, "pilot", "yOffset", defaults["pilotYOffset"]);
+    setAttribute("pilotZ",          PILOT, "pilot", "z", defaults["pilotZ"]);
 
-    setAttribute("findGraphic",     FIND, "", "graphic",
-                 ":/graphics/triangle_orange.svg");
-    setAttribute("findOpacity",     FIND, "", "opacity", 0.7);
-    setAttribute("findScale",       FIND, "", "scale", 1.0);
-    setAttribute("findZ",           FIND, "", "z", -0.5);
-    setAttribute("findXOffset",     FIND, "", "xOffset", 0);
-    setAttribute("findYOffset",     FIND, "", "yOffset", 0);
-
-    setAttribute("defaultNameFont", SYSTEM, "font", "name",
-                 QStringList({"Tahoma", QString::number(4)}) );
-    setAttribute("defaultTimeFont", SYSTEM, "font", "time",
-                 QStringList({"Arial", QString::number(4)}) );
-
-    setAttribute("backgroundImage", SYSTEM, "", "background", "");
+    setAttribute("defaultNameFont", SYSTEM, "font", "name", defaults["defaultNameFont"] );
+    setAttribute("defaultTimeFont", SYSTEM, "font", "time", defaults["defaultTimeFont"] );
 
     if(m_name != "-Default-")
     {
@@ -94,8 +138,12 @@ void Theme::load(const QString& name, ThemeType themeType)
         {
             QSettings settings(absoluteFilePath, QSettings::IniFormat);
 
-            setBackColor(settings.value("backColor").value<QColor>());
-            setLineColor(settings.value("lineColor").value<QColor>());
+//            setBackColor(settings.value("backColor").value<QColor>());
+//            setLineColor(settings.value("lineColor").value<QColor>());
+
+            // These two will go away when move to attributes is complete
+            setAttribute("backColor", LINES, "", "back", settings.value("backColor", QColor(Qt::white)).value<QColor>());
+            setAttribute("lineColor", LINES, "", "color", settings.value("lineColor", QColor(Qt::black)).value<QColor>());
 
             attributes = (settings.value("attributes").value<AttributeMap>());
 
@@ -128,13 +176,13 @@ bool Theme::save(const QString &m_name)
     // Copy in any non-local assets and update the links to them
     packageImage(themePath, "pilotGraphic");
     packageImage(themePath, "findGraphic");
-    packageImage(themePath, "backgroundGraphic");
+    packageImage(themePath, "backGraphic");
 
     QSettings settings(themePath + m_themeIni, QSettings::IniFormat);
 
     settings.setValue("name", m_name);
-    settings.setValue("backColor", m_backColor);
-    settings.setValue("lineColor", m_lineColor);
+    //settings.setValue("backColor", m_backColor);
+    //settings.setValue("lineColor", m_lineColor);
 
     settings.setValue("attributes", QVariant::fromValue<AttributeMap>(attributes));
 
@@ -166,34 +214,14 @@ QVariant Theme::getAttribute(const QString& saveName)
         return attributes[saveName].data;
     else
     {
+        qDebug() << "Theme::getAttribute for unset attribute:  " <<
+                    saveName << ".  Attempting to return a default.";
+
+        if(defaults.contains(saveName))
+            return defaults[saveName];
+
         qDebug() << "Theme::getAttribute for unknown attribute:  " <<
-                    saveName << ".  Returning a default instead.";
-
-        if(saveName == "pilotGraphic")
-            return ":/graphics/blue_circle_100.svg";
-        if(saveName == "pilotOpacity")
-            return 1.0;
-        if(saveName == "pilotScale")
-            return 0.2;
-        if(saveName == "pilotZ")
-            return -0.5;
-        if(saveName == "pilotXOffset")
-            return 0.0;
-        if(saveName == "pilotYOffset")
-            return 0.0;
-
-        if(saveName == "findGraphic")
-            return ":/graphics/triangle_orange.svg";
-        if(saveName == "findOpacity")
-            return -0.7;
-        if(saveName == "findScale")
-            return 1.0;
-        if(saveName == "findZ")
-            return -0.5;
-        if(saveName == "findXOffset")
-            return 0.0;
-        if(saveName == "findYOffset")
-            return 0.0;
+                    saveName << ".  Returning a null instead.";
 
         return QString("");
     }

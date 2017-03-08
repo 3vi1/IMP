@@ -35,7 +35,8 @@ enum ThemeObject {
     PILOT,
     FIND,
     LINES,
-    SYSTEM
+    SYSTEM,
+    MAP
 };
 Q_DECLARE_METATYPE(ThemeObject)
 
@@ -116,8 +117,8 @@ public:
     QString& name() {return m_name;}
 
     // setters
-    void setBackColor(const QColor& c){m_backColor = c; emit backColorChanged(c);}
-    void setLineColor(const QColor& c){m_lineColor = c; emit lineColorChanged(c);}
+    void setBackColor(const QColor& c);
+    void setLineColor(const QColor& c);
     void setName(const QString& s){m_name = s;}
 
     QVariant getAttribute(const QString& saveName);
@@ -132,8 +133,8 @@ public:
 
 signals:
     // Legacy.  I'm removing all these except sendUpdate, in favor of attributes.
-    void backColorChanged(const QColor&);
-    void lineColorChanged(const QColor&);
+    //void backColorChanged(const QColor&);
+    //void lineColorChanged(const QColor&);
 
     void sendUpdate(ThemeStorage& a);
 

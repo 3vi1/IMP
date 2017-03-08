@@ -94,7 +94,7 @@ private slots:
     void on_actionSystem_triggered();
     void on_actionShow_Bridges_triggered(bool checked);
     void on_actionSave_As_Theme_triggered();
-    void on_actionLineWidth_triggered();
+/*    void on_actionLineWidth_triggered();
     void on_actionLineOpacity_triggered();
     void on_actionLineColor_triggered();
     void on_actionPilotOpacity_triggered();
@@ -106,11 +106,11 @@ private slots:
     void on_actionFindX_Y_Offsets_triggered();
     void on_actionPilotX_Y_Offsets_triggered();
     void on_actionFontSystemName_triggered();
-    void on_actionFontTimer_triggered();
+    void on_actionFontTimer_triggered(); */
     void on_actionFindMessages_triggered();
-    void on_actionBackgroundColor_triggered();
-
-    void on_actionBackgroundImage_triggered();
+    //void on_actionBackgroundColor_triggered();
+    //void on_actionBackgroundImage_triggered();
+    void on_actionCustomize_triggered();
 
 private:
     void initParsing();

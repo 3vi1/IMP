@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = imp
 TEMPLATE = app
 
-VERSION = 0.5.3
+VERSION = 0.6.0
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
 QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton
@@ -36,13 +36,12 @@ SOURCES += \
     mapshape.cpp \
     themedialog.cpp \
     theme.cpp \
-    sliderdialog.cpp \
-    customizationdialog.cpp \
     systemshape.cpp \
     chatitemdelegate.cpp \
     mapscene.cpp \
     findmessagesdialog.cpp \
-    abstract_os.cpp
+    abstract_os.cpp \
+    themecustomizationdialog.cpp
     
 HEADERS  += \
     mainwindow.h \
@@ -62,13 +61,12 @@ HEADERS  += \
     mapshape.h \
     themedialog.h \
     theme.h \
-    sliderdialog.h \
-    customizationdialog.h \
     systemshape.h \
     chatitemdelegate.h \
     mapscene.h \
     findmessagesdialog.h \
-    abstract_os.h
+    abstract_os.h \
+    themecustomizationdialog.h
     
 FORMS    += \
     mainwindow.ui \
@@ -76,9 +74,8 @@ FORMS    += \
     finddialog.ui \
     info.ui \
     themedialog.ui \
-    sliderdialog.ui \
-    customizationdialog.ui \
-    findmessagesdialog.ui
+    findmessagesdialog.ui \
+    themecustomizationdialog.ui
     
 DISTFILES += \
     ../data/dictionaries/clear \

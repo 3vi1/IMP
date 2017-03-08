@@ -83,7 +83,7 @@ Q:  I've created a rule, but it's not triggering!
 A:  There are several possible causes:
 
     1) Do you have the channel the rule applies to open in the game?  For a rule to work,
-       your Eve client must be writing the logs.  It won't do that if you're not in the
+       your Eve client must be writing to the logs.  It won't do that if you're not in the
        channel.
 
     2) If your rule uses a regular expression, double check that it is correct.
@@ -106,14 +106,14 @@ Q:  Is this a fork of Vintel?
 
 A:  No.  But, it was inspired by it.  I contributed some code to Vintel previously, but
     Imp was written from scratch in C++.  They are visually similar only in that they
-    both use the same DOTLAN maps and Qt.
+    both source their maps from DOTLAN.
 
 ---------------------------------------------------------------------------------------------
 
 Q:  Why make this when Vintel already exists?
 
 A:  I had not programmed with C++ or Qt in many years, nor had I used Qt Creator for
-    anything non-trivial.  I also wanedt to add features that might not end up being
+    anything non-trivial.  I also wanted to add features that might not end up being
     very performant with Vintel's current architecture, so a re-write that
     compiles natively seemed like a good way to do this and have fun re-familiarizing
     myself with C++/Qt at the same time.
@@ -132,12 +132,4 @@ A:  A) We already have an intel program written in Python - it's called Vintel.
        biased from time spent fighting PyInstaller vs. Win10 bugs.
 
 ---------------------------------------------------------------------------------------------
-
-Q:  Can you add jump-bridges, like Vintel?
-
-A:  This is the feature that will trigger the 1.0 release.  I hope to have ready one month
-    after the initial 0.1 release.  It won't take that long to write, but I assume I'll be
-    fixing a lot of bugs in that same timeframe (and I only spend a couple of hours a week
-    working on this - since I have a family, a real job, and I'd rather be playing the game
-    too).
 

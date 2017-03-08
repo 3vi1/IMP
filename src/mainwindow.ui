@@ -192,53 +192,8 @@
     <property name="title">
      <string>Theme</string>
     </property>
-    <widget class="QMenu" name="menuPilot_Indicator">
-     <property name="title">
-      <string>Pilot Graphic</string>
-     </property>
-     <addaction name="actionPilotGraphic"/>
-     <addaction name="actionPilotOpacity"/>
-     <addaction name="actionPilotScale"/>
-     <addaction name="actionPilotX_Y_Offsets"/>
-    </widget>
-    <widget class="QMenu" name="menuFind_Indicator">
-     <property name="title">
-      <string>Find Graphic</string>
-     </property>
-     <addaction name="actionFindGraphic"/>
-     <addaction name="actionFindScale"/>
-     <addaction name="actionFindOpacity"/>
-     <addaction name="actionFindX_Y_Offsets"/>
-    </widget>
-    <widget class="QMenu" name="menuLines">
-     <property name="title">
-      <string>Lines</string>
-     </property>
-     <addaction name="actionLineColor"/>
-     <addaction name="actionLineOpacity"/>
-     <addaction name="actionLineWidth"/>
-    </widget>
-    <widget class="QMenu" name="menuFonts">
-     <property name="title">
-      <string>Fonts</string>
-     </property>
-     <addaction name="actionFontSystemName"/>
-     <addaction name="actionFontTimer"/>
-    </widget>
-    <widget class="QMenu" name="menuBackground">
-     <property name="title">
-      <string>Background</string>
-     </property>
-     <addaction name="actionBackgroundColor"/>
-     <addaction name="actionBackgroundImage"/>
-    </widget>
     <addaction name="separator"/>
-    <addaction name="menuBackground"/>
-    <addaction name="menuFonts"/>
-    <addaction name="menuLines"/>
-    <addaction name="menuFind_Indicator"/>
-    <addaction name="menuPilot_Indicator"/>
-    <addaction name="separator"/>
+    <addaction name="actionCustomize"/>
     <addaction name="actionSave_As_Theme"/>
    </widget>
    <widget class="QMenu" name="menuPilots">
@@ -425,6 +380,11 @@
   <action name="actionBackgroundImage">
    <property name="text">
     <string>Image</string>
+   </property>
+  </action>
+  <action name="actionCustomize">
+   <property name="text">
+    <string>Customize</string>
    </property>
   </action>
  </widget>

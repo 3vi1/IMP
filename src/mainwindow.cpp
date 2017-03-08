@@ -21,9 +21,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "abstract_os.h"
-#include "customizationdialog.h"
 #include "findmessagesdialog.h"
-#include "sliderdialog.h"
+#include "themecustomizationdialog.h"
 
 #include <QColorDialog>
 #include <QFontDialog>
@@ -397,9 +396,21 @@ void MainWindow::gotKosReply(const QList<KosEntry>& entries)
         info.logInfo = &impLogInfo;
         info.dateTime = QDateTime::currentDateTimeUtc();
 
-        if(e.pilot.kos || e.corp.kos || e.alliance.kos)
+        if(e.pilot.kos)
         {
             info.text = e.pilot.name + " is KOS!";
+            playKos = true;
+            addMessage(info);
+        }
+        else if(e.corp.kos)
+        {
+            info.text = e.pilot.name + "'s corp (" + e.corp.name + ") is KOS!";
+            playKos = true;
+            addMessage(info);
+        }
+        else if(e.alliance.kos)
+        {
+            info.text = e.pilot.name + "'s alliance (" + e.alliance.name + ") is KOS!";
             playKos = true;
             addMessage(info);
         }
@@ -488,8 +499,6 @@ void MainWindow::failedGettingRegionFile(QNetworkReply::NetworkError err)
 
     if (inFile.exists())
     {
-/*        connect(regionMap, SIGNAL(mapChanged(QByteArray&)),
-                this, SLOT(gotMapChanged(QByteArray&)) ); */
         regionMap->loadXml(inFile);
     }
     else
@@ -1270,7 +1279,7 @@ void MainWindow::on_actionN_RMSH_triggered()
 
 // ------------------------------------------------------------------------------
 
-
+/*
 void MainWindow::on_actionLineWidth_triggered()
 {
     SliderDialog dialog;
@@ -1498,6 +1507,7 @@ void MainWindow::on_actionPilotX_Y_Offsets_triggered()
 {
     customizeShape("Pilot", PILOT);
 }
+*/
 
 void MainWindow::gotNewPilot(const QString& pilotName)
 {
@@ -1558,7 +1568,7 @@ bool MainWindow::pilotIsEnabled(QString pilotName)
 
     return false;
 }
-
+/*
 void MainWindow::on_actionFontSystemName_triggered()
 {
     bool ok = false;
@@ -1590,7 +1600,7 @@ void MainWindow::on_actionFontTimer_triggered()
                               QStringList({font.family(), QString::number(font.pointSize())}) );
     }
 }
-
+*/
 void MainWindow::gotSystemClick(const QString& name)
 {
     chatModel->subsetForSystem(name);
@@ -1619,7 +1629,7 @@ void MainWindow::on_actionFindMessages_triggered()
 
     ui->listView->scrollToBottom();
 }
-
+/*
 void MainWindow::on_actionBackgroundImage_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(
@@ -1642,5 +1652,17 @@ void MainWindow::on_actionBackgroundColor_triggered()
                 "Background Color",
                 QColorDialog::DontUseNativeDialog);
     if(c.isValid())
-        m_theme->setBackColor(c);
+        m_theme->setAttribute("backColor", SYSTEM, "", "", c);
+//        m_theme->setBackColor(c);
+}
+*/
+void MainWindow::on_actionCustomize_triggered()
+{
+    ThemeCustomizationDialog dialog;
+    dialog.loadValues(m_theme);
+
+    if(dialog.exec() == QDialog::Accepted)
+    {
+        dialog.sendChanges(m_theme);
+    }
 }
