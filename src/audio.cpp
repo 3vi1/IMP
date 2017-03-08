@@ -71,3 +71,23 @@ void ImpAudio::setVolume(int i)
     qDebug() << "Volume changed to " << QString::number(volume, 'g', 2);
 }
 
+void ImpAudio::playLocalMedia(const QString& fileName)
+{
+    QString path = appFilesPath() + "/audio/" + fileName;
+
+    qDebug() << "Playing " << path;
+
+    player = new QMediaPlayer;
+    //connect(player, SIGNAL(positionChanged(qint64)), this, SLOT(positionChanged(qint64)));
+    player->setMedia(QUrl::fromLocalFile(path));
+    player->setVolume(50);
+    player->play();
+}
+
+void ImpAudio::stopMusic()
+{
+    if(player != NULL && player->state() == player->PlayingState)
+    {
+        player->stop();
+    }
+}

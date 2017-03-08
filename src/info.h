@@ -48,6 +48,7 @@ private:
     Ui::Info *ui;
 
     QSoundEffect* music;
+    ImpAudio* m_audio = NULL;
 };
 
 #endif // INFO_H
