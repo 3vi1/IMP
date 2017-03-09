@@ -351,38 +351,32 @@ void MainWindow::clipboardUpdated()
 {
     if(options.getKosCheck())
     {
-        QStringList names;
-        if(!QApplication::clipboard()->text().contains('\n'))
-        {
-            // Check to see if this is a right-click+Copy from the chat area:
-            // Rotham Visteen > <url=showinfo:1375//95666387>Sir Nicolas Struik</url>  <url=showinfo:5//30003733>TU-O0T</url> nv
-            // J'erat > <url=showinfo:1377//436296321>Lord Helios</url>  <url=showinfo:1375//95666387>Sir Nicolas Struik</url>  <url=showinfo:5//30003730>B-WPLZ</url>
-            // makoto Riraille > <url=showinfo:1377//136539353>nuggt007</url>  <url=showinfo:5//30003760>JEIV-E*</url> nv
-            // Ariaphne > <url=showinfo:1377//2112217572>Izaq</url>  <url=showinfo:5//30003732>E-YCML</url>  nv
-            // Moon Loop > <url=showinfo:5//30003731>XHQ-7V*</url>  <url=showinfo:1373//485792588>AntarisIX</url>  <url=showinfo:22456//1023601435561>Sabre*</url>
-            // Vipress X-TAW-SIN > <url=showinfo:1383//94824392>CocoMaster Yung</url>  <url=showinfo:5//30003762>DNR-7M</url> nv
-            // Khasm Kaotiqa > <url=showinfo:1383//94824392>CocoMaster Yung</url>
-            //          <url=showinfo:1378//1200763243>Jophiel Gabriel</url>  <url=showinfo:1375//95666387>Sir Nicolas Struik</url>
-            //          <url=showinfo:1377//436296321>Lord Helios</url>
-            // Rounon Dax > <url=showinfo:1384//95516645>Danilo Audier</url>  <url=showinfo:1378//1200763243>Jophiel Gabriel</url>
-            // - <url=showinfo:5//30003760>JEIV-E</url>
-            // Khasm Kaotiqa > <url=showinfo:1377//91374386>Koizumi Atsuchi</url> red
-            // Ars Amatoria > <url=showinfo:1385//95692307>Sith Koroshi Dreadnought</url> group location then?
-            // Khasm Kaotiqa > <url=showinfo:5//30003763>N-RMSH</url>  <url=showinfo:1375//1237583132>Xe4roX</url>
-            //     <url=showinfo:1377//96526659>Khasm Kaotiqa</url>  <url=showinfo:1375//95666387>Sir Nicolas Struik</url>
-            // Khasm Kaotiqa > <url=showinfo:1375//95666387>Sir Nicolas Struik</url>  <url=showinfo:1375//95666387>Sir Nicolas Struik</url>
+        QStringList lines, names;
+        lines = QApplication::clipboard()->text().split('\n');
 
-            QRegularExpression exp("<url=showinfo:(?!5//)[^>]+>([^<]+)</url>");
-            QRegularExpressionMatchIterator i = exp.globalMatch(QApplication::clipboard()->text());
-            while(i.hasNext())
-            {
-                QRegularExpressionMatch match = i.next();
-                names.append(match.captured(1));
-            }
-        }
-        else
+        foreach(QString line, lines)
         {
-            names = QApplication::clipboard()->text().split('\n');
+            // Sanitize the list if it's copied from chat.  i.e....
+            // Rotham Visteen > <url=showinfo:1375//95666387>Sir Nicolas Struik</url>  <url=showinfo:5//30003733>TU-O0T</url> nv
+
+            // showinfo:5//... seems to denote a link to a system, pilots will have different numbers
+            QRegularExpression exp("<url=showinfo:(?!5//)[^>]+>([^<]+)</url>");
+            QRegularExpressionMatch match = exp.match(line);
+
+            if(match.hasMatch())
+            {
+                QRegularExpressionMatchIterator i = exp.globalMatch(QApplication::clipboard()->text());
+                while(i.hasNext())
+                {
+                    match = i.next();
+                    names.append(match.captured(1));
+                }
+            }
+            else
+            {
+                // Doesn't look like a copied line with markup, so just append it unsanitized.
+                names.append(line);
+            }
         }
 
         QStringList toCheck;
@@ -392,7 +386,7 @@ void MainWindow::clipboardUpdated()
             if(name.length() < 3 ||
                     name.length() > 37 ||
                     name.count(QLatin1Char(' ')) > 2 ||
-                    name.contains(QRegExp("^[^ A-Za-z0-9'\\-\\.]+$")))
+                    name.contains(QRegExp("[^ A-Za-z0-9'\\-\\.]")))
             {
                 qDebug() << "MainWindow::clipboardUpdated() - Not KOS checking invalid name " << name;
                return;
@@ -404,10 +398,13 @@ void MainWindow::clipboardUpdated()
         }
         QString checkString = toCheck.join(',');
 
-        AsyncInfo* kosInfo = new AsyncInfo(manager, this);
-        connect(kosInfo, SIGNAL(kosResultReady(const QList<KosEntry>&)),
-                this, SLOT(gotKosReply(const QList<KosEntry>&)));
-        kosInfo->kosCheck(checkString);
+        if(checkString != "")
+        {
+            AsyncInfo* kosInfo = new AsyncInfo(manager, this);
+            connect(kosInfo, SIGNAL(kosResultReady(const QList<KosEntry>&)),
+                    this, SLOT(gotKosReply(const QList<KosEntry>&)));
+            kosInfo->kosCheck(checkString);
+        }
     }
 }
 
