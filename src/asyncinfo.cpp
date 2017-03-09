@@ -19,6 +19,7 @@
  */
 
 #include "asyncinfo.h"
+#include "meta.h"
 
 #include <iostream>
 #include <QJsonArray>
@@ -52,6 +53,7 @@ void AsyncInfo::cacheAvatar(const QString& name)
     url.setQuery(query);
 
     QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", meta.agentString.toUtf8());
     reply = manager->get(request);
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
                 this, SLOT(error(QNetworkReply::NetworkError)));
@@ -78,6 +80,7 @@ void AsyncInfo::idRetrieved()
                   QString::number(pilot->id) +
                   "_64.jpg");
     QNetworkRequest request(imageUrl);
+    request.setRawHeader("User-Agent", meta.agentString.toUtf8());
     reply = manager->get(request);
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
                 this, SLOT(error(QNetworkReply::NetworkError)));
@@ -122,6 +125,7 @@ void AsyncInfo::kosCheck(const QString &reqNames)
     url.setQuery(query);
 
     QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", meta.agentString.toUtf8());
     kosReply = manager->get(request);
     /*connect(kosReply, SIGNAL(error(QNetworkReply::NetworkError)),
                 this, SLOT(error(QNetworkReply::NetworkError)));*/

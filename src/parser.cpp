@@ -246,7 +246,8 @@ MessageInfo Parser::parseLine(const QString& line)
         {
             messageInfo.flags.append(MessageFlag::QUERY);
         }
-        else if (messageInfo.flags.count() == 0 && messageInfo.systems.count() > 0)
+        else if (messageInfo.flags.count() == 0 && messageInfo.systems.count() > 0
+                 && messageInfo.possiblePilots.length() > 0)
         {
             messageInfo.flags.append(MessageFlag::WARNING);
         }
@@ -279,27 +280,17 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
         if (ignoreWords.contains(lowerWord) || words[i].length() < 2)
         {
             // Common word to ignore, skip it and go to next word.
-            previousWord = lowerWord;
-            continue;
         }
-
-        if (lowerWord == "left")
-        {
-            messageInfo.flags.append(MessageFlag::LEFT);
-        }
-
-        if (statusWords.contains(lowerWord))
+        else if (statusWords.contains(lowerWord))
         {
             messageInfo.flags.append(MessageFlag::STATUS);
             messageInfo.flags.append(MessageFlag::QUERY);
         }
-
-        if (locationWords.contains(lowerWord))
+        else if (locationWords.contains(lowerWord))
         {
             messageInfo.flags.append(MessageFlag::LOCATION);
         }
-
-        if (clearWords.contains(lowerWord))
+        else if (clearWords.contains(lowerWord))
         {
             if(previousWord != "gate")
             {
@@ -307,37 +298,38 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
                 // "> KBP Dital gate clr!"
                 messageInfo.flags.append(MessageFlag::CLEAR);
             }
-            previousWord = lowerWord;
-            continue;
         }
-
-        if(ships.contains(lowerWord))
+        else if(ships.contains(lowerWord))
         {
            theseShips.append(words[i]);
-           previousWord = lowerWord;
-           continue;
         }
-
-        QString systemName = regionMap->getSystemByAbbreviation(words[i].toUpper());
-
-        if(systemName.length() > 0)
+        else
         {
-            if(i < (words.length()-1) && words[i+1].toLower() == "gate")
+            QString systemName = regionMap->getSystemByAbbreviation(words[i].toUpper());
+
+            if(systemName.length() > 0)
             {
-                if(i < (words.length()-2) && words[i+2].toLower() == "to")
+                if(i < (words.length()-1) && words[i+1].toLower() == "gate")
                 {
-                    // "x-x gate to..."
+                    if(i < (words.length()-2) && words[i+2].toLower() == "to")
+                    {
+                        // "x-x gate to..."
+                        theseSystems.append(systemName);
+                    }
+                    else {
+                        // "...at x-x gate"
+                        theseGates.append(systemName);
+                    }
+                }
+                else
+                {
+                    // System mentioned, not adjacent to word 'gate'
                     theseSystems.append(systemName);
                 }
-                else {
-                    // "...at x-x gate"
-                    theseGates.append(systemName);
-                }
             }
-            else
+            else if(lowerWord.length() >= 3)
             {
-                // System mentioned, not adjacent to word 'gate'
-                theseSystems.append(systemName);
+                messageInfo.possiblePilots.append(words[i]);
             }
         }
 

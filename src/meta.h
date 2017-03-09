@@ -25,13 +25,14 @@
 
 static const struct Version
 {
-    QString release = "v0.6.1";
+    QString release = "0.6.2";
     QString name = "Vrykolokas Osmosis";
 
     QString styleHeader1 = "<span style=\" color:#0000ff;\">";
     QString styleFooter1 = "</span>";
 
-    QString versionInfo = styleHeader1 + release + " - " + name + styleFooter1;
+    QString agentString = "IMP/" + release + " (EternalDusk; Qt)";
+    QString versionInfo = styleHeader1 + "v" + release + " - " + name + styleFooter1;
 } meta;
 
 #endif // META_H

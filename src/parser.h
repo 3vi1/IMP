@@ -47,7 +47,7 @@ struct LogInfo
 struct MessageInfo
 {
     QString originalLine;
-    bool indecipherable;
+    bool indecipherable = false;
 
     LogInfo* logInfo;
 
@@ -59,6 +59,7 @@ struct MessageInfo
     QStringList gates;
     QStringList ships;
     QStringList related;
+    QStringList possiblePilots;
 
     QList<MessageFlag> flags;
 

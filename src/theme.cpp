@@ -138,13 +138,6 @@ void Theme::load(const QString& name, ThemeType themeType)
         {
             QSettings settings(absoluteFilePath, QSettings::IniFormat);
 
-//            setBackColor(settings.value("backColor").value<QColor>());
-//            setLineColor(settings.value("lineColor").value<QColor>());
-
-            // These two will go away when move to attributes is complete
-            setAttribute("backColor", LINES, "", "back", settings.value("backColor", QColor(Qt::white)).value<QColor>());
-            setAttribute("lineColor", LINES, "", "color", settings.value("lineColor", QColor(Qt::black)).value<QColor>());
-
             attributes = (settings.value("attributes").value<AttributeMap>());
 
             foreach(QString key, attributes.keys())
@@ -181,8 +174,6 @@ bool Theme::save(const QString &m_name)
     QSettings settings(themePath + m_themeIni, QSettings::IniFormat);
 
     settings.setValue("name", m_name);
-    //settings.setValue("backColor", m_backColor);
-    //settings.setValue("lineColor", m_lineColor);
 
     settings.setValue("attributes", QVariant::fromValue<AttributeMap>(attributes));
 

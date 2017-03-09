@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>390</width>
+    <width>506</width>
     <height>456</height>
    </rect>
   </property>
@@ -47,8 +47,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>378</width>
-        <height>299</height>
+        <width>488</width>
+        <height>256</height>
        </rect>
       </property>
       <attribute name="label">
@@ -358,8 +358,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>378</width>
-        <height>299</height>
+        <width>488</width>
+        <height>256</height>
        </rect>
       </property>
       <attribute name="label">
@@ -617,8 +617,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>378</width>
-        <height>299</height>
+        <width>488</width>
+        <height>256</height>
        </rect>
       </property>
       <attribute name="label">
@@ -673,8 +673,8 @@
         <rect>
          <x>125</x>
          <y>134</y>
-         <width>243</width>
-         <height>54</height>
+         <width>351</width>
+         <height>64</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout">
@@ -708,8 +708,8 @@
         <rect>
          <x>125</x>
          <y>28</y>
-         <width>243</width>
-         <height>54</height>
+         <width>351</width>
+         <height>64</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout_2">
@@ -744,8 +744,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>378</width>
-        <height>299</height>
+        <width>488</width>
+        <height>256</height>
        </rect>
       </property>
       <attribute name="label">
@@ -929,8 +929,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>378</width>
-        <height>299</height>
+        <width>488</width>
+        <height>256</height>
        </rect>
       </property>
       <attribute name="label">

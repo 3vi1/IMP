@@ -1,3 +1,13 @@
+0.6.2 - Added user-agent to network requests.
+
+        Fixed bug that affected loading of line color on some themes.
+
+        Parser cleanup.
+
+        Misc obsolete code cleanup.
+
+0.6.1 - Add MP4 support for info dialog.
+
 0.6.0 - Unified theme customization dialog.
 
         Added ability to use real SVG's for background, instead of converting them to
