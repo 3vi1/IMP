@@ -25,7 +25,7 @@
 
 static const struct Version
 {
-    QString release = "0.6.2";
+    QString release = "0.6.3";
     QString name = "Vrykolokas Osmosis";
 
     QString styleHeader1 = "<span style=\" color:#0000ff;\">";

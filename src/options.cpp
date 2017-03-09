@@ -211,6 +211,37 @@ void Options::loadSettings(QSettings& settings)
                     )
                 );
 
+    // Hack that works around a problem where null values are written if the previous run
+    // exited uncleanly.  This can happen when the parser files aren't found, but
+    // I'm just going to brute force fix this for now.
+
+    if(ui->alarmCombo->currentText() == "") {
+        ui->alarmCombo->setCurrentIndex(
+                    ui->alarmCombo->findText("red-alert.wav")
+                    );
+    }
+    if(ui->essCombo->currentText() == "") {
+        ui->essCombo->setCurrentIndex(
+                    ui->essCombo->findText("sci-fi-alarm.wav")
+                    );
+    }
+    if(ui->clipKosCombo->currentText() == "") {
+        ui->clipKosCombo->setCurrentIndex(
+                    ui->clipKosCombo->findText("140-bpm-wobble-c-in-c.wav")
+                    );
+    }
+    if(ui->clipNotKosCombo->currentText() == "") {
+        ui->clipNotKosCombo->setCurrentIndex(
+                ui->clipNotKosCombo->findText("toy-hit.wav")
+                );
+    }
+    if(ui->statusCombo->currentText() == "")
+    {
+        ui->statusCombo->setCurrentIndex(
+                ui->statusCombo->findText("radio-beep.wav")
+                );
+    }
+
     QString logDir;
     logDir = settings.value("logPath", "").toString();
 

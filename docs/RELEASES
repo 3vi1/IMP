@@ -1,3 +1,9 @@
+0.6.3 - Add the ability to kos-check people by right-click/Copy of links pasted into
+        chat.
+
+        Resets default sounds if previous run abended in a way that cause blank values
+        to be written to the config.
+
 0.6.2 - Added user-agent to network requests.
 
         Fixed bug that affected loading of line color on some themes.
