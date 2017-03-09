@@ -8,20 +8,24 @@ IMP converts Eve Online channel chat into audio visual queues, letting you obser
 
 The latest binary releases are available on [the releases page](https://github.com/3vi1/IMP/releases).
 
-* IMP automatically detects your pilots and moves the map as they change star systems.
-* IMP's map is themeable and rotatable.
-  * Colors, shapes, fonts, etc. can be changed.
-  * New configurations can be saved as personal themes.
-* All alerts are customizable.
+* IMP reads recent logs and primes the system statuses with all recent activity.
+* IMP automatically detects your pilots current system at startup.
+* IMP's map:
+  * Automatically scrolls to follow your current pilot.
+  * Is themeable and rotatable.
+    * Colors, shapes, fonts, etc. can be changed.
+    * New configurations can be saved as personal themes.
+* All audio alerts are customizable.
   * New files can be added to imp/audio and will appear as options in the GUI.
   * Imp can be configured to suppress redundant alerts and/or alerts created by your own pilots.
-* New rules can be created to fire user defined actions.
+* Rules can be created to fire user defined actions for channel messages.
   * Rules can be configured to act upon any open channel, not just intel channels.
   * Rules use regular-expressions in every field for extreme flexibility.
   * Rules can play their own user-definable sounds or launch external apps.
 * Find
   * Find systems in current region by partial name.
-  * Find all messages containing a substring.
+  * Find messages containing any substring.
+* Uses less CPU than Vintel.
 
 <p align="center">
   <img align="middle" src="http://eternaldusk.com/imp/screenshots/IMP_082.png" width="400">
