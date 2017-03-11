@@ -33,19 +33,23 @@ struct PilotEntry
     QString name;
     int id;
     QPixmap avatar;
+    //QVector<QPair<int,QString>> employmentHistory;
     QDateTime cacheUntil;
 
     friend QDataStream &operator<<(QDataStream &out, const PilotEntry& pilotEntry)
     {
        out << pilotEntry.name << pilotEntry.id <<
               pilotEntry.avatar << pilotEntry.cacheUntil;
+              //pilotEntry.avatar << pilotEntry.employmentHistory << pilotEntry.cacheUntil;
        return out;
     }
 
     friend  QDataStream &operator>>(QDataStream &in, PilotEntry& pilotEntry)
     {
        in >> pilotEntry.name >> pilotEntry.id >>
-               pilotEntry.avatar >> pilotEntry.cacheUntil;
+               //pilotEntry.avatar >> pilotEntry.employmentHistory >>
+               pilotEntry.avatar >>
+               pilotEntry.cacheUntil;
        return in;
     }
 };
@@ -98,22 +102,33 @@ public:
 
     void cacheAvatar(const QString& name);
     void kosCheck(const QString& names);
+    void rblCheck(int id);
+    void rblCheck(const QString& name, int id = 0);
 
 signals:
     void resultReady(PilotEntry* pilotEntry);
-    void kosResultReady(const QList<KosEntry>& entries);
+    void kosResultReady(const QString& name, const QList<KosEntry>& entries);
+    void rblResultReady(const QString& name, bool kos);
 
 
 public slots:
     void idRetrieved();
+    void rblIdRetrieved();
+    void rblInfoRetrieved();
     void pixmapRetrieved();
     void error(QNetworkReply::NetworkError err);
-    void kosCheckReply();
+    void gotKosCheckReply();
+    void gotKosCheckCorpReply();
 
 private:
     QNetworkAccessManager* manager;
     QNetworkReply* reply;
     QNetworkReply* kosReply;
+
+    QString checkNames = "";
+
+    void requestId(const QString& name, const char* slot);
+    void kosCheck(const QString &reqNames, const char* slot, QString queryType  = "unit");
 };
 
 #endif // ASYNCINFO_H

@@ -44,29 +44,40 @@ void AsyncInfo::cacheAvatar(const QString& name)
     pilot = new PilotEntry;
     pilot->name = name;
 
-
-    // Request the Pilot ID
-
-    QUrl url("https://api.eveonline.com/eve/CharacterID.xml.aspx");
-    QUrlQuery query;
-    query.addQueryItem("names", pilot->name);
-    url.setQuery(query);
-
-    QNetworkRequest request(url);
-    request.setRawHeader("User-Agent", meta.agentString.toUtf8());
-    reply = manager->get(request);
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(error(QNetworkReply::NetworkError)));
-    connect(reply, SIGNAL(finished()),
-                this, SLOT(idRetrieved()));
+    requestId(name, SLOT(idRetrieved()));
 
     // Resumes asynchronously in idRetrieved()
 }
 
+void AsyncInfo::requestId(const QString &name, const char* slot)
+{
+    qDebug() << "AsyncInfo::requestId() - " << name;
+
+    // Request the Pilot ID
+    QUrl url("https://api.eveonline.com/eve/CharacterID.xml.aspx");
+    QUrlQuery query;
+    query.addQueryItem("names", name);
+    url.setQuery(query);
+
+    //qDebug() << "AsyncInfo::requestId() - after query";
+
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", meta.agentString.toUtf8());
+    QNetworkReply* idReply = manager->get(request);
+    connect(idReply, SIGNAL(finished()),
+                this, slot);
+    connect(idReply, SIGNAL(error(QNetworkReply::NetworkError)),
+                this, SLOT(error(QNetworkReply::NetworkError)));
+}
+
 void AsyncInfo::idRetrieved()
 {
-    QByteArray b = reply->readAll();
-    reply->deleteLater();
+    QNetworkReply* idReply = qobject_cast<QNetworkReply*>(sender());
+    if (!idReply)
+        return;
+
+    QByteArray b = idReply->readAll();
+    idReply->deleteLater();
 
     QXmlQuery query;
     query.setFocus(b);
@@ -81,10 +92,10 @@ void AsyncInfo::idRetrieved()
                   "_64.jpg");
     QNetworkRequest request(imageUrl);
     request.setRawHeader("User-Agent", meta.agentString.toUtf8());
-    reply = manager->get(request);
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
+    QNetworkReply* pixmapReply = manager->get(request);
+    connect(pixmapReply, SIGNAL(error(QNetworkReply::NetworkError)),
                 this, SLOT(error(QNetworkReply::NetworkError)));
-    connect(reply, SIGNAL(finished()),
+    connect(pixmapReply, SIGNAL(finished()),
                 this, SLOT(pixmapRetrieved()));
 
     // Resumes Asynchronously in pixmapRetrieved()
@@ -92,8 +103,12 @@ void AsyncInfo::idRetrieved()
 
 void AsyncInfo::pixmapRetrieved()
 {
-    QByteArray b = reply->readAll();
-    reply->deleteLater();
+    QNetworkReply *pixmapReply = qobject_cast<QNetworkReply*>(sender());
+    if (!pixmapReply)
+        return;
+
+    QByteArray b = pixmapReply->readAll();
+    pixmapReply->deleteLater();
 
     pilot->avatar.loadFromData(b);
 
@@ -108,10 +123,18 @@ void AsyncInfo::error(QNetworkReply::NetworkError err)
 {
     // Manage error here.
     qDebug() << "*** In AsyncInfo::error:  " << err;
-    this->deleteLater();
+    //this->deleteLater();
 }
 
 void AsyncInfo::kosCheck(const QString &reqNames)
+{
+    checkNames = reqNames;
+    kosCheck(reqNames, SLOT(gotKosCheckReply()));
+}
+
+void AsyncInfo::kosCheck(const QString &reqNames,
+                         const char* slot,
+                         QString queryType)
 {
     QString names = reqNames;
     names.replace('\n',',');
@@ -120,9 +143,11 @@ void AsyncInfo::kosCheck(const QString &reqNames)
     QUrl url("http://kos.cva-eve.org/api/");
     QUrlQuery query;
     query.addQueryItem("c", "json");
-    query.addQueryItem("type", "multi");
+    query.addQueryItem("type", queryType);
     query.addQueryItem("q", names);
     url.setQuery(query);
+
+    qDebug() << "Query = " << url.query();
 
     QNetworkRequest request(url);
     request.setRawHeader("User-Agent", meta.agentString.toUtf8());
@@ -130,15 +155,16 @@ void AsyncInfo::kosCheck(const QString &reqNames)
     /*connect(kosReply, SIGNAL(error(QNetworkReply::NetworkError)),
                 this, SLOT(error(QNetworkReply::NetworkError)));*/
     connect(kosReply, SIGNAL(finished()),
-                this, SLOT(kosCheckReply()));
+                this, slot);
+
 }
 
-void AsyncInfo::kosCheckReply()
+void AsyncInfo::gotKosCheckReply()
 {
     QByteArray b = kosReply->readAll();
     kosReply->deleteLater();
 
-    qDebug() << "kosCheckReply = " << b;
+    qDebug() << "gotKosCheckReply = " << b;
 
     QList<KosEntry> entries;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(b);
@@ -174,6 +200,145 @@ void AsyncInfo::kosCheckReply()
         entries.append(KosEntry);
     }
 
-    emit kosResultReady(entries);
+    emit kosResultReady(checkNames, entries);
+    this->deleteLater();
+}
+
+void AsyncInfo::rblCheck(const QString& name, int id)
+{
+    checkNames = name;
+
+    if(id == 0)
+    {
+        // We don't have the person's ID, so we need to get it.
+        requestId(name, SLOT(rblIdRetrieved()));
+    }
+    else
+    {
+        rblCheck(id);
+    }
+}
+
+void AsyncInfo::rblCheck(int id)
+{
+    qDebug() << "AsyncInfo::rblCheck() - " << id;
+
+    // Request the Character Information
+    QUrl url("https://api.eveonline.com/eve/CharacterInfo.xml.aspx");
+    QUrlQuery query;
+    query.addQueryItem("characterID", QString::number(id));
+    url.setQuery(query);
+
+    QNetworkRequest request(url);
+    request.setRawHeader("User-Agent", meta.agentString.toUtf8());
+    QNetworkReply* infoReply = manager->get(request);
+    connect(infoReply, SIGNAL(error(QNetworkReply::NetworkError)),
+                this, SLOT(error(QNetworkReply::NetworkError)));
+    connect(infoReply, SIGNAL(finished()),
+                this, SLOT(rblInfoRetrieved()));
+}
+
+void AsyncInfo::rblIdRetrieved()
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    if (!reply)
+        return;
+
+    QByteArray b = reply->readAll();
+    reply->deleteLater();
+
+    QXmlQuery query;
+    query.setFocus(b);
+    query.setQuery("//*:row/@characterID/string()");
+    QString results;
+    query.evaluateTo(&results);
+
+    int id = results.toInt();
+
+    rblCheck(id);
+}
+
+void AsyncInfo::rblInfoRetrieved()
+{
+    qDebug() << "AsyncInfo::rblInfoRetrieved() - Entered...";
+
+    QNetworkReply* infoReply = qobject_cast<QNetworkReply*>(sender());
+    if (!infoReply)
+        return;
+
+    QByteArray b = infoReply->readAll();
+    infoReply->deleteLater();
+
+    qDebug() << "AsyncInfo::rblInfoRetrieved() - " << b;
+
+    if(b.length() > 0)
+    {
+        QXmlQuery query;
+        query.setFocus(b);
+    /*    query.setQuery("//[REMOVE_ME]*:characterName/string()");
+        QString name;
+        query.evaluateTo(&name);
+        name = name.trimmed();
+    */
+        query.setQuery("//*:row/concat(@corporationID,',',@corporationName/string())");
+        QStringList results;
+        query.evaluateTo(&results);
+
+        foreach(QString result, results)
+        {
+            QStringList entry = result.split(',');
+            if(entry[0].toInt() > 2000000)
+            {
+                // Found last NPC corp
+                //entry[1].replace(' ','+');
+                kosCheck(entry[1], SLOT(gotKosCheckCorpReply()), "corp");
+                return;
+            }
+        }
+    }
+
+    emit rblResultReady(checkNames, false);
+    this->deleteLater();
+}
+
+void AsyncInfo::gotKosCheckCorpReply()
+{
+    QNetworkReply* rblReply = qobject_cast<QNetworkReply*>(sender());
+    if (!rblReply)
+        return;
+
+    QByteArray b = rblReply->readAll();
+    rblReply->deleteLater();
+
+    qDebug() << "AsyncInfo::gotKosCheckCorpReply - b = " << b;
+
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(b);
+    QJsonObject jsonObject = jsonResponse.object();
+    QJsonArray jsonArray = jsonObject["results"].toArray();
+
+    KosEntry kosEntry;
+    foreach (const QJsonValue& value, jsonArray) {
+        QJsonObject obj = value.toObject();
+
+        // Most of these are unused right now, but I've got plans
+
+        kosEntry.corp.eveId = obj["eveid"].toInt();
+        kosEntry.corp.icon = obj["icon"].toString();
+        kosEntry.corp.id = obj["id"].toInt();
+        kosEntry.corp.kos = obj["kos"].toBool();
+        kosEntry.corp.name = obj["label"].toString();
+        kosEntry.corp.npc = obj["npc"].toBool();
+        kosEntry.corp.ticker = obj["ticker"].toString();
+
+        QJsonObject allianceObj = obj["alliance"].toObject();
+        kosEntry.alliance.eveId = allianceObj["eveid"].toInt();
+        kosEntry.alliance.icon = allianceObj["icon"].toString();
+        kosEntry.alliance.id = allianceObj["id"].toInt();
+        kosEntry.alliance.kos = allianceObj["kos"].toBool();
+        kosEntry.alliance.name = allianceObj["label"].toString();
+        kosEntry.alliance.ticker = allianceObj["ticker"].toString();
+    }
+
+    emit rblResultReady(checkNames, kosEntry.corp.kos | kosEntry.alliance.kos);
     this->deleteLater();
 }

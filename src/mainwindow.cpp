@@ -396,23 +396,69 @@ void MainWindow::clipboardUpdated()
                 toCheck.append(name);
             }
         }
+
+        pilotsBeingChecked += toCheck.count();
         QString checkString = toCheck.join(',');
 
         if(checkString != "")
         {
             AsyncInfo* kosInfo = new AsyncInfo(manager, this);
-            connect(kosInfo, SIGNAL(kosResultReady(const QList<KosEntry>&)),
-                    this, SLOT(gotKosReply(const QList<KosEntry>&)));
+            connect(kosInfo, &AsyncInfo::kosResultReady,
+                    this, &MainWindow::gotKosReply);
             kosInfo->kosCheck(checkString);
         }
     }
 }
 
-void MainWindow::gotKosReply(const QList<KosEntry>& entries)
+void MainWindow::doRedByLastCheck(const QString& name, int id)
+{
+    qDebug() << "RBL Checking " << id;
+
+    AsyncInfo* rblInfo = new AsyncInfo(manager, this);
+    connect(rblInfo, &AsyncInfo::rblResultReady,
+            this, &MainWindow::gotRblReply);
+    rblInfo->rblCheck(name, id);
+}
+
+void MainWindow::gotRblReply(QString name, bool rbl)
+{
+    qDebug() << "MainWindow::gotRblReply - " << name << ": " << rbl;
+
+    if(rbl)
+    {
+        audio.playLocalFile(options.getSoundIsKos());
+        kosSoundPlayed = true;
+
+        MessageInfo info;
+        info.sender = "Khasm Kaotiqa";
+        info.logInfo = &impLogInfo;
+        info.dateTime = QDateTime::currentDateTimeUtc();
+        info.text = name + " is RED BY LAST!";
+        addMessage(info);
+    }
+
+    if(--pilotsBeingChecked == 0)
+    {
+        if(kosSoundPlayed)
+        {
+            kosSoundPlayed = false;
+        }
+        else
+        {
+            audio.playLocalFile(options.getSoundNoKos());
+        }
+    }
+}
+
+void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& entries)
 {
     if(entries.count() == 0)
     {
-        audio.playLocalFile(options.getSoundNoKos());
+        QStringList pilots = pilotNames.split(',');
+        foreach(QString pilot, pilots)
+        {
+            doRedByLastCheck(pilotNames, 0);
+        }
         return;
     }
 
@@ -443,12 +489,23 @@ void MainWindow::gotKosReply(const QList<KosEntry>& entries)
             playKos = true;
             addMessage(info);
         }
+        else
+        {
+            // If we got a player that's in an NPC corp, do the RBL check.
+            if(e.corp.npc)
+            {
+                doRedByLastCheck(e.pilot.name, e.pilot.eveId);
+                return;
+            }
+        }
     }
     if(playKos)
     {
         audio.playLocalFile(options.getSoundIsKos());
+        kosSoundPlayed = true;
     }
-    else
+
+    if(--pilotsBeingChecked == 0)
     {
         audio.playLocalFile(options.getSoundNoKos());
     }

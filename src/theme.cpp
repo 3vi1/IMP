@@ -58,8 +58,8 @@ const QMap<QString,QVariant> defaults = {
     {"pilotYOffset", 0},
     {"pilotZ", -0.5},
 
-    {"defaultNameFont", QStringList({"Tahoma", QString::number(4)}) },
-    {"defaultTimeFont", QStringList({"Arial", QString::number(4)}) }
+    {"defaultNameFont", QStringList({"Tahoma", QString::number(6)}) },
+    {"defaultTimeFont", QStringList({"Arial", QString::number(6)}) }
 };
 
 Theme::Theme(QObject *parent) : QObject(parent)

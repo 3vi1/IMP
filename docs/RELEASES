@@ -1,3 +1,8 @@
+0.7.0 - Added red-by-last KOS checking.
+
+        Changed default font sizes to be not customized for my weird 150% in a VM on a
+        4k screen size.
+
 0.6.3 - Add the ability to kos-check people by right-click/Copy of links pasted into
         chat.
 

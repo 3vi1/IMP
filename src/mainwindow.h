@@ -67,7 +67,8 @@ public slots:
     void fileChanged(const QString &absoluteFilePath);
     void gotAutoPeriodChange(int msecs);
     void gotAvatar(PilotEntry* pilotEntry);
-    void gotKosReply(const QList<KosEntry>& entries);
+    void gotKosReply(const QString &pilotName, const QList<KosEntry>& entries);
+    void gotRblReply(QString name, bool rbl);
     void gotEssReply(const QList<KosEntry>& entries);
     void gotMapRefreshChange(int msecs);
     void gotNewPilot(const QString& pilotName);
@@ -94,22 +95,7 @@ private slots:
     void on_actionSystem_triggered();
     void on_actionShow_Bridges_triggered(bool checked);
     void on_actionSave_As_Theme_triggered();
-/*    void on_actionLineWidth_triggered();
-    void on_actionLineOpacity_triggered();
-    void on_actionLineColor_triggered();
-    void on_actionPilotOpacity_triggered();
-    void on_actionPilotScale_triggered();
-    void on_actionPilotGraphic_triggered();
-    void on_actionFindGraphic_triggered();
-    void on_actionFindOpacity_triggered();
-    void on_actionFindScale_triggered();
-    void on_actionFindX_Y_Offsets_triggered();
-    void on_actionPilotX_Y_Offsets_triggered();
-    void on_actionFontSystemName_triggered();
-    void on_actionFontTimer_triggered(); */
     void on_actionFindMessages_triggered();
-    //void on_actionBackgroundColor_triggered();
-    //void on_actionBackgroundImage_triggered();
     void on_actionCustomize_triggered();
 
 private:
@@ -120,6 +106,8 @@ private:
     void opacityChange(QString obj, ThemeObject objType);
     void scaleChange(QString obj, ThemeObject objType);
     void customizeShape(QString obj, ThemeObject objType);
+
+    void doRedByLastCheck(const QString& name, int id);
 
     void loadMap();
     void loadBridges();
@@ -165,6 +153,9 @@ private:
     bool errorRetrievingBridgeFile = false;
 
     QMap<QString, PilotEntry> pilotCache;
+
+    int pilotsBeingChecked = 0;
+    bool kosSoundPlayed = false;
 
     QDateTime lastAlertTime;
     QString lastAlertSystem = "";
