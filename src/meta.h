@@ -25,8 +25,8 @@
 
 static const struct Version
 {
-    QString release = "0.7.2";
-    QString name = "An Ultra Uber-toxic Lycanthropic Hot-Topic";
+    QString release = "0.7.3";
+    QString name = "The Super-Sonic Uber-toxic Lycanthropic Hot-Topic";
 
     QString styleHeader1 = "<span style=\" color:#0000ff;\">";
     QString styleFooter1 = "</span>";

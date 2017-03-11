@@ -402,6 +402,8 @@ void MainWindow::clipboardUpdated()
         pilotsBeingChecked += toCheck.count();
         QString checkString = toCheck.join(',');
 
+        qDebug() << "MainWindow::clipboardUpdated() - Checking" << toCheck;
+
         if(checkString != "")
         {
             AsyncInfo* kosInfo = new AsyncInfo(manager, this);
@@ -439,6 +441,8 @@ void MainWindow::gotRblReply(QString name, bool rbl)
         addMessage(info);
     }
 
+    qDebug() << "MainWindow::gotRblReply - Finished checking" << name;
+
     if(--pilotsBeingChecked == 0)
     {
         if(kosSoundPlayed)
@@ -454,19 +458,13 @@ void MainWindow::gotRblReply(QString name, bool rbl)
 
 void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& entries)
 {
-    if(entries.count() == 0)
-    {
-        QStringList pilots = pilotNames.split(',');
-        foreach(QString pilot, pilots)
-        {
-            doRedByLastCheck(pilot, 0);
-        }
-        return;
-    }
+    QSet<QString> pilots = pilotNames.split(',').toSet();
 
     bool playKos = false;
     foreach(KosEntry e, entries)
     {
+        pilots.remove(e.pilot.name);
+
         qDebug() << "MainWindow::gotKosReply - " << e.pilot.name;
         MessageInfo info;
         info.sender = "Khasm Kaotiqa";
@@ -501,7 +499,14 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
             }
         }
 
+        qDebug() << "MainWindow::gotKosReply - Finished checking" << e.pilot.name;
         pilotsBeingChecked--;
+    }
+
+    // Do red-by-last checks on any pilots the CVA checker didn't know about.
+    foreach(QString pilot, pilots)
+    {
+        doRedByLastCheck(pilot, 0);
     }
 
     if(playKos && kosSoundPlayed != true)
