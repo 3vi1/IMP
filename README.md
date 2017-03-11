@@ -25,6 +25,8 @@ The latest binary releases are available on [the releases page](https://github.c
 * Find
   * Find systems in current region by partial name.
   * Find messages containing any substring.
+* Clipboard KOS Checking
+  * Performs red-by-last checks on NPC-corp members.
 * Uses less CPU than Vintel.
 
 <p align="center">
