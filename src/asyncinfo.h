@@ -128,7 +128,7 @@ private:
     QString checkNames = "";
 
     void requestId(const QString& name, const char* slot);
-    void kosCheck(const QString &reqNames, const char* slot, QString queryType  = "unit");
+    void kosCheck(const QString &reqNames, const char* slot, QString queryType  = "multi");
 };
 
 #endif // ASYNCINFO_H

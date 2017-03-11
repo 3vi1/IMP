@@ -457,7 +457,7 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
         QStringList pilots = pilotNames.split(',');
         foreach(QString pilot, pilots)
         {
-            doRedByLastCheck(pilotNames, 0);
+            doRedByLastCheck(pilot, 0);
         }
         return;
     }
@@ -499,7 +499,7 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
             }
         }
     }
-    if(playKos)
+    if(playKos && kosSoundPlayed != true)
     {
         audio.playLocalFile(options.getSoundIsKos());
         kosSoundPlayed = true;
@@ -508,6 +508,7 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
     if(--pilotsBeingChecked == 0)
     {
         audio.playLocalFile(options.getSoundNoKos());
+        kosSoundPlayed = false;
     }
 }
 
