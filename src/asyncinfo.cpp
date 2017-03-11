@@ -312,33 +312,40 @@ void AsyncInfo::gotKosCheckCorpReply()
 
     qDebug() << "AsyncInfo::gotKosCheckCorpReply - b = " << b;
 
-    QJsonDocument jsonResponse = QJsonDocument::fromJson(b);
-    QJsonObject jsonObject = jsonResponse.object();
-    QJsonArray jsonArray = jsonObject["results"].toArray();
+    if(b.length() > 0)
+    {
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(b);
+        QJsonObject jsonObject = jsonResponse.object();
+        QJsonArray jsonArray = jsonObject["results"].toArray();
 
-    KosEntry kosEntry;
-    foreach (const QJsonValue& value, jsonArray) {
-        QJsonObject obj = value.toObject();
+        KosEntry kosEntry;
+        foreach (const QJsonValue& value, jsonArray) {
+            QJsonObject obj = value.toObject();
 
-        // Most of these are unused right now, but I've got plans
+            // Most of these are unused right now, but I've got plans
 
-        kosEntry.corp.eveId = obj["eveid"].toInt();
-        kosEntry.corp.icon = obj["icon"].toString();
-        kosEntry.corp.id = obj["id"].toInt();
-        kosEntry.corp.kos = obj["kos"].toBool();
-        kosEntry.corp.name = obj["label"].toString();
-        kosEntry.corp.npc = obj["npc"].toBool();
-        kosEntry.corp.ticker = obj["ticker"].toString();
+            kosEntry.corp.eveId = obj["eveid"].toInt();
+            kosEntry.corp.icon = obj["icon"].toString();
+            kosEntry.corp.id = obj["id"].toInt();
+            kosEntry.corp.kos = obj["kos"].toBool();
+            kosEntry.corp.name = obj["label"].toString();
+            kosEntry.corp.npc = obj["npc"].toBool();
+            kosEntry.corp.ticker = obj["ticker"].toString();
 
-        QJsonObject allianceObj = obj["alliance"].toObject();
-        kosEntry.alliance.eveId = allianceObj["eveid"].toInt();
-        kosEntry.alliance.icon = allianceObj["icon"].toString();
-        kosEntry.alliance.id = allianceObj["id"].toInt();
-        kosEntry.alliance.kos = allianceObj["kos"].toBool();
-        kosEntry.alliance.name = allianceObj["label"].toString();
-        kosEntry.alliance.ticker = allianceObj["ticker"].toString();
+            QJsonObject allianceObj = obj["alliance"].toObject();
+            kosEntry.alliance.eveId = allianceObj["eveid"].toInt();
+            kosEntry.alliance.icon = allianceObj["icon"].toString();
+            kosEntry.alliance.id = allianceObj["id"].toInt();
+            kosEntry.alliance.kos = allianceObj["kos"].toBool();
+            kosEntry.alliance.name = allianceObj["label"].toString();
+            kosEntry.alliance.ticker = allianceObj["ticker"].toString();
+        }
+
+        emit rblResultReady(checkNames, kosEntry.corp.kos | kosEntry.alliance.kos);
     }
-
-    emit rblResultReady(checkNames, kosEntry.corp.kos | kosEntry.alliance.kos);
+    else
+    {
+        emit rblResultReady(checkNames, false);
+    }
     this->deleteLater();
 }

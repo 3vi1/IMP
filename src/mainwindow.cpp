@@ -351,6 +351,8 @@ void MainWindow::clipboardUpdated()
 {
     if(options.getKosCheck())
     {
+        kosSoundPlayed = false;
+
         QStringList lines, names;
         lines = QApplication::clipboard()->text().split('\n');
 
@@ -498,18 +500,19 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
                 return;
             }
         }
+
+        pilotsBeingChecked--;
     }
+
     if(playKos && kosSoundPlayed != true)
     {
         audio.playLocalFile(options.getSoundIsKos());
         kosSoundPlayed = true;
     }
-
-    if(--pilotsBeingChecked == 0)
+    else if(pilotsBeingChecked == 0)
     {
         audio.playLocalFile(options.getSoundNoKos());
-        kosSoundPlayed = false;
-    }
+    }   
 }
 
 void MainWindow::gotEssReply(const QList<KosEntry>& entries)
