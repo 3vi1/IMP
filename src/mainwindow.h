@@ -156,6 +156,7 @@ private:
 
     int pilotsBeingChecked = 0;
     bool kosSoundPlayed = false;
+    QString m_lastClipboard;
 
     QDateTime lastAlertTime;
     QString lastAlertSystem = "";

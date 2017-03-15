@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QApplication::setWindowIcon(QIcon(":/graphics/impicon.png"));
     options.setAudio(&audio);
 
-    chatModel = new ChatModel(this);
+    chatModel = new ChatModel(&options, this);
     chatModel->setPilotCache(&pilotCache);
     ui->listView->setModel(chatModel);
     m_cid.setModel(chatModel);
@@ -351,6 +351,13 @@ void MainWindow::clipboardUpdated()
 {
     if(options.getKosCheck())
     {
+        if(options.getKosOnDouble() &&
+                QApplication::clipboard()->text() != m_lastClipboard)
+        {
+            m_lastClipboard = QApplication::clipboard()->text();
+            return;
+        }
+
         kosSoundPlayed = false;
 
         QStringList lines, names;

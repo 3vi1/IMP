@@ -23,15 +23,16 @@
 
 #include <QAbstractListModel>
 #include <QList>
-#include "parser.h"
 #include "asyncinfo.h"
+#include "options.h"
+#include "parser.h"
 
 class ChatModel : public QAbstractListModel
 {
     Q_OBJECT
 
 public:
-    explicit ChatModel(QObject *parent = 0);
+    explicit ChatModel(Options* options, QObject *parent = 0);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -57,6 +58,8 @@ private:
     QList<MessageInfo*> visibleItems;
     QString subset = "";
     bool    subsetOnSystem = false;
+
+    Options* _options;
 };
 
 #endif // CHATMODEL_H

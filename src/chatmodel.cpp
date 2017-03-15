@@ -20,9 +20,10 @@
 
 #include "chatmodel.h"
 
-ChatModel::ChatModel(QObject *parent)
+ChatModel::ChatModel(Options *options, QObject *parent)
     : QAbstractListModel(parent)
 {
+    _options = options;
 }
 
 void ChatModel::setPilotCache(QMap<QString, PilotEntry>* pilotCache)
@@ -79,7 +80,11 @@ QVariant ChatModel::data(const QModelIndex &index, int role) const
 
     switch(role){
     case Qt::DecorationRole:
-        if(pilotCache->contains(message.sender))
+        if(!_options->showAvatar())
+        {
+            return (QPixmap());
+        }
+        else if(pilotCache->contains(message.sender))
         {
             return (QPixmap)((*pilotCache)[message.sender].avatar);
         }

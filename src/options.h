@@ -66,6 +66,7 @@ public:
     bool getEssAndKos();
     int getHistoryMax();
     bool getKosCheck();
+    bool getKosOnDouble();
     int getMapRefresh();
     int getMaxEntries();
     int getPollerRefresh();
@@ -97,6 +98,8 @@ public:
     QString getSoundStatus();
     QString getSoundIsKos();
     QString getSoundNoKos();
+
+    bool showAvatar();
 
     QString getThemeName(){ return m_themeName; }
     ThemeType getThemeType(){ return m_themeType; }
@@ -144,8 +147,10 @@ private:
     QList<Rule> readRules(QXmlStreamReader& reader);
 
     bool _autofollow = true;
+    bool _showAvatar;
     bool _smoothAutofollow;
     bool _essAndKos;
+    bool _kosDouble;
     bool _selfSuppress;
 
     int _alarmDistance = 1;

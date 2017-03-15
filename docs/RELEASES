@@ -1,3 +1,7 @@
+0.7.5 - Added option to disable portraits.
+
+        Added option to use Ctrl-Cx2 for KOS checks.
+
 0.7.4 - Another fix for RBL checks when CVA comes back with no info for corp.
 
 0.7.3 - Fixes various issues with kos checking.

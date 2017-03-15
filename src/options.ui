@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
-    <height>377</height>
+    <width>635</width>
+    <height>438</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,33 +46,33 @@
       <attribute name="title">
        <string>Alerts</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_6">
-       <item row="11" column="1" colspan="2">
-        <widget class="QSlider" name="volume">
-         <property name="maximum">
-          <number>100</number>
-         </property>
-         <property name="value">
-          <number>100</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_11">
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Clipboard KOS:</string>
+          <string>Alarm Distance:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSpinBox" name="distanceSpinBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="value">
+          <number>1</number>
          </property>
         </widget>
        </item>
@@ -92,95 +92,17 @@
          </property>
         </widget>
        </item>
-       <item row="9" column="1" colspan="2">
-        <widget class="QComboBox" name="essCombo">
+       <item row="1" column="1">
+        <widget class="QComboBox" name="alarmCombo">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>1</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
         </widget>
        </item>
-       <item row="10" column="1" colspan="2">
-        <widget class="QCheckBox" name="essBox">
-         <property name="text">
-          <string>Only alert on ESS when person is KOS.</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_3">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Status Requested:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="1" colspan="2">
-        <widget class="QComboBox" name="clipNotKosCombo">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="0">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Volume:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="label_12">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Clipboard not KOS:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1" rowspan="2" colspan="2">
-        <widget class="QCheckBox" name="selfSuppressCheck">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Suppress alerts generated by my intel reports.</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="3">
+       <item row="1" column="2">
         <widget class="QToolButton" name="alarmTestButton">
          <property name="text">
           <string>...</string>
@@ -191,93 +113,7 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="3">
-        <widget class="QToolButton" name="clipKosTestButton">
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/graphics/volume-icon.png</normaloff>:/graphics/volume-icon.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Alarm Distance:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1" colspan="2">
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="0">
-          <widget class="QSpinBox" name="distanceSpinBox">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="value">
-            <number>1</number>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="label_6">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Clipboard KOS Checking:</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QCheckBox" name="kosCheck">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="6" column="1" colspan="2">
-        <widget class="QComboBox" name="statusCombo">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1" colspan="2">
+       <item row="2" column="1">
         <layout class="QGridLayout" name="gridLayout_7">
          <item row="0" column="0">
           <widget class="QLabel" name="label_26">
@@ -323,8 +159,63 @@
          </item>
         </layout>
        </item>
-       <item row="8" column="3">
-        <widget class="QToolButton" name="clipNotKosTestButton">
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="selfSuppressCheck">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Suppress alerts generated by my own intel reports.</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Status Requested:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QComboBox" name="statusCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QToolButton" name="statusTestButton">
          <property name="text">
           <string>...</string>
          </property>
@@ -334,7 +225,7 @@
          </property>
         </widget>
        </item>
-       <item row="9" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="label_14">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -350,38 +241,17 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1" colspan="2">
-        <widget class="QComboBox" name="alarmCombo">
+       <item row="6" column="1">
+        <widget class="QComboBox" name="essCombo">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>1</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
         </widget>
        </item>
-       <item row="7" column="1" colspan="2">
-        <widget class="QComboBox" name="clipKosCombo">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="3">
-        <widget class="QToolButton" name="statusTestButton">
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/graphics/volume-icon.png</normaloff>:/graphics/volume-icon.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="3">
+       <item row="6" column="2">
         <widget class="QToolButton" name="essTestButton">
          <property name="text">
           <string>...</string>
@@ -392,18 +262,193 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
-        <spacer name="verticalSpacer_2">
+       <item row="7" column="1">
+        <widget class="QCheckBox" name="essBox">
+         <property name="text">
+          <string>Only alert on ESS when person is KOS.</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Volume:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QSlider" name="volume">
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>20</height>
-          </size>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>KOS Checking</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_8">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-        </spacer>
+         <property name="text">
+          <string>Clipboard KOS Checking:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QCheckBox" name="kosCheck">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_32">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Check on double copy:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="checkKosDouble">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="label_33">
+         <property name="text">
+          <string>(Require Ctrl-C twice on same data before sending to checker)</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Clipboard KOS:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QComboBox" name="clipKosCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QToolButton" name="clipKosTestButton">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/graphics/volume-icon.png</normaloff>:/graphics/volume-icon.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Clipboard not KOS:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" colspan="2">
+        <widget class="QComboBox" name="clipNotKosCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>1</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QToolButton" name="clipNotKosTestButton">
+         <property name="text">
+          <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/graphics/volume-icon.png</normaloff>:/graphics/volume-icon.png</iconset>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -602,7 +647,7 @@
        <string>Messages</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="1">
+       <item row="0" column="0">
         <widget class="QLabel" name="label_30">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -618,7 +663,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2" colspan="3">
+       <item row="0" column="1" colspan="3">
         <widget class="QListWidget" name="intelWidget">
          <property name="selectionMode">
           <enum>QAbstractItemView::MultiSelection</enum>
@@ -628,10 +673,10 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2" colspan="2">
+       <item row="1" column="1" colspan="2">
         <widget class="QLineEdit" name="intelEdit"/>
        </item>
-       <item row="1" column="4">
+       <item row="1" column="3">
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
           <widget class="QToolButton" name="addIntelButton">
@@ -673,7 +718,7 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="2">
+       <item row="2" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -689,7 +734,49 @@
          </property>
         </spacer>
        </item>
-       <item row="3" column="2" colspan="2">
+       <item row="3" column="0">
+        <widget class="QLabel" name="labelFontSize_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Show Avatar:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1" colspan="2">
+        <widget class="QCheckBox" name="checkAvatar">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="labelFontSize_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Font:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1" colspan="2">
         <widget class="QFontComboBox" name="fontComboBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -702,7 +789,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0" colspan="2">
+       <item row="5" column="0">
         <widget class="QLabel" name="labelFontSize">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -718,7 +805,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="2">
+       <item row="5" column="1">
         <widget class="QSpinBox" name="fontSpinBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -734,7 +821,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0" colspan="2">
+       <item row="6" column="0">
         <widget class="QLabel" name="label_5">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -750,7 +837,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="2">
+       <item row="6" column="1">
         <widget class="QSpinBox" name="historySpinBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -766,7 +853,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="3">
+       <item row="6" column="2">
         <widget class="QLabel" name="label_7">
          <property name="text">
           <string>(0 = Keep all)</string>
@@ -776,7 +863,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0" colspan="2">
+       <item row="7" column="0">
         <widget class="QLabel" name="label_8">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -792,7 +879,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="2">
+       <item row="7" column="1">
         <widget class="QSpinBox" name="avatarBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -805,29 +892,13 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="3">
+       <item row="7" column="2">
         <widget class="QLabel" name="label_9">
          <property name="text">
           <string>(0 = Do not override)</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLabel" name="labelFontSize_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Font:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -1063,10 +1134,6 @@
   <tabstop>alarmTestButton</tabstop>
   <tabstop>statusCombo</tabstop>
   <tabstop>statusTestButton</tabstop>
-  <tabstop>clipKosCombo</tabstop>
-  <tabstop>clipKosTestButton</tabstop>
-  <tabstop>clipNotKosCombo</tabstop>
-  <tabstop>clipNotKosTestButton</tabstop>
   <tabstop>essCombo</tabstop>
   <tabstop>essTestButton</tabstop>
   <tabstop>essBox</tabstop>

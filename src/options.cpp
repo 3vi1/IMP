@@ -90,9 +90,11 @@ void Options::cacheSettings()
     _pollerRefresh = ui->pollerSpinBox->value();
     _redundantSuppress = ui->redundantSpinBox->value();
 
+    _kosDouble = ui->checkKosDouble->isChecked();
     _selfSuppress = ui->selfSuppressCheck->isChecked();
     _smoothAutofollow = ui->smoothCheck->isChecked();
     _essAndKos = ui->essBox->isChecked();
+    _showAvatar = ui->checkAvatar->isChecked();
 
     _soundAlarm = ui->alarmCombo->currentText();
     _soundStatus = ui->statusCombo->currentText();
@@ -129,6 +131,8 @@ void Options::restoreSettings()
     ui->selfSuppressCheck->setChecked(_selfSuppress);
     ui->smoothCheck->setChecked(_smoothAutofollow);
     ui->essBox->setChecked(_essAndKos);
+    ui->checkKosDouble->setChecked(_kosDouble);
+    ui->checkAvatar->setChecked(_showAvatar);
 
     ui->alarmCombo->setCurrentIndex(ui->alarmCombo->findText(_soundAlarm));
     ui->statusCombo->setCurrentIndex(ui->statusCombo->findText(_soundStatus));
@@ -179,6 +183,8 @@ void Options::loadSettings(QSettings& settings)
     ui->selfSuppressCheck->setChecked(settings.value("selfSuppress", true).toBool());
     ui->smoothCheck->setChecked(settings.value("smoothAutofollow", true).toBool());
     ui->essBox->setChecked(settings.value("essAndKos", true).toBool());
+    ui->checkKosDouble->setChecked(settings.value("kosDouble", true).toBool());
+    ui->checkAvatar->setChecked(settings.value("showAvatar", true).toBool());
 
     ui->volume->setValue(settings.value("volume", 100).toInt());
     audio->setVolume(ui->volume->value());
@@ -766,4 +772,14 @@ void Options::on_bridgeEdit_editingFinished()
     {
         ui->bridgeEdit->setText(ui->bridgeEdit->text() + "/");
     }
+}
+
+bool Options::showAvatar()
+{
+    return _showAvatar;
+}
+
+bool Options::getKosOnDouble()
+{
+    return _kosDouble;
 }
