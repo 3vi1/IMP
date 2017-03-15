@@ -9,11 +9,11 @@ You will need the following dependencies (Ubuntu, Debian):
 
 1. Change into the out-of-tree build subdirectory of the source tree:
 
-        cd IMP\build
+        mkdir IMP/build; cd IMP/build
 
 2. Create the makefile via qmake:
 
-        qmake ..\src\imp.pro
+        qmake ../src/imp.pro
 
 3. Build the binary:
 
