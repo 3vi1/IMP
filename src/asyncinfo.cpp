@@ -147,7 +147,7 @@ void AsyncInfo::kosCheck(const QString &reqNames,
     query.addQueryItem("q", names);
     url.setQuery(query);
 
-    qDebug() << "Query = " << url.query();
+    //qDebug() << "Query = " << url.query();
 
     QNetworkRequest request(url);
     request.setRawHeader("User-Agent", meta.agentString.toUtf8());
@@ -164,7 +164,7 @@ void AsyncInfo::gotKosCheckReply()
     QByteArray b = kosReply->readAll();
     kosReply->deleteLater();
 
-    qDebug() << "gotKosCheckReply = " << b;
+    //qDebug() << "gotKosCheckReply = " << b;
 
     QList<KosEntry> entries;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(b);
@@ -260,7 +260,7 @@ void AsyncInfo::rblIdRetrieved()
 
 void AsyncInfo::rblInfoRetrieved()
 {
-    qDebug() << "AsyncInfo::rblInfoRetrieved() - Entered...";
+    //qDebug() << "AsyncInfo::rblInfoRetrieved() - Entered...";
 
     QNetworkReply* infoReply = qobject_cast<QNetworkReply*>(sender());
     if (!infoReply)
@@ -269,7 +269,7 @@ void AsyncInfo::rblInfoRetrieved()
     QByteArray b = infoReply->readAll();
     infoReply->deleteLater();
 
-    qDebug() << "AsyncInfo::rblInfoRetrieved() - " << b;
+    //qDebug() << "AsyncInfo::rblInfoRetrieved() - " << b;
 
     if(b.length() > 0)
     {
@@ -290,7 +290,6 @@ void AsyncInfo::rblInfoRetrieved()
             if(entry[0].toInt() > 2000000)
             {
                 // Found last NPC corp
-                //entry[1].replace(' ','+');
                 kosCheck(entry[1], SLOT(gotKosCheckCorpReply()), "corp");
                 return;
             }
@@ -310,7 +309,7 @@ void AsyncInfo::gotKosCheckCorpReply()
     QByteArray b = rblReply->readAll();
     rblReply->deleteLater();
 
-    qDebug() << "AsyncInfo::gotKosCheckCorpReply - b = " << b;
+    //qDebug() << "AsyncInfo::gotKosCheckCorpReply - b = " << b;
 
     if(b.length() > 0)
     {
