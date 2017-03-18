@@ -45,6 +45,8 @@
 #include <QString>
 #include <QTimer>
 
+#include "options.h"
+
 using namespace std;
 
 
@@ -52,7 +54,7 @@ class LogCatcher : public QObject
 {
     Q_OBJECT
 public:
-    explicit LogCatcher(QObject *parent = 0);
+    explicit LogCatcher(Options* options, QObject *parent = 0);
 
     void setLogDir(QString logDir);
     void setPollerRefresh(int interval);
@@ -67,6 +69,7 @@ public slots:
     void fallbackPoller();
 
 private:
+    Options* m_options;
     QFileSystemWatcher dirWatcher;
     QFileInfoList infoList;
     QString logDir;

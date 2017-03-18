@@ -68,7 +68,7 @@
         <item row="1" column="0">
          <widget class="QListView" name="listView">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -137,7 +137,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>19</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="font">
@@ -173,13 +173,15 @@
    </widget>
    <widget class="QMenu" name="menuRegion">
     <property name="title">
-     <string>Region</string>
+     <string>Map</string>
     </property>
     <addaction name="actionCatch"/>
     <addaction name="actionProvidence"/>
     <addaction name="actionQuerious"/>
     <addaction name="separator"/>
     <addaction name="actionShow_Bridges"/>
+    <addaction name="separator"/>
+    <addaction name="actionReset_Rotation"/>
    </widget>
    <widget class="QMenu" name="menuFind">
     <property name="title">
@@ -385,6 +387,11 @@
   <action name="actionCustomize">
    <property name="text">
     <string>Customize</string>
+   </property>
+  </action>
+  <action name="actionReset_Rotation">
+   <property name="text">
+    <string>&amp;Reset Rotation</string>
    </property>
   </action>
  </widget>

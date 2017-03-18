@@ -208,11 +208,6 @@ void SvgMapView::wheelEvent(QWheelEvent *event)
     event->accept();
 }
 
-float SvgMapView::getZoom()
-{
-    return zoom;
-}
-
 void SvgMapView::setZoom(float factor)
 {
     if(factor <= 0)
@@ -221,7 +216,6 @@ void SvgMapView::setZoom(float factor)
         factor = 1;
     }
 
-    zoom *= factor;
     scale(factor, factor);
 }
 
@@ -732,6 +726,32 @@ void SvgMapView::gotSystemColor(const QString& name, QColor color)
 qreal SvgMapView::getSystemsRotation()
 {
     return systemShapes.first()->rotation();
+}
+
+void SvgMapView::resetRotation()
+{
+    qreal mapScale = getTransform().m22();
+    qDebug() << "SvgMapView::resetRotation() scale = " << mapScale;
+    resetTransform();
+
+
+    for(int i=0; i<systemShapes.count(); i++)
+    {
+        SystemShape* item = systemShapes.values().at(i);
+        item->setTransformOriginPoint(item->boundingRect().width() * .5,
+                                      item->boundingRect().height() * .5);
+        item->setRotation(0);
+
+        MapShape* outlineItem = systemOutlines.values().at(i);
+        outlineItem->setTransformOriginPoint(outlineItem->boundingRect().width() * .5,
+                                      outlineItem->boundingRect().height() * .5);
+        outlineItem->setRotation(0);
+    }
+
+    foreach(QGraphicsTextItem* t, m_texts.values())
+    {
+        t->setRotation(0);
+    }
 }
 
 void SvgMapView::rotateSystems(qreal angle)

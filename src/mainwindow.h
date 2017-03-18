@@ -98,6 +98,8 @@ private slots:
     void on_actionFindMessages_triggered();
     void on_actionCustomize_triggered();
 
+    void on_actionReset_Rotation_triggered();
+
 private:
     void initParsing();
     void initThemes();

@@ -60,20 +60,21 @@ public:
     int         getVerticalScroll();
     QRect       getViewRect();
     QPointF     getViewportCenter();
-    float       getZoom();
 
     void setHorizontalScroll(int x);
     void setLoadText(const QString text);
     void setNameFont(QFont newFont);
     void setSceneRect(QRectF rect);
+
+    void resetRotation();
     void rotateSystems(qreal angle);
+
     void setTheme(Theme* theme){m_theme = theme;}
     void setTimeFont(QFont newFont);
     void setTransform(QTransform transform);
     void setVerticalScroll(int y);
     void setViewRect(QRect rect);
     void setZoom(float factor);
-
 
     void addBridge(QGraphicsLineItem *arrow);
     void showBridges(bool enable);

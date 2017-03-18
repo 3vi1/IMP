@@ -349,10 +349,15 @@ QString Map::getSystemByAbbreviation(const QString& word)
             }
             else if(wordLength == 2)
             {
-                // maybe just two letters (nr instead of n-r)
+                // Maybe just two letters (nr instead of n-r), but not
+                //    x1 -
                 QString shortName = system.mid(dashPos-1) +
                         system.mid(dashPos+1);
-                if (shortName == upperWord)
+                if (shortName == upperWord &&
+                        !(shortName[0] == 'X' &&
+                          (shortName[1].isDigit() && shortName[1].digitValue() > 1)
+                         )
+                   )
                 {
                     return system;
                 }

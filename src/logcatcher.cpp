@@ -24,8 +24,9 @@
 #include <QFileInfo>
 #include "logcatcher.h"
 
-LogCatcher::LogCatcher(QObject *parent) : QObject(parent)
+LogCatcher::LogCatcher(Options* options, QObject *parent) : QObject(parent)
 {
+    m_options = options;
 }
 
 void LogCatcher::setLogDir(QString logDir)
@@ -105,7 +106,7 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
     if(infoList.count() > 0)
         infoList.clear();
 
-    QRegExp logNameRegEx(".*_[0-9]+_[0-9]+\\.txt$");
+    QRegExp logNameRegEx("(.*)_[0-9]+_[0-9]+\\.txt$");
 
     foreach (QFileInfo fileInfo, QDir(dirName).entryInfoList()) {
         if (fileInfo.isFile()) {
@@ -117,6 +118,25 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
             }
 
             if (fileInfo.lastModified() > (QDateTime::currentDateTime().addDays(-1))) {
+
+                // We only put intel channels in the list once, no matter how many pilots
+                // are in them.
+
+                QString channelName = logNameRegEx.cap(1);
+                if(m_options->getIntelChannels().contains(channelName))
+                {
+                    QMutableListIterator<QFileInfo> i(infoList);
+                    while (i.hasNext()) {
+                        QString iFileName = i.next().fileName();
+                        QString iChanName = iFileName.left(iFileName.length() - 20);
+                        if (iChanName == channelName) {
+                            if (i.value().lastModified() < fileInfo.lastModified()) {
+                                i.remove();
+                            }
+                        }
+                    }
+                }
+
                 infoList.append(fileInfo);
             }
         }

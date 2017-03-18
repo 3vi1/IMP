@@ -150,11 +150,11 @@ void MainWindow::changeTheme(const QString& themeName, ThemeType themeType)
     {
         m_theme = new Theme(this);
 
-        connect(m_theme, SIGNAL(backColorChanged(const QColor&)),
+/*        connect(m_theme, SIGNAL(backColorChanged(const QColor&)),
                 ui->mapView, SLOT(gotBackColor(const QColor&)));
         connect(m_theme, SIGNAL(lineColorChanged(const QColor&)),
                 ui->mapView, SLOT(gotLineColor(const QColor&)));
-
+*/
         connect(m_theme, &Theme::sendUpdate,
                 ui->mapView, &SvgMapView::receiveThemeUpdate);
     }
@@ -566,7 +566,7 @@ void MainWindow::initParsing()
     {
         lc->deleteLater();
     }
-    lc = new LogCatcher();
+    lc = new LogCatcher(&options);
 
     lc->setLogDir(options.getLogPath());
 #ifdef USE_FALLBACK_POLLER
@@ -591,7 +591,6 @@ void MainWindow::failedGettingRegionFile(QNetworkReply::NetworkError err)
 {
     qDebug() << "MainWindow::failedGettingRegionFile - Failed to retrieve region file.";
     qDebug() << err;
-    qDebug() << "MainWindow::failedGettingRegionFile - Attempting to use local file if it exists." << endl;
 
     changeImpStatus("Failed getting map, attempting to use last.");
 
@@ -840,11 +839,15 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
     if(mapLoading && !parser->getLocalChannels().contains(shortName(absoluteFilePath)))
     {
+        // We're loading, and this isn't a local channel.  Load last 50 or so entries.
+
         messages = parser->fileChanged(absoluteFilePath, options.getMaxEntries());
     }
     else
     {
-        messages = parser->fileChanged(absoluteFilePath);
+        // Either we're not loading, or this is a local channel, so read all changes.
+
+        messages = parser->fileChanged(absoluteFilePath, 0, mapLoading);
     }
 
     QString status = "Parsing " + QString::number(messages.count());
@@ -1070,7 +1073,7 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
         // If we just reloaded, there may be a lot of these, so let's process other
         // events to keep the gui responsive until we rewrite multi-threaded.
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 20);
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
     }
 }
 
@@ -1230,7 +1233,7 @@ void MainWindow::positionTo(const QString& systemName)
 
 void MainWindow::updatePosition()
 {
-    // TEMP
+    // TEMP - Roll this into the view later
 
     if(mapLoading)
     {
@@ -1258,7 +1261,7 @@ void MainWindow::updatePosition()
         positionTimer->deleteLater();
         positionTimer = NULL;
 
-        qDebug() << "positionTimer expired for"<< destinationPos;
+        //qDebug() << "positionTimer expired for"<< destinationPos;
     }
 }
 
@@ -1344,7 +1347,7 @@ void MainWindow::findLocation(const QString& location)
 void MainWindow::logDirChanged(const QString& dir)
 {
     lc->deleteLater();
-    lc = new LogCatcher();
+    lc = new LogCatcher(&options);
     connect(lc, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
     lc->setLogDir(dir);
 }
@@ -1480,4 +1483,9 @@ void MainWindow::on_actionCustomize_triggered()
     {
         dialog.sendChanges(m_theme);
     }
+}
+
+void MainWindow::on_actionReset_Rotation_triggered()
+{
+    ui->mapView->resetRotation();
 }

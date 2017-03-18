@@ -71,7 +71,7 @@ class Parser : public QObject
 public:
     explicit Parser(QObject *parent = 0);
     void setMap(Map& map);
-    QList<MessageInfo> fileChanged(const QString& path, int maxEntries = 0);
+    QList<MessageInfo> fileChanged(const QString& path, int maxEntries = 0, bool initialLoad = false);
     QSet<QString> getLocalChannels();
 
 signals:

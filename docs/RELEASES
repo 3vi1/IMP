@@ -1,3 +1,19 @@
+0.7.6 - Stop "x4" from setting off alarms in X-4.  x[2-9] are no longer considered
+        potential system abbreviations.
+
+        Message view can now be sized smaller.
+
+        Renamed Regions menu to Map and added a "Reset Rotation" option, just in
+        case someone manages to desync system/map rotation before I make that
+        system smarter.
+
+        Fixed a couple of potential crashes when clicking map/subsetting messages.
+
+        Fixed it so that IMP will not add the intel channels multiple times if
+        you have joined them with multiple pilots.
+
+        Shout outs to Fenix Inferni and Subelectro Shanzaar for the donations!
+
 0.7.5 - Added option to disable portraits.
 
         Added option to use Ctrl-Cx2 for KOS checks.

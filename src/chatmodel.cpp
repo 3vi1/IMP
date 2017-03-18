@@ -33,7 +33,7 @@ void ChatModel::setPilotCache(QMap<QString, PilotEntry>* pilotCache)
 
 void ChatModel::addEntry(const MessageInfo& message)
 {
-    beginInsertRows(QModelIndex(), items.size(), items.size());
+    beginInsertRows(QModelIndex(), items.size(), items.size()+1);
 
     items.append(message);
 
@@ -117,6 +117,7 @@ bool ChatModel::removeRows(int row, int count, const QModelIndex &parent)
         return true;
     }
 
+    Q_ASSERT(row < row+count-1);
     beginRemoveRows(parent, row, (row + count) - 1);
     if(row == 0 && count == items.count())
     {
@@ -148,13 +149,16 @@ void ChatModel::subsetForSystem(const QString& system)
         subsetOnSystem = false;
     }
 
-    beginRemoveRows(QModelIndex(), 0, visibleItems.count() - 1);
-    visibleItems.clear();
-    endRemoveRows();
+    if(visibleItems.count() >0)
+    {
+        beginRemoveRows(QModelIndex(), 0, visibleItems.count() - 1);
+        visibleItems.clear();
+        endRemoveRows();
+    }
 
     for(int i = 0; i < items.count(); i++)
     {
-        beginInsertRows(QModelIndex(), visibleItems.count(), 1);
+        beginInsertRows(QModelIndex(), visibleItems.count(), visibleItems.count()+1);
         if(system == "" || items[i].systems.contains(system))
         {
             visibleItems.append(&items[i]);
@@ -168,13 +172,16 @@ void ChatModel::subsetForString(const QString& string)
     subset = string;
     subsetOnSystem = false;
 
-    beginRemoveRows(QModelIndex(), 0, visibleItems.count() - 1);
-    visibleItems.clear();
-    endRemoveRows();
+    if(visibleItems.count() >0)
+    {
+        beginRemoveRows(QModelIndex(), 0, visibleItems.count() - 1);
+        visibleItems.clear();
+        endRemoveRows();
+    }
 
     for(int i = 0; i < items.count(); i++)
     {
-        beginInsertRows(QModelIndex(), visibleItems.count(), 1);
+        beginInsertRows(QModelIndex(), visibleItems.count(), visibleItems.count()+1);
         if(string == "" || items[i].text.contains(string))
         {
             visibleItems.append(&items[i]);

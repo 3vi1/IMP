@@ -78,7 +78,7 @@ QSet<QString> Parser::getLocalChannels()
     return localChannels;
 }
 
-QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries)
+QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool /*initialLoad*/)
 {
     QFile file(path);
     QTextStream input(&file);
