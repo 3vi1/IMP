@@ -176,7 +176,7 @@ void Options::loadSettings(QSettings& settings)
     ui->autoPeriodSpin->setValue(settings.value("autoPeriod", 4000).toInt());
     ui->autoRefreshSpin->setValue(settings.value("autoRefresh", 33).toInt());
     ui->maxEntriesSpinBox->setValue(settings.value("maxEntriesToLoad", 50).toInt());
-    ui->refreshSpin->setValue(settings.value("mapRefresh", 3000).toInt());
+    ui->refreshSpin->setValue(settings.value("mapRefresh", 1000).toInt());
     ui->pollerSpinBox->setValue(settings.value("pollerRefresh", 500).toInt());
     ui->redundantSpinBox->setValue(settings.value("redundantSuppress", 30).toInt());
 
