@@ -96,6 +96,7 @@ public:
     QString getSoundAlarm();
     QString getSoundEss();
     QString getSoundStatus();
+    QString getSoundIncompleteKos();
     QString getSoundIsKos();
     QString getSoundNoKos();
 
@@ -136,6 +137,8 @@ private slots:
     void on_intelWidget_itemClicked(QListWidgetItem *item);
 
     void on_bridgeEdit_editingFinished();
+
+    void on_incompleteTestButton_clicked();
 
 private:
     Ui::Options *ui;
@@ -178,11 +181,12 @@ private:
 
     QList<Rule> _rules;
 
-    QString _soundAlarm;
-    QString _soundEss;
-    QString _soundIsKos;
-    QString _soundNoKos;
-    QString _soundStatus;
+    QString m_soundAlarm;
+    QString m_soundEss;
+    QString m_soundIncomplete;
+    QString m_soundIsKos;
+    QString m_soundNoKos;
+    QString m_soundStatus;
 
 };
 

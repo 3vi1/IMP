@@ -67,8 +67,9 @@ public slots:
     void fileChanged(const QString &absoluteFilePath);
     void gotAutoPeriodChange(int msecs);
     void gotAvatar(PilotEntry* pilotEntry);
+    void gotKosError(const QString &pilotName);
     void gotKosReply(const QString &pilotName, const QList<KosEntry>& entries);
-    void gotRblReply(QString name, bool rbl);
+    void gotRblReply(QString name, bool rbl, int corpNum = 0);
     void gotEssReply(const QList<KosEntry>& entries);
     void gotMapRefreshChange(int msecs);
     void gotNewPilot(const QString& pilotName);

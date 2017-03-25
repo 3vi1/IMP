@@ -166,6 +166,13 @@ void AsyncInfo::gotKosCheckReply()
 
     //qDebug() << "gotKosCheckReply = " << b;
 
+    if(b.length() == 0)
+    {
+        emit kosCheckFailed(checkNames);
+        this->deleteLater();
+        return;
+    }
+
     QList<KosEntry> entries;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(b);
     QJsonObject jsonObject = jsonResponse.object();
@@ -271,28 +278,29 @@ void AsyncInfo::rblInfoRetrieved()
 
     //qDebug() << "AsyncInfo::rblInfoRetrieved() - " << b;
 
-    if(b.length() > 0)
+    if(b.length() == 0)
     {
-        QXmlQuery query;
-        query.setFocus(b);
-    /*    query.setQuery("//[REMOVE_ME]*:characterName/string()");
-        QString name;
-        query.evaluateTo(&name);
-        name = name.trimmed();
-    */
-        query.setQuery("//*:row/concat(@corporationID,',',@corporationName/string())");
-        QStringList results;
-        query.evaluateTo(&results);
+        emit kosCheckFailed(checkNames);
+        this->deleteLater();
+        return;
+    }
 
-        foreach(QString result, results)
+    QXmlQuery query;
+    query.setFocus(b);
+    query.setQuery("//*:row/concat(@corporationID,',',@corporationName/string())");
+    QStringList results;
+    query.evaluateTo(&results);
+
+    m_corpNum = 0;
+    foreach(QString result, results)
+    {
+        m_corpNum++;
+        QStringList entry = result.split(',');
+        if(entry[0].toInt() > 2000000)
         {
-            QStringList entry = result.split(',');
-            if(entry[0].toInt() > 2000000)
-            {
-                // Found last NPC corp
-                kosCheck(entry[1], SLOT(gotKosCheckCorpReply()), "corp");
-                return;
-            }
+            // Found last NPC corp
+            kosCheck(entry[1], SLOT(gotKosCheckCorpReply()), "corp");
+            return;
         }
     }
 
@@ -342,7 +350,7 @@ void AsyncInfo::gotKosCheckCorpReply()
                 kosEntry.alliance.ticker = allianceObj["ticker"].toString();
             }
 
-            emit rblResultReady(checkNames, kosEntry.corp.kos | kosEntry.alliance.kos);
+            emit rblResultReady(checkNames, kosEntry.corp.kos | kosEntry.alliance.kos, m_corpNum);
         }
         else
         {

@@ -49,6 +49,7 @@ Options::Options(QWidget *parent) :
             continue;
 
         ui->alarmCombo->addItem(fileInfo.fileName());
+        ui->comboIncomplete->addItem(fileInfo.fileName());
         ui->clipKosCombo->addItem(fileInfo.fileName());
         ui->clipNotKosCombo->addItem(fileInfo.fileName());
         ui->statusCombo->addItem(fileInfo.fileName());
@@ -96,11 +97,12 @@ void Options::cacheSettings()
     _essAndKos = ui->essBox->isChecked();
     _showAvatar = ui->checkAvatar->isChecked();
 
-    _soundAlarm = ui->alarmCombo->currentText();
-    _soundStatus = ui->statusCombo->currentText();
-    _soundIsKos = ui->clipKosCombo->currentText();
-    _soundNoKos = ui->clipNotKosCombo->currentText();
-    _soundEss = ui->essCombo->currentText();
+    m_soundAlarm = ui->alarmCombo->currentText();
+    m_soundStatus = ui->statusCombo->currentText();
+    m_soundIncomplete = ui->comboIncomplete->currentText();
+    m_soundIsKos = ui->clipKosCombo->currentText();
+    m_soundNoKos = ui->clipNotKosCombo->currentText();
+    m_soundEss = ui->essCombo->currentText();
 
     _logPath = ui->logsEdit->text();
     _mapPath = ui->mapEdit->text();
@@ -134,11 +136,12 @@ void Options::restoreSettings()
     ui->checkKosDouble->setChecked(_kosDouble);
     ui->checkAvatar->setChecked(_showAvatar);
 
-    ui->alarmCombo->setCurrentIndex(ui->alarmCombo->findText(_soundAlarm));
-    ui->statusCombo->setCurrentIndex(ui->statusCombo->findText(_soundStatus));
-    ui->clipKosCombo->setCurrentIndex(ui->clipKosCombo->findText(_soundIsKos));
-    ui->clipNotKosCombo->setCurrentIndex(ui->clipNotKosCombo->findText(_soundNoKos));
-    ui->essCombo->setCurrentIndex(ui->essCombo->findText(_soundEss));
+    ui->alarmCombo->setCurrentIndex(ui->alarmCombo->findText(m_soundAlarm));
+    ui->statusCombo->setCurrentIndex(ui->statusCombo->findText(m_soundStatus));
+    ui->comboIncomplete->setCurrentIndex(ui->comboIncomplete->findText(m_soundIncomplete));
+    ui->clipKosCombo->setCurrentIndex(ui->clipKosCombo->findText(m_soundIsKos));
+    ui->clipNotKosCombo->setCurrentIndex(ui->clipNotKosCombo->findText(m_soundNoKos));
+    ui->essCombo->setCurrentIndex(ui->essCombo->findText(m_soundEss));
 
     /* Works on Linux, but not on Windows...
     ui->alarmCombo->setCurrentText(_soundAlarm);
@@ -201,6 +204,11 @@ void Options::loadSettings(QSettings& settings)
                     settings.value("soundEss", "sci-fi-alarm.wav").toString()
                     )
                 );
+    ui->comboIncomplete->setCurrentIndex(
+                ui->clipKosCombo->findText(
+                    settings.value("soundIncomplete", "bottle-cap-drop.wav").toString()
+                    )
+                );
     ui->clipKosCombo->setCurrentIndex(
                 ui->clipKosCombo->findText(
                     settings.value("soundIsKos", "140-bpm-wobble-c-in-c.wav").toString()
@@ -229,6 +237,11 @@ void Options::loadSettings(QSettings& settings)
     if(ui->essCombo->currentText() == "") {
         ui->essCombo->setCurrentIndex(
                     ui->essCombo->findText("sci-fi-alarm.wav")
+                    );
+    }
+    if(ui->comboIncomplete->currentText() == "") {
+        ui->comboIncomplete->setCurrentIndex(
+                    ui->comboIncomplete->findText("bottle-cap-drop.wav")
                     );
     }
     if(ui->clipKosCombo->currentText() == "") {
@@ -402,6 +415,7 @@ void Options::saveSettings(QSettings& settings)
 
     settings.setValue("soundAlarm", getSoundAlarm());
     settings.setValue("soundStatus", getSoundStatus());
+    settings.setValue("soundIncomplete", getSoundIncompleteKos());
     settings.setValue("soundIsKos", getSoundIsKos());
     settings.setValue("soundNoKos", getSoundNoKos());
     settings.setValue("soundEss", getSoundEss());
@@ -573,6 +587,11 @@ QString Options::getSoundEss()
     return ui->essCombo->currentText();
 }
 
+QString Options::getSoundIncompleteKos()
+{
+    return ui->comboIncomplete->currentText();
+}
+
 QString Options::getSoundIsKos()
 {
     return ui->clipKosCombo->currentText();
@@ -667,6 +686,11 @@ void Options::on_clipKosTestButton_clicked()
 void Options::on_clipNotKosTestButton_clicked()
 {
     audio->playLocalFile(getSoundNoKos());
+}
+
+void Options::on_incompleteTestButton_clicked()
+{
+    audio->playLocalFile(getSoundIncompleteKos());
 }
 
 void Options::on_ruleInsertButton_clicked()
@@ -783,3 +807,4 @@ bool Options::getKosOnDouble()
 {
     return _kosDouble;
 }
+

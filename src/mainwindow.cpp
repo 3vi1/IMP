@@ -416,6 +416,8 @@ void MainWindow::clipboardUpdated()
             AsyncInfo* kosInfo = new AsyncInfo(manager, this);
             connect(kosInfo, &AsyncInfo::kosResultReady,
                     this, &MainWindow::gotKosReply);
+            connect(kosInfo, &AsyncInfo::kosCheckFailed,
+                    this, &MainWindow::gotKosError);
             kosInfo->kosCheck(checkString);
         }
     }
@@ -431,9 +433,9 @@ void MainWindow::doRedByLastCheck(const QString& name, int id)
     rblInfo->rblCheck(name, id);
 }
 
-void MainWindow::gotRblReply(QString name, bool rbl)
+void MainWindow::gotRblReply(QString name, bool rbl, int corpNum)
 {
-    qDebug() << "MainWindow::gotRblReply - " << name << ": " << rbl;
+    qDebug() << "MainWindow::gotRblReply - " << name << ": " << rbl << ".  CorpNum = " << corpNum;
 
     if(rbl)
     {
@@ -444,7 +446,15 @@ void MainWindow::gotRblReply(QString name, bool rbl)
         info.sender = "Khasm Kaotiqa";
         info.logInfo = &impLogInfo;
         info.dateTime = QDateTime::currentDateTimeUtc();
-        info.text = name + " is RED BY LAST!";
+
+        if(corpNum > 1)
+        {
+            info.text = name + " is RED BY LAST!";
+        }
+        else
+        {
+            info.text = name + " is IN A RED CORP!";
+        }
         addMessage(info);
     }
 
@@ -461,6 +471,14 @@ void MainWindow::gotRblReply(QString name, bool rbl)
             audio.playLocalFile(options.getSoundNoKos());
         }
     }
+}
+
+void MainWindow::gotKosError(const QString& pilotNames)
+{
+    QSet<QString> pilots = pilotNames.split(',').toSet();
+
+    pilotsBeingChecked -= pilots.count();
+    audio.playLocalFile(options.getSoundIncompleteKos());
 }
 
 void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& entries)

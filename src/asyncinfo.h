@@ -108,7 +108,8 @@ public:
 signals:
     void resultReady(PilotEntry* pilotEntry);
     void kosResultReady(const QString& name, const QList<KosEntry>& entries);
-    void rblResultReady(const QString& name, bool kos);
+    void kosCheckFailed(const QString& name);
+    void rblResultReady(const QString& name, bool kos, int corpNum = 0);
 
 
 public slots:
@@ -126,6 +127,7 @@ private:
     QNetworkReply* kosReply;
 
     QString checkNames = "";
+    int m_corpNum = 0;
 
     void requestId(const QString& name, const char* slot);
     void kosCheck(const QString &reqNames, const char* slot, QString queryType  = "multi");

@@ -1,3 +1,13 @@
+0.7.7 - Catches network/server failures on KOS lookups and plays a new "incomplete"
+        lookup sound.  The new sound is configurable on KOS tab in options, and
+        defaults to the sound of a bottle-cap being dropped.
+
+        Red-by-last checking now properly distinguishes between new, unlisted,
+        pilots who are in red corps and people that are red by their previous
+        player corp membership.
+
+        Minor variable refactoring.
+
 0.7.6 - Stop "x4" from setting off alarms in X-4.  x[2-9] are no longer considered
         potential system abbreviations.
 
