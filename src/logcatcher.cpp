@@ -49,7 +49,9 @@ void LogCatcher::setLogDir(QString logDir)
 #else
 
     // On Linux fileChanged actually emits on flush(), but Qt can't see flushes on
-    // Windows because they don't update the file modification time.
+    // Windows because they don't update the file modification time.  So on Linux we
+    // can just do this:
+
     connect(&dirWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(gotFileChanged(const QString&)));
 
 #endif
@@ -146,6 +148,17 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
     //fallbackPollTimer->start(pollerInterval);
     rebuilding = false;
 #else
+
+    // Emit changes for any new files that may have popped up
+    // This ensures newly logged in pilots will be seen when their
+    // Local_ file is created rather than waiting until someone
+    // says something in channel.
+
+    foreach (QFileInfo i, infoList)
+    {
+        if(!dirWatcher.files().contains(i.absoluteFilePath()))
+            emit fileChanged(i.absoluteFilePath());
+    }
 
     // Always rebuild watched files.  The actual underlying object may have changed,
     // even if the absolute path didn't.

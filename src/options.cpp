@@ -38,6 +38,32 @@ Options::Options(QWidget *parent) :
     ui->setupUi(this);
     ui->intelEdit->installEventFilter(this);
 
+    rebuildAudioFileList();
+
+    ruleModel = new RuleModel(this);
+    ui->tableView->setModel(ruleModel);
+    ui->tableView->setColumnWidth(0, 25);
+    ui->tableView->setColumnWidth(1, 100);
+    ui->tableView->setColumnWidth(2, 100);
+    ui->tableView->setColumnWidth(3, 310);
+    ui->tableView->setColumnWidth(4, 25);
+    ui->tableView->show();
+}
+
+Options::~Options()
+{
+    delete ui;
+}
+
+void Options::rebuildAudioFileList()
+{
+    ui->alarmCombo->clear();
+    ui->comboIncomplete->clear();
+    ui->clipKosCombo->clear();
+    ui->clipNotKosCombo->clear();
+    ui->statusCombo->clear();
+    ui->essCombo->clear();
+
     audioPath = appFilesPath() + "/audio/";
     QDir audioDir(audioPath);
     audioDir.setFilter(QDir::Files);
@@ -56,19 +82,12 @@ Options::Options(QWidget *parent) :
         ui->essCombo->addItem(fileInfo.fileName());
     }
 
-    ruleModel = new RuleModel(this);
-    ui->tableView->setModel(ruleModel);
-    ui->tableView->setColumnWidth(0, 25);
-    ui->tableView->setColumnWidth(1, 100);
-    ui->tableView->setColumnWidth(2, 100);
-    ui->tableView->setColumnWidth(3, 310);
-    ui->tableView->setColumnWidth(4, 25);
-    ui->tableView->show();
-}
-
-Options::~Options()
-{
-    delete ui;
+    ui->alarmCombo->setCurrentIndex(ui->alarmCombo->findText(m_soundAlarm));
+    ui->statusCombo->setCurrentIndex(ui->statusCombo->findText(m_soundStatus));
+    ui->comboIncomplete->setCurrentIndex(ui->comboIncomplete->findText(m_soundIncomplete));
+    ui->clipKosCombo->setCurrentIndex(ui->clipKosCombo->findText(m_soundIsKos));
+    ui->clipNotKosCombo->setCurrentIndex(ui->clipNotKosCombo->findText(m_soundNoKos));
+    ui->essCombo->setCurrentIndex(ui->essCombo->findText(m_soundEss));
 }
 
 void Options::cacheSettings()
@@ -173,6 +192,10 @@ void Options::loadSettings(QSettings& settings)
         QStringList({ "TheCitadel", "North Provi Intel",
           "North Catch Intel", "North Querious Intel" })
                                              ).toStringList());
+
+    QStringList dpList = settings.value("disabledPilots", QStringList()).toStringList();
+    m_disabledPilots = m_disabledPilots.fromList(dpList);
+
     ui->avatarBox->setValue(settings.value("avatarExpiration", 0).toInt());
     ui->distanceSpinBox->setValue(settings.value("alarmDistance", 1).toInt());
     ui->historySpinBox->setValue(settings.value("historyCount", 0).toInt());
@@ -269,7 +292,7 @@ void Options::loadSettings(QSettings& settings)
 #ifdef Q_OS_WIN32
         logDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/EVE/logs/Chatlogs";
 #elif defined(Q_OS_MAC)
-        logDir = QDir::homePath() + "/Library/Application Support/Eve Online/p_drive/User/My Documents/EVE/logs/Chatlogs");
+        logDir = QDir::homePath() + "/Library/Application Support/Eve Online/p_drive/User/My Documents/EVE/logs/Chatlogs";
 #else
         // Assume Q_OS_LINUX
         logDir = QDir::homePath() + "/Documents/EVE/logs/Chatlogs";
@@ -390,74 +413,84 @@ void Options::readTextElements(QXmlStreamReader& reader, Rule& rule)
         }
     }
 }
-void Options::saveSettings(QSettings& settings)
+void Options::saveSettings() //QSettings& settings)
 {
-    settings.setValue("autofollow", getAutofollow());
-
-    settings.setValue("intelChannels", getIntelChannels());
-
-    settings.setValue("avatarExpiration", getAvatarExpiration());
-    settings.setValue("alarmDistance", getAlarmDistance());
-    settings.setValue("themeName", getThemeName());
-    settings.setValue("themeType", getThemeType());
-    settings.setValue("volume", getAlarmVolume());
-    settings.setValue("historyCount", getHistoryMax());
-    settings.setValue("autoPeriod", getAutoPeriod());
-    settings.setValue("autoRefresh", getAutoRefresh());
-    settings.setValue("mapRefresh", getMapRefresh());
-    settings.setValue("maxEntriesToLoad", getMaxEntries());
-    settings.setValue("pollerRefresh", getPollerRefresh());
-    settings.setValue("redundantSuppress", getRedundantSuppress());
-
-    settings.setValue("selfSuppress", getSelfSuppress());
-    settings.setValue("smoothAutofollow", getSmoothAutofollow());
-    settings.setValue("essAndKos", getEssAndKos());
-
-    settings.setValue("soundAlarm", getSoundAlarm());
-    settings.setValue("soundStatus", getSoundStatus());
-    settings.setValue("soundIncomplete", getSoundIncompleteKos());
-    settings.setValue("soundIsKos", getSoundIsKos());
-    settings.setValue("soundNoKos", getSoundNoKos());
-    settings.setValue("soundEss", getSoundEss());
-
-    settings.setValue("bridgePath", getBridgePath());
-    settings.setValue("logPath", getLogPath());
-    settings.setValue("mapPath", getMapPath());
-    settings.setValue("currentRegion", _currentRegion);
-
-    settings.setValue("fontName", getFontName());
-    settings.setValue("fontSize", getFontSize());
-
-    // Save rules
-    QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    QDir dataDir{dataPath};
-    QFile file(dataDir.absoluteFilePath("imp_rules"));
-
-    if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(NULL, "Error Opening File", "Could not open output file " +
-                             file.fileName() + ".", QMessageBox::Ok);
-        return;
-    }
-
-    QXmlStreamWriter xmlWriter(&file);
-    xmlWriter.setAutoFormatting(true);
-    xmlWriter.writeStartDocument();
-    xmlWriter.writeStartElement("Rules");
-
-    QList<Rule> rules = ruleModel->getRules();
-    for (int i = 0; i < rules.count(); ++i)
+    QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    QDir configDir{configPath};
+    if (configDir.mkpath(configDir.absolutePath()) && QDir::setCurrent(configDir.absolutePath()))
     {
-        xmlWriter.writeStartElement("Rule");
-        xmlWriter.writeAttribute("Enabled", QString::number(rules[i].enabled));
-        xmlWriter.writeAttribute("ContinueOnMatch", QString::number(rules[i].continueOnMatch));
-        xmlWriter.writeTextElement("Channel", rules[i].channel);
-        xmlWriter.writeTextElement("Match", rules[i].match);
-        xmlWriter.writeTextElement("Action", rules[i].action);
-        xmlWriter.writeEndElement();
-    }
+        // Save configuration options
 
-    xmlWriter.writeEndDocument();
-    file.close();
+        qDebug() << "Settings in " << QDir::currentPath() << endl;
+
+        QString fileName = "imp-settings";
+        QSettings settings(fileName, QSettings::IniFormat);
+
+        settings.setValue("intelChannels", getIntelChannels());
+
+        settings.setValue("avatarExpiration", getAvatarExpiration());
+        settings.setValue("alarmDistance", getAlarmDistance());
+        settings.setValue("themeName", getThemeName());
+        settings.setValue("themeType", getThemeType());
+        settings.setValue("volume", getAlarmVolume());
+        settings.setValue("historyCount", getHistoryMax());
+        settings.setValue("autoPeriod", getAutoPeriod());
+        settings.setValue("autoRefresh", getAutoRefresh());
+        settings.setValue("mapRefresh", getMapRefresh());
+        settings.setValue("maxEntriesToLoad", getMaxEntries());
+        settings.setValue("pollerRefresh", getPollerRefresh());
+        settings.setValue("redundantSuppress", getRedundantSuppress());
+
+        settings.setValue("selfSuppress", getSelfSuppress());
+        settings.setValue("smoothAutofollow", getSmoothAutofollow());
+        settings.setValue("essAndKos", getEssAndKos());
+
+        settings.setValue("soundAlarm", getSoundAlarm());
+        settings.setValue("soundStatus", getSoundStatus());
+        settings.setValue("soundIncomplete", getSoundIncompleteKos());
+        settings.setValue("soundIsKos", getSoundIsKos());
+        settings.setValue("soundNoKos", getSoundNoKos());
+        settings.setValue("soundEss", getSoundEss());
+
+        settings.setValue("bridgePath", getBridgePath());
+        settings.setValue("logPath", getLogPath());
+        settings.setValue("mapPath", getMapPath());
+        settings.setValue("currentRegion", _currentRegion);
+
+        settings.setValue("fontName", getFontName());
+        settings.setValue("fontSize", getFontSize());
+
+        // Save rules
+        QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+        QDir dataDir{dataPath};
+        QFile file(dataDir.absoluteFilePath("imp_rules"));
+
+        if (!file.open(QFile::WriteOnly | QFile::Text)) {
+            QMessageBox::warning(NULL, "Error Opening File", "Could not open output file " +
+                                 file.fileName() + ".", QMessageBox::Ok);
+            return;
+        }
+
+        QXmlStreamWriter xmlWriter(&file);
+        xmlWriter.setAutoFormatting(true);
+        xmlWriter.writeStartDocument();
+        xmlWriter.writeStartElement("Rules");
+
+        QList<Rule> rules = ruleModel->getRules();
+        for (int i = 0; i < rules.count(); ++i)
+        {
+            xmlWriter.writeStartElement("Rule");
+            xmlWriter.writeAttribute("Enabled", QString::number(rules[i].enabled));
+            xmlWriter.writeAttribute("ContinueOnMatch", QString::number(rules[i].continueOnMatch));
+            xmlWriter.writeTextElement("Channel", rules[i].channel);
+            xmlWriter.writeTextElement("Match", rules[i].match);
+            xmlWriter.writeTextElement("Action", rules[i].action);
+            xmlWriter.writeEndElement();
+        }
+
+        xmlWriter.writeEndDocument();
+        file.close();
+    }
 }
 
 void Options::setAudio(ImpAudio* impAudio)
@@ -661,6 +694,9 @@ void Options::on_buttonBox_accepted()
     }
 
     cacheSettings();
+    //emit okayPressed();
+
+    saveSettings();
 }
 
 void Options::on_buttonBox_rejected()
@@ -808,3 +844,22 @@ bool Options::getKosOnDouble()
     return _kosDouble;
 }
 
+void Options::disablePilot(const QString& pilotName)
+{
+    m_disabledPilots.insert(pilotName);
+}
+
+void Options::enablePilot(const QString& pilotName)
+{
+    m_disabledPilots.remove(pilotName);
+}
+
+bool Options::pilotIsDisabled(const QString &pilotName)
+{
+    return m_disabledPilots.contains(pilotName);
+}
+
+QStringList Options::getDisabledPilots()
+{
+    return m_disabledPilots.toList();
+}

@@ -796,6 +796,9 @@ void MainWindow::saveSettings()
         QString fileName = "imp-settings";
         QSettings settings(fileName, QSettings::IniFormat);
 
+        settings.setValue("autofollow", options.getAutofollow());
+        settings.setValue("disabledPilots", options.getDisabledPilots());
+
         settings.setValue("geometry", saveGeometry());
         settings.setValue("windowState", saveState());
 
@@ -806,7 +809,7 @@ void MainWindow::saveSettings()
         settings.setValue("sceneRect", ui->mapView->getSceneRect());
         settings.setValue("center", ui->mapView->getViewportCenter());
 
-        options.saveSettings(settings);
+        //options.saveSettings(settings);
     }
 
     QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
@@ -1210,6 +1213,11 @@ void MainWindow::on_actionAbout_triggered()
 void MainWindow::on_actionOptions_triggered()
 {
     options.cacheSettings();
+    options.rebuildAudioFileList();
+
+    /*connect(&options, &Options::okayPressed,
+            this, &MainWindow::saveSettings);
+    */
     options.show();
 }
 
@@ -1424,12 +1432,20 @@ void MainWindow::gotNewPilot(const QString& pilotName)
                 action->text().length() == 0)
         {
             ui->menuPilots->insertAction(action, newAct);
+            if(options.pilotIsDisabled(pilotName))
+            {
+                newAct->setChecked(false);
+            }
             return;
         }
     }
 
-    // It wasn't inserted to any existing actions, so add it now.
+    // It wasn't inserted before any existing actions, so add it now.
     ui->menuPilots->addAction(newAct);
+    if(options.pilotIsDisabled(pilotName))
+    {
+        newAct->setChecked(false);
+    }
 }
 
 void MainWindow::pilotSelected()
@@ -1442,11 +1458,13 @@ void MainWindow::pilotSelected()
     {
         // Add pilot back to map
         ui->mapView->enablePilot(s->text());
+        options.enablePilot(s->text());
     }
     else
     {
         // Remove pilot from map
         ui->mapView->disablePilot(s->text());
+        options.disablePilot(s->text());
     }
 }
 

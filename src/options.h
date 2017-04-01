@@ -47,7 +47,7 @@ public:
     void restoreSettings();
 
     void loadSettings(QSettings& settings);
-    void saveSettings(QSettings& settings);
+    void saveSettings(); //QSettings& settings);
 
     void setAudio(ImpAudio* impAudio);
 
@@ -100,7 +100,14 @@ public:
     QString getSoundIsKos();
     QString getSoundNoKos();
 
+    void rebuildAudioFileList();
+
     bool showAvatar();
+
+    void disablePilot(const QString& pilotName);
+    void enablePilot(const QString& pilotName);
+    bool pilotIsDisabled(const QString& pilotName);
+    QStringList getDisabledPilots();
 
     QString getThemeName(){ return m_themeName; }
     ThemeType getThemeType(){ return m_themeType; }
@@ -115,6 +122,7 @@ signals:
     void mapRefreshChanged(int msecs);
     void logDirChanged(const QString&);
     void fontChanged(const QString& fontName, int fontSize);
+    void okayPressed();
 
 protected:
     bool eventFilter(QObject *, QEvent *evt);
@@ -135,9 +143,7 @@ private slots:
     void on_addIntelButton_clicked();
     void on_delIntelButton_clicked();
     void on_intelWidget_itemClicked(QListWidgetItem *item);
-
     void on_bridgeEdit_editingFinished();
-
     void on_incompleteTestButton_clicked();
 
 private:
@@ -178,6 +184,7 @@ private:
     ThemeType   m_themeType;
 
     QStringList _intelChannels;
+    QSet<QString> m_disabledPilots;
 
     QList<Rule> _rules;
 

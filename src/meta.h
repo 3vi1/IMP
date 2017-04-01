@@ -25,10 +25,10 @@
 
 static const struct Version
 {
-    Version(){};
+    Version(){}
 
     QString release = VERSION;
-    QString name = "Yada yada yada Lycanthropic Hot Topic";
+    QString name = "Still Some Sort of Lycanthropic Hot Topic";
 
     QString styleHeader1 = "<span style=\" color:#0000ff;\">";
     QString styleFooter1 = "</span>";

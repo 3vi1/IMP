@@ -78,6 +78,7 @@ public slots:
     void findLocation(const QString& systemName);
     void logDirChanged(const QString& dir);
 
+    void saveSettings();
 
 private slots:
     void changeFont(const QString& fontName, int fontSize);
@@ -116,7 +117,6 @@ private:
     void loadBridges();
 
     void loadSettings();
-    void saveSettings();
 
     bool pilotIsEnabled(QString pilotName);
 
