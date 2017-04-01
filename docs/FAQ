@@ -28,6 +28,29 @@ A:  No.  Nothing is currently logged when a pilot enters your system (or you ent
 
 ---------------------------------------------------------------------------------------------
 
+Q:  Can you add "xxx PilotName" checking.
+
+A:  I seriously considered this, but I believe other features make it unnecessary in
+    addition to the feature itself being redundant.
+
+    If you want to KOS-check someone that's linked in a line, just right-click the line
+    and choose copy, then right-click the line and choose copy again.
+
+    Vintel appears to have only allowed 'xxx' requests from channels in your intel list,
+    most likely to prevent spamming by reds trying to jam out people.  This also means
+    you get an elevated heart rate when someone mistypes this into one of the main
+    intel channels.
+
+    Players can coordinate IMP message rules (rules tab in Options) to play any number
+    of sounds for certain messages in a specific (or any) channel from specific/any people,
+    if what your trying to accomplish is to play a sound for a subset of people.
+
+    In the future there will be a LUA scripting component in IMP, and I will make one
+    of the example scripts show how to add the 'xxx' checking back for people that
+    really don't want to change to the improved rules system.
+
+---------------------------------------------------------------------------------------------
+
 Q:  What does disabling a pilot from the pilots menu do.
 
 A:  This is for people that play multiple accounts from the same computer.  Disabling a pilot
