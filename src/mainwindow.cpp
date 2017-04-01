@@ -69,6 +69,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
+#ifndef Q_OS_WIN32
+    ui->menu_Window->menuAction()->setVisible(false);
+#endif
+
+
     // Initialize lastAlertTime
     lastAlertTime = QDateTime::currentDateTimeUtc().addDays(-1);
 
@@ -662,7 +667,7 @@ void MainWindow::gotRegionFile()
     connect(regionMap, &Map::newPilot,
             this, &MainWindow::gotNewPilot);
     connect(regionMap, &Map::pilotLocationChange,
-            ui->mapView, &SvgMapView::gotPilotLocation);
+            this, &MainWindow::onPilotLocation);
     connect(regionMap, &Map::systemColorUpdated,
             ui->mapView, &SvgMapView::gotSystemColor);
     connect(regionMap, &Map::systemTimeUpdated,
@@ -678,6 +683,11 @@ void MainWindow::gotRegionFile()
     ui->mapView->rotateSystems(m_savedSystemRotation);
 
     regionMap->startUpdates();
+}
+
+void MainWindow::onPilotLocation(const QString &pilotName, const QString &systemName)
+{
+    ui->mapView->gotPilotLocation(pilotName, systemName, pilotIsEnabled(pilotName));
 }
 
 void MainWindow::failedGettingBridgeFile(QNetworkReply::NetworkError err)
@@ -1524,4 +1534,19 @@ void MainWindow::on_actionCustomize_triggered()
 void MainWindow::on_actionReset_Rotation_triggered()
 {
     ui->mapView->resetRotation();
+}
+
+void MainWindow::on_action_Always_on_Top_triggered(bool checked)
+{
+    Qt::WindowFlags flags = this->windowFlags();
+    if (checked)
+    {
+        this->setWindowFlags(flags | Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint);
+        this->show();
+    }
+    else
+    {
+        this->setWindowFlags(flags ^ (Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint));
+        this->show();
+    }
 }

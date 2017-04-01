@@ -99,12 +99,7 @@ public slots:
     void gotSystemTime(const QString& name, const QString& text, QColor timeColor);
     void gotSystemColor(const QString& name, QColor color);
 
-    // Theme Changes
-    //void gotBackColor(const QColor& c);
-    //void gotLineColor(const QColor& c);
-
-    void gotPilotLocation(const QString &pilotName, const QString &systemName);
-
+    void gotPilotLocation(const QString &pilotName, const QString &systemName, bool enabled = true);
     void gotSystemShapesFile(QString shapesFile);
 
     void receiveThemeUpdate(ThemeStorage &a);

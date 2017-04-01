@@ -12,6 +12,8 @@
         options dialog, so you do not need to restart IMP to see newly added
         files.
 
+        Windows users will now see a "Window" menu, which has the "Always on
+        Top" option that's missing from their desktop compositor.
 
 0.7.7 - Catches network/server failures on KOS lookups and plays a new "incomplete"
         lookup sound.  The new sound is configurable on KOS tab in options, and

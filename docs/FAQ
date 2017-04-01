@@ -67,25 +67,12 @@ A:  That's because I never tested other regions.  I'm a madman like that.  I've 
 
 ---------------------------------------------------------------------------------------------
 
-Q:  Where's the "Always on Top" option?
-
-A:  That's a feature that should be part of your window manager, rather than re-implemented
-    in every app's UI.  On Linux, right-click the title bar and click "Always on Top".  On
-    Windows, there are some third-party apps that will allow you set the flag for any app.
-
-    Nothing's off the table though.  I might even add a feature I don't believe is needed
-    if Isk is thrown at Khasm Kaotiqa.  :)
-
----------------------------------------------------------------------------------------------
-
 Q:  Where are the transparency options?
 
 A:  That's a feature that should be part of your desktop compositor, rather than
     re-implemented in every app's UI.  On Linux, the Compiz, KWin, and other compositors
     give you options to do this for each app.  On Windows, I know there are some third-
     party apps that allow you to do it.
-
-    Again... nothing's off the table.  :)
 
 ---------------------------------------------------------------------------------------------
 

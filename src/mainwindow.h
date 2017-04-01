@@ -86,6 +86,7 @@ private slots:
     void pilotSelected();
     void themeSelected();
     void updatePosition();
+    void onPilotLocation(const QString &pilotName, const QString &systemName);
     void on_actionAbout_triggered();
     void on_actionOptions_triggered();
     void on_actionF_YH5B_triggered();
@@ -99,8 +100,8 @@ private slots:
     void on_actionSave_As_Theme_triggered();
     void on_actionFindMessages_triggered();
     void on_actionCustomize_triggered();
-
     void on_actionReset_Rotation_triggered();
+    void on_action_Always_on_Top_triggered(bool checked);
 
 private:
     void initParsing();

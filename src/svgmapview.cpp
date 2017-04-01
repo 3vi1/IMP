@@ -375,7 +375,7 @@ void SvgMapView::findLocation(const QString &systemName)
     }
 }
 
-void SvgMapView::gotPilotLocation(const QString& pilotName, const QString& systemName)
+void SvgMapView::gotPilotLocation(const QString& pilotName, const QString& systemName, bool enabled)
 {
     if(!m_map->contains(systemName))
     {
@@ -407,7 +407,9 @@ void SvgMapView::gotPilotLocation(const QString& pilotName, const QString& syste
         }
 
         pilotShapes.insert(pilotName, pilotShape);
-        mapScene.addItem(pilotShape);
+
+        if(enabled)
+            mapScene.addItem(pilotShape);
     }
 
     pilotShape->setPos(m_map->getCoordinates(systemName));
