@@ -20,7 +20,12 @@
 
 #include "chatitemdelegate.h"
 
-ChatItemDelegate::ChatItemDelegate(QObject *parent) : QItemDelegate(parent)
+#include <QAbstractTextDocumentLayout>
+#include <QApplication>
+#include <QPainter>
+#include <QTextDocument>
+
+ChatItemDelegate::ChatItemDelegate(QObject *parent) : QStyledItemDelegate(parent)
 {
 }
 
@@ -28,12 +33,38 @@ void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
            const QModelIndex &index ) const
 {
     if (index.column() == 0) {
-        QItemDelegate::paint(painter, option, index);
-        return;
-    }
 
-    /* This is not really used yet..  For future plans
-    */
+        QStyleOptionViewItem options = option;
+        initStyleOption(&options, index);
+
+        painter->save();
+
+        QTextDocument doc;
+        doc.setHtml(options.text);
+
+        QTextOption textOption(doc.defaultTextOption());
+        textOption.setWrapMode(QTextOption::WordWrap);
+        doc.setDefaultTextOption(textOption);
+        doc.setTextWidth(options.rect.width() - m_avatarSize.width() - padding.width());
+
+        options.text = "";
+        options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
+
+        // shift text right to make icon visible
+        QSize iconSize = options.icon.actualSize(options.rect.size());
+        painter->translate(options.rect.left()+iconSize.width(), options.rect.top());
+        QRect clip(0, 0, options.rect.width()+iconSize.width(), options.rect.height());
+
+        painter->setClipRect(clip);
+        QAbstractTextDocumentLayout::PaintContext ctx;
+
+        if (option.state & QStyle::State_Selected)
+            ctx.palette.setColor(QPalette::Text, QColor("white"));
+
+        ctx.clip = clip;
+        doc.documentLayout()->draw(painter, ctx);
+        painter->restore();
+    }
 }
 
 void ChatItemDelegate::setModel(ChatModel* model)
@@ -41,11 +72,20 @@ void ChatItemDelegate::setModel(ChatModel* model)
     m_model = model;
 }
 
-QSize ChatItemDelegate::sizeHint(const QStyleOptionViewItem& /*option*/, const QModelIndex &index) const
+QSize ChatItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex &index) const
 {
-    // Yes.  I'm guessing.  I welcome a real way to get the right
-    // text height.
+    QStyleOptionViewItem options = option;
+    initStyleOption(&options, index);
 
-    int guess = (m_model->data(index).toString().length() * .2);
-    return QSize(0, guess + 64);
+    QTextDocument doc;
+    doc.setHtml(options.text);
+
+    QTextOption textOption(doc.defaultTextOption());
+    textOption.setWrapMode(QTextOption::WordWrap);
+    doc.setDefaultTextOption(textOption);
+    doc.setTextWidth(options.rect.width() - m_avatarSize.width() - padding.width());
+
+    QSize textSize = QSize(doc.idealWidth() + m_avatarSize.width(), doc.size().height());
+    return m_avatarSize.height() > doc.size().height() ?
+                QSize(doc.idealWidth(), m_avatarSize.height() + padding.height()) : textSize;
 }

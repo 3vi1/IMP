@@ -103,6 +103,8 @@ private slots:
     void on_actionReset_Rotation_triggered();
     void on_action_Always_on_Top_triggered(bool checked);
 
+    void on_listView_doubleClicked(const QModelIndex &index);
+
 private:
     void initParsing();
     void initThemes();

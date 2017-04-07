@@ -45,6 +45,7 @@ public:
     void subsetForSystem(const QString &system);
     void subsetForString(const QString &string);
     void addEntry(const MessageInfo &message);
+    MessageInfo getMessageAt(const QModelIndex &index);
     void truncateTo(int i);
 
     void avatarChanged();

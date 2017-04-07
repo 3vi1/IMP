@@ -54,6 +54,7 @@ struct MessageInfo
     QString sender;
     QDateTime dateTime;
     QString text;
+    QString markedUpText;
 
     QStringList systems;
     QStringList gates;

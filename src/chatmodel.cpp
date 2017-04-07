@@ -96,7 +96,7 @@ QVariant ChatModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         return "(" + message.logInfo->channel + " @ " +
                 message.dateTime.toString("hh:mm:ss") + " " + message.sender + ")\n" +
-                message.text;
+                message.markedUpText;
         break;
     }
 
@@ -188,4 +188,17 @@ void ChatModel::subsetForString(const QString& string)
         }
         endInsertRows();
     }
+}
+
+MessageInfo ChatModel::getMessageAt(const QModelIndex &index)
+{
+    MessageInfo message;
+
+    if (index.isValid())
+    {
+        int row = index.row();
+        message = *visibleItems.at(row);
+    }
+
+    return message;
 }

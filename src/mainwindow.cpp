@@ -1550,3 +1550,11 @@ void MainWindow::on_action_Always_on_Top_triggered(bool checked)
         this->show();
     }
 }
+
+void MainWindow::on_listView_doubleClicked(const QModelIndex &index)
+{
+    MessageInfo message = chatModel->getMessageAt(index);
+
+    if(message.systems.count() > 0)
+        findLocation(message.systems[0]);
+}

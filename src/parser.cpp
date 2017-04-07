@@ -273,6 +273,8 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
     simChat = simChat.simplified();
     QStringList words = simChat.split(" ");
 
+    messageInfo.markedUpText = "<span style=\"color: #000000\">";
+
     QString previousWord = "";
     for (int i = 0; i < words.length(); i++)
     {
@@ -280,15 +282,24 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
         if (ignoreWords.contains(lowerWord) || words[i].length() < 2)
         {
             // Common word to ignore, skip it and go to next word.
+            messageInfo.markedUpText += words[i];
         }
         else if (statusWords.contains(lowerWord))
         {
             messageInfo.flags.append(MessageFlag::STATUS);
             messageInfo.flags.append(MessageFlag::QUERY);
+
+            messageInfo.markedUpText += "<span style=\"color: #900090\">";
+            messageInfo.markedUpText += words[i];
+            messageInfo.markedUpText += "<span style=\"color: #000000\">";
         }
         else if (locationWords.contains(lowerWord))
         {
             messageInfo.flags.append(MessageFlag::LOCATION);
+
+            messageInfo.markedUpText += "<span style=\"color: #00FF00\">";
+            messageInfo.markedUpText += words[i];
+            messageInfo.markedUpText += "<span style=\"color: #000000\">";
         }
         else if (clearWords.contains(lowerWord))
         {
@@ -297,11 +308,18 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
                 // We don't want to clear a system if someone says a gate is clear.
                 // "> KBP Dital gate clr!"
                 messageInfo.flags.append(MessageFlag::CLEAR);
+
+                messageInfo.markedUpText += "<span style=\"color: #00D000\">";
+                messageInfo.markedUpText += words[i];
+                messageInfo.markedUpText += "<span style=\"color: #000000\">";
             }
         }
         else if(ships.contains(lowerWord))
         {
            theseShips.append(words[i]);
+           messageInfo.markedUpText += "<span style=\"color: #d03090\">";
+           messageInfo.markedUpText += words[i];
+           messageInfo.markedUpText += "<span style=\"color: #000000\">";
         }
         else
         {
@@ -315,25 +333,40 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
                     {
                         // "x-x gate to..."
                         theseSystems.append(systemName);
+                        messageInfo.markedUpText += "<span style=\"color: #303030\">";
+                        messageInfo.markedUpText += words[i];
+                        messageInfo.markedUpText += "<span style=\"color: #000000\">";
                     }
                     else {
                         // "...at x-x gate"
                         theseGates.append(systemName);
+                        messageInfo.markedUpText += "<span style=\"color: #303030\">";
+                        messageInfo.markedUpText += words[i];
+                        messageInfo.markedUpText += "<span style=\"color: #000000\">";
                     }
                 }
                 else
                 {
                     // System mentioned, not adjacent to word 'gate'
                     theseSystems.append(systemName);
+                    messageInfo.markedUpText += "<span style=\"color: #0000FF\">";
+                    messageInfo.markedUpText += words[i];
+                    messageInfo.markedUpText += "<span style=\"color: #000000\">";
                 }
             }
             else if(lowerWord.length() >= 3)
             {
                 messageInfo.possiblePilots.append(words[i]);
+                messageInfo.markedUpText += "<span style=\"color: #804000\">";
+                messageInfo.markedUpText += words[i];
+                messageInfo.markedUpText += "<span style=\"color: #000000\">";
             }
         }
 
         previousWord = lowerWord;
+
+        if(i < words.length())
+            messageInfo.markedUpText += " ";
     }
 
     messageInfo.systems = theseSystems;

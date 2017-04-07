@@ -9,6 +9,9 @@ A:  Currently there are only a few:
          Mousewheel:  Over map it will zoom in/out.
     Ctrl+Mousewheel:  Rotates map (make sure map has focus first - click it)
              Ctrl+F:  Shortcut for Find System.
+         Left-Click:  On a system to switch the message view to just messages for that
+                      system.  Click on an empty space to switch back to all messages.
+       Double-Click:  On a message in the list to find the related system.
 
     You can also click and drag the map around.
 

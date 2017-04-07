@@ -23,10 +23,11 @@
 
 #include <QItemDelegate>
 #include <QObject>
+#include <QStyledItemDelegate>
 
 #include "chatmodel.h"
 
-class ChatItemDelegate : public QItemDelegate
+class ChatItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
@@ -35,13 +36,15 @@ public:
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index ) const override;
     void setModel(ChatModel* model);
-    QSize sizeHint(const QStyleOptionViewItem &, const QModelIndex &index) const;
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 signals:
 public slots:
 
 private:
-    ChatModel* m_model;
+    ChatModel*  m_model;
+    QSize       m_avatarSize = QSize(64,64);
+    QSize       padding = QSize(2,1);
 };
 
 #endif // CHATITEMDELEGATE_H
