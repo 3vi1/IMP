@@ -939,7 +939,9 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
             case MessageFlag::ESS:
             {
-                QStringList pilots = regionMap->pilotsIn(message.systems[0]);
+                QStringList pilots = regionMap->pilotsIn(
+                            regionMap->pilotsSystem(message.logInfo->pilot)
+                            );
                 foreach(QString pilot, pilots)
                 {
                     if(pilotIsEnabled(pilot))
