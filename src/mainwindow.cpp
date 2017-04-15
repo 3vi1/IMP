@@ -155,11 +155,6 @@ void MainWindow::changeTheme(const QString& themeName, ThemeType themeType)
     {
         m_theme = new Theme(this);
 
-/*        connect(m_theme, SIGNAL(backColorChanged(const QColor&)),
-                ui->mapView, SLOT(gotBackColor(const QColor&)));
-        connect(m_theme, SIGNAL(lineColorChanged(const QColor&)),
-                ui->mapView, SLOT(gotLineColor(const QColor&)));
-*/
         connect(m_theme, &Theme::sendUpdate,
                 ui->mapView, &SvgMapView::receiveThemeUpdate);
     }
@@ -504,18 +499,21 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
         if(e.pilot.kos)
         {
             info.text = e.pilot.name + " is KOS!";
+            info.markedUpText = e.pilot.name + " is KOS!";
             playKos = true;
             addMessage(info);
         }
         else if(e.corp.kos)
         {
             info.text = e.pilot.name + "'s corp (" + e.corp.name + ") is KOS!";
+            info.markedUpText = e.pilot.name + "'s corp (" + e.corp.name + ") is KOS!";
             playKos = true;
             addMessage(info);
         }
         else if(e.alliance.kos)
         {
             info.text = e.pilot.name + "'s alliance (" + e.alliance.name + ") is KOS!";
+            info.markedUpText = e.pilot.name + "'s alliance (" + e.alliance.name + ") is KOS!";
             playKos = true;
             addMessage(info);
         }
@@ -939,26 +937,21 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
             case MessageFlag::ESS:
             {
-                QStringList pilots = regionMap->pilotsIn(
-                            regionMap->pilotsSystem(message.logInfo->pilot)
-                            );
-                foreach(QString pilot, pilots)
+                QString pilot = message.logInfo->pilot;
+                if(pilotIsEnabled(pilot))
                 {
-                    if(pilotIsEnabled(pilot))
+                    if(options.getEssAndKos())
                     {
-                        if(options.getEssAndKos())
-                        {
-                            AsyncInfo* kosInfo = new AsyncInfo(manager, this);
-                            connect(kosInfo, SIGNAL(kosResultReady(const QList<KosEntry>&)),
-                                    this, SLOT(gotEssReply(const QList<KosEntry>&)));
-                            kosInfo->kosCheck(message.related[0]);
-                        }
-                        else
-                        {
-                            audio.playLocalFile(options.getSoundEss());
-                        }
-                        break;
+                        AsyncInfo* kosInfo = new AsyncInfo(manager, this);
+                        connect(kosInfo, SIGNAL(kosResultReady(const QList<KosEntry>&)),
+                                this, SLOT(gotEssReply(const QList<KosEntry>&)));
+                        kosInfo->kosCheck(message.related[0]);
                     }
+                    else
+                    {
+                        audio.playLocalFile(options.getSoundEss());
+                    }
+                    break;
                 }
                 break;
             }
@@ -974,10 +967,13 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
             case MessageFlag::QUERY:
             case MessageFlag::STATUS:
+            {
                 if (!options.getIntelChannels().contains(message.logInfo->channel))
                 {
                     break;
                 }
+
+                bool play = false;
                 foreach (QString system, message.systems)
                 {
                     qint64 secondsDiff = message.dateTime.msecsTo(
@@ -985,29 +981,24 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
                                 ) / 1000;
                     if(secondsDiff < 10)
                     {
-                        bool play = false;
-                        foreach(QString system, message.systems)
+                        // Test each pilot's location to see if we're in one of the systems.
+                        QStringList pilots = regionMap->pilotsIn(system);
+                        foreach(QString pilot, pilots)
                         {
-                            // Test each pilot's location to see if we're in one of the systems.
-                            QStringList pilots = regionMap->pilotsIn(system);
-
-                            //if(regionMap->isPilotIn(system))
-                            foreach(QString pilot, pilots)
+                            if(pilotIsEnabled(pilot))
                             {
-                                if(pilotIsEnabled(pilot))
-                                {
-                                   changeImpStatus("Status requested for " + system + ".");
-                                    play = true;
-                                }
+                               changeImpStatus("Status requested for " + system + ".");
+                                play = true;
                             }
-                        }
-                        if (play)
-                        {
-                            audio.playLocalFile(options.getSoundStatus());
                         }
                     }
                 }
-                break;
+                if (play)
+                {
+                    audio.playLocalFile(options.getSoundStatus());
+                }
+            }
+            break;
 
             case MessageFlag::SYSTEM_CHANGE:
                 if(regionMap->pilotsIn(message.systems[0]).contains(message.logInfo->pilot))

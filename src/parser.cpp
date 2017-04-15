@@ -43,6 +43,14 @@ Parser::Parser(QObject *parent) : QObject(parent)
     statusWords = QSet<QString>::fromList(fromFile("status"));
     ships = QSet<QString>::fromList(fromFile("ships"));
 
+    QStringList pocketsList = fromFile("pockets");
+    foreach(QString pocket, pocketsList)
+    {
+        QStringList pocketList = pocket.split(",");
+        QString pocketName = pocketList[0];
+        pocketList.removeFirst();
+        pockets.insert(pocketName.trimmed(),pocketList);
+    }
 }
 
 void Parser::setMap(Map &map)
@@ -68,6 +76,15 @@ QStringList Parser::fromFile(const QString& fileName)
         QString all = in.readAll();
         stringList = all.split('\n');
         stringList.removeAll("");
+
+        for(int i=stringList.length()-1; i>=0; i--)
+        {
+            if(stringList[i].trimmed()[0]=='#')
+            {
+                // Discard comments
+                stringList.removeAt(i);
+            }
+        }
     }
 
     return stringList;
@@ -244,7 +261,8 @@ MessageInfo Parser::parseLine(const QString& line)
 
         if (endingPunctuation.contains('?'))
         {
-            messageInfo.flags.append(MessageFlag::QUERY);
+            if(!messageInfo.flags.contains(MessageFlag::STATUS))
+                messageInfo.flags.append(MessageFlag::QUERY);
         }
         else if (messageInfo.flags.count() == 0 && messageInfo.systems.count() > 0
                  && messageInfo.possiblePilots.length() > 0)
@@ -287,7 +305,6 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
         else if (statusWords.contains(lowerWord))
         {
             messageInfo.flags.append(MessageFlag::STATUS);
-            messageInfo.flags.append(MessageFlag::QUERY);
 
             messageInfo.markedUpText += "<span style=\"color: #900090\">";
             messageInfo.markedUpText += words[i];
@@ -372,4 +389,12 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
     messageInfo.systems = theseSystems;
     messageInfo.ships = theseShips;
     messageInfo.gates = theseGates;
+
+    // If this message pertains to a pocket, expand the systems.
+    if(messageInfo.text.toLower().contains("pocket") &&
+            messageInfo.systems.length() == 1)
+    {
+        messageInfo.systems.append(pockets[messageInfo.systems[0]]);
+    }
+
 }

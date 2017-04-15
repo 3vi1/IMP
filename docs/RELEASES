@@ -1,3 +1,9 @@
+0.8.2 - Now support's "Pocket Status" queries.  I.E. "b-w pocket status?"
+
+        Fixed missing text from KOS checks since 0.8.0.
+
+0.8.1 - Fixed ESS message crash bug.
+
 0.8.0 - Messages in list can now be doubleclicked to find the related system.
 
         Message text is now colorized to highlight the mentioned systems, ships,
@@ -149,3 +155,11 @@
         to meet the requirements at this time.
 
 0.0.1 - Original QWebKit version on Linux with working map, parser, configurable sounds.
+
+
+Coming soon:
+
+- docking.
+- transparency
+- additional sound/volume options for alerts, dependant on jump distance.
+- better memory cache/cleanup.

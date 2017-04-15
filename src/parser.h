@@ -33,7 +33,9 @@
 
 #include "map.h"
 
-enum MessageFlag { UNKNOWN = 0, CLEAR, ESS, LEFT, LOCATION, MOTD, QUERY, STATUS, SYSTEM_CHANGE, WARNING };
+enum MessageFlag { UNKNOWN = 0, CLEAR, ESS,
+                   LEFT, LOCATION, MOTD, POCKET, QUERY,
+                   STATUS, SYSTEM_CHANGE, WARNING };
 
 struct LogInfo
 {
@@ -97,6 +99,8 @@ private:
 
     QMap<QString, LogInfo> fileMap;
     Map* regionMap;
+
+    QMap<QString, QStringList> pockets;
 
     QStringList fromFile(const QString& fileName);
     void loadSet(QSet<QString>& set, QString& string);
