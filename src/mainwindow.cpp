@@ -450,10 +450,12 @@ void MainWindow::gotRblReply(QString name, bool rbl, int corpNum)
         if(corpNum > 1)
         {
             info.text = name + " is RED BY LAST!";
+            info.markedUpText = name + " is <span style=\"color: #B00000\">RED BY LAST!";
         }
         else
         {
             info.text = name + " is IN A RED CORP!";
+            info.markedUpText = name + " is <span style=\"color: #D00000\">IN A RED CORP!";
         }
         addMessage(info);
     }
@@ -499,21 +501,21 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
         if(e.pilot.kos)
         {
             info.text = e.pilot.name + " is KOS!";
-            info.markedUpText = e.pilot.name + " is KOS!";
+            info.markedUpText = "<span style=\"color: #C00000\">" + e.pilot.name + " is KOS!";
             playKos = true;
             addMessage(info);
         }
         else if(e.corp.kos)
         {
             info.text = e.pilot.name + "'s corp (" + e.corp.name + ") is KOS!";
-            info.markedUpText = e.pilot.name + "'s corp (" + e.corp.name + ") is KOS!";
+            info.markedUpText = e.pilot.name + "'s corp (" + e.corp.name + ") is <span style=\"color: #C00000\">KOS!";
             playKos = true;
             addMessage(info);
         }
         else if(e.alliance.kos)
         {
             info.text = e.pilot.name + "'s alliance (" + e.alliance.name + ") is KOS!";
-            info.markedUpText = e.pilot.name + "'s alliance (" + e.alliance.name + ") is KOS!";
+            info.markedUpText = e.pilot.name + "'s alliance (" + e.alliance.name + ") is <span style=\"color: #C00000\">KOS!";
             playKos = true;
             addMessage(info);
         }
@@ -1256,7 +1258,7 @@ void MainWindow::positionTo(const QString& systemName)
 
     startTime = QDateTime::currentMSecsSinceEpoch();
 
-    qDebug() << "Positioning To" << systemName << destinationPos;
+    //qDebug() << "Positioning To" << systemName << destinationPos;
 
 }
 
