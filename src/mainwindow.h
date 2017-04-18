@@ -77,7 +77,7 @@ public slots:
     void gotSystemClick(const QString& name);
     void findLocation(const QString& systemName);
     void logDirChanged(const QString& dir);
-
+    void gotOpacity(int delta);
     void saveSettings();
 
 private slots:
@@ -102,8 +102,8 @@ private slots:
     void on_actionCustomize_triggered();
     void on_actionReset_Rotation_triggered();
     void on_action_Always_on_Top_triggered(bool checked);
-
     void on_listView_doubleClicked(const QModelIndex &index);
+    void on_actionToggle_Frameless_triggered();
 
 private:
     void initParsing();
@@ -133,6 +133,7 @@ private:
     void updateRegionMenu(const QString& currentRegion);
 
     Ui::MainWindow*         ui;
+    bool                    frameless = false;
     ChatModel*              chatModel;
     ChatItemDelegate        m_cid;
     QShortcut*              findShortcut;

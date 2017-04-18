@@ -1,6 +1,13 @@
 0.8.3 - Fixed two more missing KOS texts.
 
+        Added "--debuglogging" flag.  Log writing is now disabled by default
+        unless this flag is set.
 
+        "Toggle Frameless" option added.  Use 'T' to toggle the frame back
+        on.
+
+        Added transparency:  Click the map and use ctrl+alt+mousewheel to
+        adjust transparency.
 
 0.8.2 - Now support's "Pocket Status" queries.  I.E. "b-w pocket status?"
 
@@ -164,6 +171,6 @@
 Coming soon:
 
 - docking.
-- transparency
 - additional sound/volume options for alerts, dependant on jump distance.
 - better memory cache/cleanup.
+- investigate crash on region change.

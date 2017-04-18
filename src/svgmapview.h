@@ -86,6 +86,7 @@ public:
 
 signals:
     void systemClicked(const QString& name);
+    void sendOpacity(int delta);
 
 public slots:
     void showMap(bool enable);
@@ -135,8 +136,9 @@ private:
     QString                     m_pilotGraphic;
     QColor                      m_linesColor;
 
-    bool drawBridges = false;
+    bool altKeyDown = false;
     bool controlKeyDown = false;
+    bool drawBridges = false;
     float zoom = 1;
 
     //bool middlePressed = false;

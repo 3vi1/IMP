@@ -43,26 +43,10 @@
 
 #include <iostream>
 
-void messageHandler(QtMsgType, const QMessageLogContext &, const QString & msg)
-{
-    QString txt = QString(QDateTime::currentDateTimeUtc().toString(
-                              "yyyy.MM.dd HH:mm:ss") + "> %1").arg(msg);
-
-    QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    QDir dataDir{dataPath};
-    QFile outFile(dataDir.absoluteFilePath("imp.log"));
-    outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
-    QTextStream ts(&outFile);
-    ts << txt << endl;
-    std::cout << txt.toStdString() <<endl;
-}
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    qInstallMessageHandler(messageHandler);
-
     qDebug() << "---------------";
     qDebug() << "* Imp Started *";
     qDebug() << "---------------";
@@ -129,6 +113,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->mapView, &SvgMapView::systemClicked,
             this, &MainWindow::gotSystemClick);
+    connect(ui->mapView, &SvgMapView::sendOpacity,
+            this, &MainWindow::gotOpacity);
 
     ui->mapView->show();
 }
@@ -772,6 +758,8 @@ void MainWindow::loadSettings()
         m_savedSystemRotation = settings.value("systemRotation", 0).toDouble();
         ui->mapView->setSceneRect( settings.value("sceneRect").value<QRect>() );
         ui->mapView->centerOn(settings.value("center").value<QPointF>() );
+
+        setWindowOpacity(settings.value("windowOpacity", windowOpacity() ).toDouble());
     }
 
     // Let options figure out if settings does not exist and set defaults if reads fail.
@@ -819,7 +807,7 @@ void MainWindow::saveSettings()
         settings.setValue("sceneRect", ui->mapView->getSceneRect());
         settings.setValue("center", ui->mapView->getViewportCenter());
 
-        //options.saveSettings(settings);
+        settings.setValue("windowOpacity", windowOpacity());
     }
 
     QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
@@ -1552,4 +1540,31 @@ void MainWindow::on_listView_doubleClicked(const QModelIndex &index)
 
     if(message.systems.count() > 0)
         findLocation(message.systems[0]);
+}
+
+void MainWindow::gotOpacity(int delta)
+{
+    qreal factor = windowOpacity() + (delta * .001);
+    if(factor <= 0)
+        factor = 0.1f;
+    else if(factor > 1)
+        factor = 1.0f;
+    setWindowOpacity(factor);
+}
+
+void MainWindow::on_actionToggle_Frameless_triggered()
+{
+    Qt::WindowFlags flags = this->windowFlags();
+
+    frameless = !frameless;
+    if(frameless)
+    {
+        this->setWindowFlags(flags | Qt::Widget | Qt::FramelessWindowHint);
+        this->show();
+    }
+    else
+    {
+        this->setWindowFlags(flags ^ (Qt::Widget | Qt::FramelessWindowHint));
+        this->show();
+    }
 }

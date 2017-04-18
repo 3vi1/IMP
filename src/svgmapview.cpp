@@ -138,6 +138,10 @@ void SvgMapView::keyPressEvent(QKeyEvent *event)
     {
         controlKeyDown = true;
     }
+    else if(event->key() == Qt::Key::Key_Alt)
+    {
+        altKeyDown = true;
+    }
 
     QGraphicsView::keyPressEvent(event);
 }
@@ -147,6 +151,10 @@ void SvgMapView::keyReleaseEvent(QKeyEvent *event)
     if(event->key() == Qt::Key::Key_Control)
     {
         controlKeyDown = false;
+    }
+    else if(event->key() == Qt::Key::Key_Alt)
+    {
+        altKeyDown = false;
     }
 
     QGraphicsView::keyReleaseEvent(event);
@@ -188,8 +196,11 @@ void SvgMapView::mouseReleaseEvent(QMouseEvent *event)
 
 void SvgMapView::wheelEvent(QWheelEvent *event)
 {
-
-    if(controlKeyDown)
+    if(altKeyDown == true && controlKeyDown == true)
+    {
+        emit sendOpacity(event->delta());
+    }
+    else if(controlKeyDown)
     {
         setTransformationAnchor(AnchorViewCenter);
         qreal angle = event->delta() * .025f;
@@ -727,7 +738,9 @@ void SvgMapView::gotSystemColor(const QString& name, QColor color)
 
 qreal SvgMapView::getSystemsRotation()
 {
-    return systemShapes.first()->rotation();
+    if(systemShapes.count() > 0)
+        return systemShapes.first()->rotation();
+    return 0;
 }
 
 void SvgMapView::resetRotation()

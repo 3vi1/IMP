@@ -20,6 +20,7 @@
 
 #include "mainwindow.h"
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QDebug>
 #include <QDir>
 #include <QtWidgets/QMessageBox>
@@ -28,6 +29,26 @@
 
 using namespace std;
 
+bool debugLogging = false;
+
+void messageHandler(QtMsgType, const QMessageLogContext &, const QString & msg)
+{
+    QString txt = QString(QDateTime::currentDateTimeUtc().toString(
+                              "yyyy.MM.dd HH:mm:ss") + "> %1").arg(msg);
+
+    if(debugLogging)
+    {
+        QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+        QDir dataDir{dataPath};
+        QFile outFile(dataDir.absoluteFilePath("imp.log"));
+        outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
+        QTextStream ts(&outFile);
+
+        ts << txt << endl;
+    }
+    std::cout << txt.toStdString() <<endl;
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -35,6 +56,21 @@ int main(int argc, char *argv[])
     a.setOrganizationName("EternalDusk");
     a.setOrganizationDomain("https://github.com/3vi1/IMP");
     a.setApplicationName("IMP");
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Eve Online Intelligence Management Program");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    QCommandLineOption debugOption(QStringList() << "d" << "debuglogging",
+            QCoreApplication::translate("main", "Write debugging log."));
+    parser.addOption(debugOption);
+
+    // Process the actual command line arguments given by the user
+    parser.process(a);
+    debugLogging = parser.isSet(debugOption);
+
+    qInstallMessageHandler(messageHandler);
 
     MainWindow w;
     w.show();
