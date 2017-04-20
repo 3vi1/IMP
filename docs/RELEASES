@@ -1,13 +1,39 @@
 0.8.3 - Fixed two more missing KOS texts.
 
+        "Overlay Mode" added.  This disables drawing of (only) the map and
+        window background, turns on frameless window mode, hides the menu,
+        and enables the Always on Top flag.  This allows you to put IMP on
+        top of the game window and obscure much less of the game (particularly
+        if you drag the message list to the closed position).  Use 'O' to
+        toggle overlay mode on/off.
+
+        Added transparency support:  Click the map (to make sure the app
+        has focus) and then use Ctrl+Alt+Mousewheel to adjust transparency
+        of the entire application.  This is different than overlay mode in
+        that overlay mode makes only the map/window backgrounds
+        fully transparent, whereas transparency support adjusts *all* visual
+        elements.
+
+        "Frameless Window" option added.  Use 'W' to toggle the window
+        title bar on/off.  This can also be used from Overlay mode to
+        re-enable the title-bar for easy re-positioning and then to
+        re-disable it.
+
+        Added an Always on Top hotkey: 'T'.  Note:  When using the Unity
+        desktop on Ubuntu, Compiz doesn't seem to honor toggling the flag
+        off correctly.  You will have to disable it by right-clicking the
+        title-bar if you're using that desktop.  KDE, and the Windows desktops
+        toggle the always-on-top state as expected.
+
+        Added Menu hide/unhide hotkey: 'M'  You can use this in desktops
+        like KDE and Windows to toggle the menubar on/off while in overlay
+        mode.
+
         Added "--debuglogging" flag.  Log writing is now disabled by default
         unless this flag is set.
 
-        "Toggle Frameless" option added.  Use 'T' to toggle the frame back
-        on.
-
-        Added transparency:  Click the map and use ctrl+alt+mousewheel to
-        adjust transparency.
+        Fixed a bug where some Linux desktops would not load themes due to
+        auto-shortcuts.
 
 0.8.2 - Now support's "Pocket Status" queries.  I.E. "b-w pocket status?"
 

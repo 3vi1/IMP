@@ -51,12 +51,22 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "* Imp Started *";
     qDebug() << "---------------";
 
+    // On Linux with the Compiz compositor, I discovered that if you don't
+    // set the translucent background flag before you setup the window, the
+    // window appears to get optimized such that it will not support
+    // transparency (it gets drawn as black).  This might be because it
+    // uses some separate OpenGL surface directly.  Making this note to
+    // report it as a bug down the road.
+    //
+    // After some amount of time, we *could* toggle the translucent
+    // background flag off to draw things solid, but since the time is
+    // indeterminate, we'll just set the autofillBackground flag on all
+    // our visual elements instead. and unset the flag when we want
+    // transparency.
+
+    setAttribute(Qt::WA_TranslucentBackground);
+
     ui->setupUi(this);
-
-#ifndef Q_OS_WIN32
-    ui->menu_Window->menuAction()->setVisible(false);
-#endif
-
 
     // Initialize lastAlertTime
     lastAlertTime = QDateTime::currentDateTimeUtc().addDays(-1);
@@ -104,8 +114,17 @@ MainWindow::MainWindow(QWidget *parent) :
     // If we do a macOS port later, we will need to set up a timer and another
     // function to compare the previous/current clipboard value, because
     // they cannot detect the clipboard is changed until the app is activated.
+
     connect(QApplication::clipboard(), SIGNAL(dataChanged()),
             this, SLOT(clipboardUpdated()));
+
+    // Normally, you could just set these shortcuts in the UI, but since we hide the menus they may become
+    //    disabled on some Desktop Environments (like KDE) if we did it that way.
+    findShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this, SLOT(on_actionSystem_triggered()));
+    framelessShortcut = new QShortcut(QKeySequence(Qt::Key_W), this, SLOT(on_action_Frameless_Window_triggered()));
+    menuShortcut = new QShortcut(QKeySequence(Qt::Key_M), this, SLOT(on_action_Menu_Toggle_triggered()));
+    overlayShortcut = new QShortcut(QKeySequence(Qt::Key_O), this, SLOT(on_action_Overlay_Mode_triggered()));
+    alwaysOnTopShortcut = new QShortcut(QKeySequence(Qt::Key_T), this, SLOT(on_action_Always_on_Top_triggered()));
 
 #ifndef QT_DEBUG
     ui->menuDebug->menuAction()->setVisible(false);
@@ -125,14 +144,29 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+QString MainWindow::withoutShortcutAmpersands(const QString input)
+{
+    QString output;
+    for(int i = 0; i < input.length()-1; i++)
+    {
+        if(input[i] != '&' || (input[i] == '&' && input[i+1] == '&'))
+        {
+            output.append(input[i]);
+        }
+    }
+    output.append(input[input.length()-1]);
+
+    return output;
+}
 
 void MainWindow::themeSelected()
 {
     QAction *s = qobject_cast<QAction *> (sender());
 
-    qDebug() << "MainWindow::themeSelected - loading " + s->text();
-    changeTheme(s->text(), qvariant_cast<ThemeType>(s->data()) );
-    options.setTheme(s->text(), qvariant_cast<ThemeType>(s->data()));
+    QString themeName = withoutShortcutAmpersands(s->text());
+    qDebug() << "MainWindow::themeSelected - loading " + themeName;
+    changeTheme(themeName, qvariant_cast<ThemeType>(s->data()) );
+    options.setTheme(themeName, qvariant_cast<ThemeType>(s->data()));
 }
 
 void MainWindow::changeTheme(const QString& themeName, ThemeType themeType)
@@ -211,7 +245,7 @@ void MainWindow::addThemeToMenu(QString name, ThemeType themeType)
 void MainWindow::addThemesFromSubdirectories(QDir dir, ThemeType themeType)
 {
     foreach (QFileInfo fileInfo, dir.entryInfoList()) {
-        if (fileInfo.isDir() )
+        if (fileInfo.isDir() && fileInfo.fileName()[0] != '.')
         {
             QString absoluteFilePath = dir.absoluteFilePath(fileInfo.fileName() + "/theme.ini");
             QFile file(absoluteFilePath);
@@ -222,7 +256,6 @@ void MainWindow::addThemesFromSubdirectories(QDir dir, ThemeType themeType)
             addThemeToMenu(fileInfo.fileName(), themeType);
         }
     }
-
 }
 void MainWindow::initThemes()
 {
@@ -254,6 +287,7 @@ void MainWindow::initThemes()
     {
         addThemesFromSubdirectories(userThemeDir, ThemeType::THEME_USER);
     }
+
 
 }
 
@@ -1519,19 +1553,15 @@ void MainWindow::on_actionReset_Rotation_triggered()
     ui->mapView->resetRotation();
 }
 
-void MainWindow::on_action_Always_on_Top_triggered(bool checked)
+void MainWindow::on_action_Always_on_Top_triggered()
 {
-    Qt::WindowFlags flags = this->windowFlags();
-    if (checked)
-    {
-        this->setWindowFlags(flags | Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint);
-        this->show();
-    }
-    else
-    {
-        this->setWindowFlags(flags ^ (Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint));
-        this->show();
-    }
+    alwaysOnTop = !alwaysOnTop;
+    Qt::WindowFlags flags = windowFlags();
+    flags ^= Qt::WindowStaysOnTopHint;
+    setWindowFlags(flags);
+
+    ui->action_Always_on_Top->setChecked(alwaysOnTop);
+    show();
 }
 
 void MainWindow::on_listView_doubleClicked(const QModelIndex &index)
@@ -1552,19 +1582,82 @@ void MainWindow::gotOpacity(int delta)
     setWindowOpacity(factor);
 }
 
-void MainWindow::on_actionToggle_Frameless_triggered()
+void MainWindow::on_action_Overlay_Mode_triggered()
+{
+    overlayMode = !overlayMode;
+
+    ui->mapView->disableBackgroundDraw(overlayMode);
+    ui->action_Overlay_Mode->setChecked(overlayMode);
+
+    Qt::WindowFlags flags = this->windowFlags();
+    if(overlayMode)
+    {
+        ui->menuBar->setAutoFillBackground(false);
+        ui->centralWidget->setAutoFillBackground(false);
+        ui->statusBar->setAutoFillBackground(false);
+
+        if(!frameless)
+        {
+            // Enable frameless mode too.
+            flags |= Qt::FramelessWindowHint;
+            ui->menuBar->hide();
+        }
+
+        alwaysOnTop = true;
+        setWindowFlags(flags | Qt::WindowStaysOnTopHint);
+
+    }
+    else
+    {
+        // Disable Translucency
+        ui->menuBar->setAutoFillBackground(true);
+        ui->centralWidget->setAutoFillBackground(true);
+        ui->statusBar->setAutoFillBackground(true);
+
+        Qt::WindowFlags newFlags = flags;
+        if(alwaysOnTop == false && (flags & Qt::WindowStaysOnTopHint))
+        {
+            // Disable Always on Top
+            newFlags = newFlags ^ Qt::WindowStaysOnTopHint;
+        }
+
+        if(frameless == false && (flags & Qt::FramelessWindowHint))
+        {
+            newFlags = newFlags ^ Qt::FramelessWindowHint;
+            ui->menuBar->show();
+        }
+
+        if (flags != newFlags)
+            setWindowFlags(newFlags);
+
+    }
+
+    this->show();
+    this->repaint();
+}
+
+void MainWindow::on_action_Frameless_Window_triggered()
 {
     Qt::WindowFlags flags = this->windowFlags();
 
     frameless = !frameless;
     if(frameless)
     {
-        this->setWindowFlags(flags | Qt::Widget | Qt::FramelessWindowHint);
-        this->show();
+        this->setWindowFlags(flags | Qt::FramelessWindowHint);
+        ui->menuBar->hide();
     }
     else
     {
-        this->setWindowFlags(flags ^ (Qt::Widget | Qt::FramelessWindowHint));
-        this->show();
+        this->setWindowFlags(flags ^ Qt::FramelessWindowHint);
+        ui->menuBar->show();
     }
+    this->show();
+}
+
+void MainWindow::on_action_Menu_Toggle_triggered()
+{
+    if(ui->menuBar->isVisible())
+        ui->menuBar->hide();
+    else
+        ui->menuBar->show();
 }

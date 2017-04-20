@@ -25,6 +25,9 @@
    <iconset resource="resources.qrc">
     <normaloff>:/graphics/impicon.png</normaloff>:/graphics/impicon.png</iconset>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
   <property name="documentMode">
    <bool>false</bool>
   </property>
@@ -37,6 +40,9 @@
      <horstretch>1</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
@@ -137,13 +143,18 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <family>FreeSerif</family>
+     <family>Tahoma</family>
+     <weight>75</weight>
+     <bold>true</bold>
     </font>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
    </property>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -173,7 +184,7 @@
    </widget>
    <widget class="QMenu" name="menuRegion">
     <property name="title">
-     <string>Map</string>
+     <string>&amp;Map</string>
     </property>
     <addaction name="actionCatch"/>
     <addaction name="actionProvidence"/>
@@ -192,7 +203,7 @@
    </widget>
    <widget class="QMenu" name="menuTheme">
     <property name="title">
-     <string>Theme</string>
+     <string>&amp;Theme</string>
     </property>
     <addaction name="separator"/>
     <addaction name="actionCustomize"/>
@@ -200,7 +211,7 @@
    </widget>
    <widget class="QMenu" name="menuPilots">
     <property name="title">
-     <string>Pilots</string>
+     <string>&amp;Pilots</string>
     </property>
    </widget>
    <widget class="QMenu" name="menu_Window">
@@ -208,7 +219,9 @@
      <string>&amp;Window</string>
     </property>
     <addaction name="action_Always_on_Top"/>
-    <addaction name="actionToggle_Frameless"/>
+    <addaction name="action_Frameless_Window"/>
+    <addaction name="action_Menu_Toggle"/>
+    <addaction name="action_Overlay_Mode"/>
    </widget>
    <addaction name="menuDebug"/>
    <addaction name="menuPilots"/>
@@ -219,7 +232,11 @@
    <addaction name="menu_Window"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QStatusBar" name="statusBar">
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+  </widget>
   <action name="actionAbout">
    <property name="text">
     <string>&amp;About</string>
@@ -285,13 +302,10 @@
   </action>
   <action name="actionSystem">
    <property name="text">
-    <string>&amp;System</string>
+    <string>&amp;System (Ctrl+F)</string>
    </property>
    <property name="toolTip">
     <string>Locate a system by name or partial name.</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+F</string>
    </property>
   </action>
   <action name="actionShow_Bridges">
@@ -394,7 +408,7 @@
   </action>
   <action name="actionCustomize">
    <property name="text">
-    <string>Customize</string>
+    <string>&amp;Customize</string>
    </property>
   </action>
   <action name="actionReset_Rotation">
@@ -407,18 +421,31 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&amp;Always on Top</string>
+    <string>Always on &amp;Top</string>
    </property>
   </action>
-  <action name="actionToggle_Frameless">
+  <action name="action_Frameless_Window">
    <property name="checkable">
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>&amp;Toggle Frameless</string>
+    <string>Frameless &amp;Window (w)</string>
    </property>
-   <property name="shortcut">
-    <string extracomment="Toggle Frameless Mode">T</string>
+  </action>
+  <action name="action_Overlay_Mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Overlay Mode (o)</string>
+   </property>
+  </action>
+  <action name="action_Menu_Toggle">
+   <property name="text">
+    <string>&amp;Menu Toggle (m)</string>
    </property>
   </action>
  </widget>

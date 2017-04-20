@@ -101,9 +101,11 @@ private slots:
     void on_actionFindMessages_triggered();
     void on_actionCustomize_triggered();
     void on_actionReset_Rotation_triggered();
-    void on_action_Always_on_Top_triggered(bool checked);
+    void on_action_Always_on_Top_triggered();
     void on_listView_doubleClicked(const QModelIndex &index);
-    void on_actionToggle_Frameless_triggered();
+    void on_action_Overlay_Mode_triggered();
+    void on_action_Frameless_Window_triggered();
+    void on_action_Menu_Toggle_triggered();
 
 private:
     void initParsing();
@@ -132,8 +134,18 @@ private:
     void switchToRegion(const QString& currentRegion);
     void updateRegionMenu(const QString& currentRegion);
 
+    QString withoutShortcutAmpersands(const QString input);
+
     Ui::MainWindow*         ui;
     bool                    frameless = false;
+    bool                    alwaysOnTop = false;
+    bool                    overlayMode = false;
+    QShortcut*              alwaysOnTopShortcut = NULL;
+    QShortcut*              framelessShortcut = NULL;
+    QShortcut*              menuShortcut = NULL;
+    QShortcut*              overlayShortcut = NULL;
+//    QStyle*                 savedStyle;
+
     ChatModel*              chatModel;
     ChatItemDelegate        m_cid;
     QShortcut*              findShortcut;

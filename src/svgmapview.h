@@ -61,6 +61,8 @@ public:
     QRect       getViewRect();
     QPointF     getViewportCenter();
 
+    void disableBackgroundDraw(bool disable);
+
     void setHorizontalScroll(int x);
     void setLoadText(const QString text);
     void setNameFont(QFont newFont);
@@ -106,6 +108,7 @@ public slots:
     void receiveThemeUpdate(ThemeStorage &a);
 
 protected:
+    void drawBackground(QPainter *painter, const QRectF &rect);
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -171,6 +174,10 @@ private:
     QPointF timeOffset = QPointF(0, +4);
 
     QRectF savedSceneRect;
+
+    bool    drawStandardBackground = true;
+    QColor  backgroundColor = QColor(Qt::white);
+
     QGraphicsPixmapItem* backPixmap = NULL;
     QGraphicsSvgItem* backSvg = NULL;
     qreal backgroundOpacity = 1.0;

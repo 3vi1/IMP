@@ -64,13 +64,14 @@ SvgMapView::SvgMapView(QWidget *parent) : QGraphicsView(parent)
     loadText->setFont(QFont("Decorative", 18));
     loadingScene.addItem(loadText);
 
-    nameFont = QFont("Tahoma", 4); //, QFont::Bold);
-    timeFont = QFont("Arial", 4);
+    nameFont = QFont("Tahoma", 6);
+    timeFont = QFont("Arial", 6);
+
+    setStyleSheet("background-color: transparent;");
 }
 
 void SvgMapView::paintEvent(QPaintEvent *event)
 {
-
     if(scene() == &loadingScene)
     {
         QTransform transform = getTransform();
@@ -100,7 +101,7 @@ void SvgMapView::paintEvent(QPaintEvent *event)
     }
     else if(scene() == &mapScene)
     {
-        return QGraphicsView::paintEvent(event);
+        QGraphicsView::paintEvent(event);
     }
     else
     {
@@ -108,6 +109,12 @@ void SvgMapView::paintEvent(QPaintEvent *event)
     }
 
     return;
+}
+
+void SvgMapView::drawBackground(QPainter *painter, const QRectF &rect)
+{
+//    if(drawStandardBackground)
+        QGraphicsView::drawBackground(painter, rect);
 }
 
 void SvgMapView::showMap(bool enable)
@@ -162,18 +169,7 @@ void SvgMapView::keyReleaseEvent(QKeyEvent *event)
 
 void SvgMapView::mouseMoveEvent(QMouseEvent *event)
 {
-    /*
-    if(middlePressed)
-    {
-        qreal delta = event->pos().y() - startPosition.y();
-        setTransformationAnchor(QGraphicsView::ViewportAnchor::AnchorViewCenter);
-        rotate(delta/120);
-    }
-    else
-    {*/
-        return QGraphicsView::mouseMoveEvent(event);
-    //}
-
+    return QGraphicsView::mouseMoveEvent(event);
 }
 
 void SvgMapView::mousePressEvent(QMouseEvent *event)
@@ -185,11 +181,6 @@ void SvgMapView::mousePressEvent(QMouseEvent *event)
 
 void SvgMapView::mouseReleaseEvent(QMouseEvent *event)
 {
-/*    if(event->button() == Qt::MouseButton::LeftButton) //Qt::MouseButton::MiddleButton)
-    {
-        middlePressed = false;
-    }
-*/
     return QGraphicsView::mouseReleaseEvent(event);
 }
 
@@ -519,7 +510,9 @@ void SvgMapView::receiveThemeUpdate(ThemeStorage& ts)
         {
             if(ts.member == "color")
             {
-                setBackgroundBrush(ts.data.value<QColor>());
+                backgroundColor = ts.data.value<QColor>();
+                if(drawStandardBackground)
+                    setBackgroundBrush(backgroundColor);
             }
             else if(ts.member == "graphic")
             {
@@ -835,4 +828,14 @@ void SvgMapView::setTimeFont(QFont newFont)
             m_texts[k]->setPos(realPosition - newCenter );
         }
     }
+}
+
+void SvgMapView::disableBackgroundDraw(bool disable)
+{
+    drawStandardBackground = !disable;
+
+    if(drawStandardBackground)
+        setBackgroundBrush(backgroundColor);
+    else
+        setBackgroundBrush(Qt::transparent);
 }

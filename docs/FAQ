@@ -1,26 +1,31 @@
+
 Some miscellaneous questions and answers:
 
 ---------------------------------------------------------------------------------------------
 
 Q:  What are the controls?
 
-A:  Currently there are only a few:
+A:  The controls so far (make sure you have clicked app window to give it focus first:
 
+             Click+Drag:  Pan/scroll map.
              Mousewheel:  Over map it will zoom in/out.
-        Ctrl+Mousewheel:  Rotates map (make sure map has focus first - click it)
-    Alt+Ctrl+Mousewheel:  Adjust transparency (click map for focus first)
-                 Ctrl+F:  Shortcut for Find System.
-             Left-Click:  On a system to switch the message view to just messages for that
-                          system.  Click on an empty space to switch back to all messages.
+        Ctrl+Mousewheel:  Rotates map
+    Alt+Ctrl+Mousewheel:  Adjust transparency
+                 Ctrl+F:  Shortcut for "Find System".
+             Left-Click:  On a system (on the map) to switch the message view to just
+                          messages for that system.  Click on an empty space to switch
+                          back to all messages.
            Double-Click:  On a message in the list to find the related system.
 
-    You can also click and drag the map around.
+                      O:  Toggle on/off Overlay Mode.
+                      W:  Toggle on/off title bar
+                      M:  Toggle on/off menu bar
+                      T:  Toggle on/off Always on Top.
 
     There's no feature to set your current system at the moment, but I haven't needed it
     since Imp deduces your location on startup without needing to jump.
 
-    In the future, there will be some right-click context menus... as soon as I write
-    the features that need them.
+    In the future, there will be some right-click context menus.
 
 ---------------------------------------------------------------------------------------------
 
@@ -38,7 +43,9 @@ A:  I seriously considered this, but I believe other features make it unnecessar
     addition to the feature itself being redundant.
 
     If you want to KOS-check someone that's linked in a line, just right-click the line
-    and choose copy, then right-click the line and choose copy again.
+    and choose copy, then right-click the line and choose copy again.  The second time it
+    hits your clipboard, IMP will know you want to KOS check the pilots linked in that
+    line.
 
     Vintel appears to have only allowed 'xxx' requests from channels in your intel list,
     most likely to prevent spamming by reds trying to jam out people.  This also means
@@ -47,7 +54,8 @@ A:  I seriously considered this, but I believe other features make it unnecessar
 
     Players can coordinate IMP message rules (rules tab in Options) to play any number
     of sounds for certain messages in a specific (or any) channel from specific/any people,
-    if what your trying to accomplish is to play a sound for a subset of people.
+    if what your trying to accomplish is to play a sound for a subset of people.  See
+    the RULES file for details.
 
     In the future there will be a LUA scripting component in IMP, and I will make one
     of the example scripts show how to add the 'xxx' checking back for people that
@@ -59,24 +67,16 @@ Q:  What does disabling a pilot from the pilots menu do.
 
 A:  This is for people that play multiple accounts from the same computer.  Disabling a pilot
     (who may have been seen and added to the map if they were used within the previous 24
-    hours) will remove them from the map and suppress warnings for them.  You will still get
-    the warnings other pilots should receive - even if they're in the same system.
+    hours) will remove them from the map and suppress warnings for their nearby systems.
+    You will still get the warnings other pilots should receive - even if they're in the same
+    system.
 
 ---------------------------------------------------------------------------------------------
 
 Q:  When I change regions, [something] doesn't work.
 
-A:  That's because I never tested other regions.  I'm a madman like that.  I've only just
-    added regions and never flown outside of Providence.  I'll fix it... soon (tm).
-
----------------------------------------------------------------------------------------------
-
-Q:  Where are the transparency options?
-
-A:  That's a feature that should be part of your desktop compositor, rather than
-    re-implemented in every app's UI.  On Linux, the Compiz, KWin, and other compositors
-    give you options to do this for each app.  On Windows, I know there are some third-
-    party apps that allow you to do it.
+A:  That's because I've only recently even gone to another region.  I am going to be
+    looking hard at this in the near future.
 
 ---------------------------------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ A:  I found that I never used the tray icon when running Vintel because the main
     when you're not playing the game.
 
     I'm not saying I *won't* add a tray icon and minimize to tray feature... but it's way
-    down the list of priorities until I can think of a real benefit.
+    down the list of priorities.
 
 ---------------------------------------------------------------------------------------------
 
