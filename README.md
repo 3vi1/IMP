@@ -14,6 +14,7 @@ The latest binary releases are available on [the releases page](https://github.c
   * Is themeable and rotatable.
     * Colors, shapes, fonts, etc. can be changed.
     * New configurations can be saved as personal themes.
+  * Has an overlay mode that lets you put it over the game window and see through the background.
 * All audio alerts are customizable.
   * New files can be added to imp/audio and will appear as options in the GUI.
   * Imp can be configured to suppress redundant alerts and/or alerts created by your own pilots.
