@@ -26,12 +26,13 @@
 #include <QStyledItemDelegate>
 
 #include "chatmodel.h"
+#include "msgstyle.h"
 
 class ChatItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    explicit ChatItemDelegate(QObject *parent = Q_NULLPTR);
+    explicit ChatItemDelegate(const MsgStyle* style, QObject *parent = Q_NULLPTR);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index ) const override;
@@ -45,6 +46,8 @@ private:
     ChatModel*  m_model;
     QSize       m_avatarSize = QSize(64,64);
     QSize       padding = QSize(2,1);
+
+    const MsgStyle* m_msgStyle;
 };
 
 #endif // CHATITEMDELEGATE_H

@@ -70,6 +70,11 @@ SvgMapView::SvgMapView(QWidget *parent) : QGraphicsView(parent)
     setStyleSheet("background-color: transparent;");
 }
 
+SvgMapView::~SvgMapView()
+{
+    findShape->deleteLater();
+}
+
 void SvgMapView::paintEvent(QPaintEvent *event)
 {
     if(scene() == &loadingScene)

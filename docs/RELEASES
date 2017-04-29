@@ -1,3 +1,25 @@
+0.8.4 - Added skin/styles support.  This adds a new UI tab to the settings
+        dialog where you can select the style.  You can add your own styles
+        by placing them in the /styles subdirectory.  Take a look at
+        https://doc.qt.io/qt-5/stylesheet-examples.html for more info on
+        the format.  There will be more cleanup/expansion to the styles and
+        UI in subsequent releases.  Until this is further along, the app
+        still defaults to unskinned.
+
+        Added the ability to drag window by grabbing the non-map/list areas.
+        Note: If you drag the window in this manner on a high-DPI screen
+        with a desktop manager that's doing scaling, the window may shrink
+        slightly on each move due to a bug inside the Qt QWidget::move()
+        function that I have not yet investigated.  It works fine on
+        non-4k/scaled screens.
+
+        Fixes "show avatars" option not being saved.
+
+        Fixes calculation of word wrap to better fit text in message list if
+        you have avatars disabled.
+
+        Fix some minor memory leaks.
+
 0.8.3 - Fixed two more missing KOS texts.
 
         "Overlay Mode" added.  This disables drawing of (only) the map and

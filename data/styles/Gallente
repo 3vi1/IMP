@@ -1,0 +1,101 @@
+#centralWidget, QStatusBar
+{
+	color: white; 
+	background-color: rgba(26,44,48,120);
+	font-family: "Arial Narrow", Arial, "Helvetica Condensed", Helvetica, sans-serif;
+}
+
+QLabel, QGraphicsView 
+{
+	color: white;
+	background-color: transparent;
+	font-family: "Arial Narrow", Arial, "Helvetica Condensed", Helvetica, sans-serif;
+}
+
+QListView 
+{
+	alternate-background-color: rgba(26,34,38,80);
+	background-color: rgb(38,74,70,80);
+}
+
+MsgStyle
+{
+	qproperty-clearColor: #00FF00;
+	qproperty-gateColor: blue;
+	qproperty-infoColor: yellow;
+	qproperty-locationColor: DeepPink;
+	qproperty-shipColor: DarkOrange;
+	qproperty-stampColor: white;
+	qproperty-statusColor: DarkCyan;
+	qproperty-systemColor: #A0A0FF;
+	qproperty-warnColor: #FF0000;
+}
+
+QScrollBar:vertical,
+QScrollBar:horizontal,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical,
+QScrollBar::add-page:horizontal,
+QScrollBar::sub-page:horizontal 
+{
+        background: transparent;
+}
+
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal
+{
+	background: rgba(68,114,110,200);
+}
+
+/********** ListViews **********/
+QListView QScrollBar:vertical {
+  width: 5px;
+  background: transparent;
+  border: 0px;
+}
+
+QListView QScrollBar::handle:vertical  {
+  background: #0c6765;
+  min-height: 24px;
+}
+
+QListView QScrollBar::add-line:vertical, QListView QScrollBar::sub-line:vertical,
+QListView QScrollBar::up-arrow:vertical, QListView QScrollBar::down-arrow:vertical,
+QListView QScrollBar::add-page:vertical, QListView QScrollBar::sub-page:vertical 
+{
+    background: transparent;
+}
+
+/* For Settings / Info Dialog */
+QDialog
+{
+	background-color: rgba(46,64,68,50);
+}
+
+QTabWidget
+{
+    background-color: rgba(38,74,70,80);
+}
+
+QCheckBox
+{
+    color: yellow;
+}
+
+QListWidget
+{
+    color: cyan;
+    background-color: rgba(68,104,100,80);
+}
+
+#Info
+{
+/*	background-color: white;*/
+	background-color: rgba(30%, 50%, 50%, 0.8);
+}
+
+#gridLayout
+{
+    /*background-color: rgba(50%, 80%, 80%, 0.8);*/
+    background-color: white;
+}

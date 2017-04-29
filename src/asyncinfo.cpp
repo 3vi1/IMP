@@ -123,7 +123,8 @@ void AsyncInfo::error(QNetworkReply::NetworkError err)
 {
     // Manage error here.
     qDebug() << "*** In AsyncInfo::error:  " << err;
-    //this->deleteLater();
+    emit kosCheckFailed(checkNames);
+    this->deleteLater();
 }
 
 void AsyncInfo::kosCheck(const QString &reqNames)
@@ -152,8 +153,8 @@ void AsyncInfo::kosCheck(const QString &reqNames,
     QNetworkRequest request(url);
     request.setRawHeader("User-Agent", meta.agentString.toUtf8());
     kosReply = manager->get(request);
-    /*connect(kosReply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(error(QNetworkReply::NetworkError)));*/
+    connect(kosReply, SIGNAL(error(QNetworkReply::NetworkError)),
+                this, SLOT(error(QNetworkReply::NetworkError)));
     connect(kosReply, SIGNAL(finished()),
                 this, slot);
 
@@ -176,6 +177,10 @@ void AsyncInfo::gotKosCheckReply()
     QList<KosEntry> entries;
     QJsonDocument jsonResponse = QJsonDocument::fromJson(b);
     QJsonObject jsonObject = jsonResponse.object();
+
+    // For unlisted, CVA returns:
+    // "{\n  "total": 0,\n  "code": 100,\n  "message": "OK",\n  "results": [\n    \n  ]\n}"
+
     QJsonArray jsonArray = jsonObject["results"].toArray();
 
     foreach (const QJsonValue& value, jsonArray) {

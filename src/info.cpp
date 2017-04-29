@@ -27,6 +27,11 @@ Info::Info(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Info)
 {
+    // ToDo:  Figure out why QDialog doesn't draw background at all with
+    //        translucency set.
+
+    //setAttribute(Qt::WA_TranslucentBackground);
+    //setAttribute(Qt::WA_NoSystemBackground);
     ui->setupUi(this);
     ui->versionInfo->setText(meta.versionInfo);
 }
@@ -39,7 +44,6 @@ Info::~Info()
 void Info::on_okayButton_accepted()
 {
     hide();
-    //music->stop();
     if(m_audio != NULL)
         m_audio->stopMusic();
 }
@@ -47,7 +51,6 @@ void Info::on_okayButton_accepted()
 void Info::reject()
 {
     hide();
-    //music->stop();
     if(m_audio != NULL)
         m_audio->stopMusic();
 }
@@ -55,7 +58,5 @@ void Info::reject()
 void Info::startMusic(ImpAudio *audio)
 {
     m_audio = audio;
-    //music =
     audio->playLocalMedia("info/1 dont kn0w.m4a");
-    //music->setLoopCount(QSoundEffect::Infinite);
 }

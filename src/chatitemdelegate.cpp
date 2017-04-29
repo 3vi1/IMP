@@ -25,7 +25,8 @@
 #include <QPainter>
 #include <QTextDocument>
 
-ChatItemDelegate::ChatItemDelegate(QObject *parent) : QStyledItemDelegate(parent)
+ChatItemDelegate::ChatItemDelegate(const MsgStyle* style, QObject *parent) : QStyledItemDelegate(parent),
+    m_msgStyle(style)
 {
 }
 
@@ -37,6 +38,16 @@ void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         QStyleOptionViewItem options = option;
         initStyleOption(&options, index);
 
+        options.text = options.text.replace("<clear>", "<span style=\"color: " + m_msgStyle->getClearColor().name() + "\">");
+        options.text = options.text.replace("<info>", "<span style=\"color: " + m_msgStyle->getInfoColor().name() + "\">");
+        options.text = options.text.replace("<gate>", "<span style=\"color: " + m_msgStyle->getGateColor().name() + "\">");
+        options.text = options.text.replace("<location>", "<span style=\"color: " + m_msgStyle->getLocationColor().name() + "\">");
+        options.text = options.text.replace("<ship>", "<span style=\"color: " + m_msgStyle->getShipColor().name() + "\">");
+        options.text = options.text.replace("<stamp>", "<span style=\"color: " + m_msgStyle->getStampColor().name() + "\">");
+        options.text = options.text.replace("<status>", "<span style=\"color: " + m_msgStyle->getStatusColor().name() + "\">");
+        options.text = options.text.replace("<system>", "<span style=\"color: " + m_msgStyle->getSystemColor().name() + "\">");
+        options.text = options.text.replace("<warn>", "<span style=\"color: " + m_msgStyle->getWarnColor().name() + "\">");
+
         painter->save();
 
         QTextDocument doc;
@@ -45,7 +56,9 @@ void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         QTextOption textOption(doc.defaultTextOption());
         textOption.setWrapMode(QTextOption::WordWrap);
         doc.setDefaultTextOption(textOption);
-        doc.setTextWidth(options.rect.width() - m_avatarSize.width() - padding.width());
+
+        int iconWidth = (options.icon.isNull() ? 0 : m_avatarSize.width());
+        doc.setTextWidth(options.rect.width() - iconWidth - padding.width());
 
         options.text = "";
         options.widget->style()->drawControl(QStyle::CE_ItemViewItem, &options, painter);
@@ -58,8 +71,10 @@ void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         painter->setClipRect(clip);
         QAbstractTextDocumentLayout::PaintContext ctx;
 
-        if (option.state & QStyle::State_Selected)
+/*        if (option.state & QStyle::State_Selected)
             ctx.palette.setColor(QPalette::Text, QColor("white"));
+            // Maybe we'll bring back selected colors later
+            */
 
         ctx.clip = clip;
         doc.documentLayout()->draw(painter, ctx);
@@ -83,9 +98,14 @@ QSize ChatItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMode
     QTextOption textOption(doc.defaultTextOption());
     textOption.setWrapMode(QTextOption::WordWrap);
     doc.setDefaultTextOption(textOption);
-    doc.setTextWidth(options.rect.width() - m_avatarSize.width() - padding.width());
 
-    QSize textSize = QSize(doc.idealWidth() + m_avatarSize.width(), doc.size().height());
-    return m_avatarSize.height() > doc.size().height() ?
-                QSize(doc.idealWidth(), m_avatarSize.height() + padding.height()) : textSize;
+    int iconWidth = (options.icon.isNull() ? 0 : m_avatarSize.width());
+    doc.setTextWidth(options.rect.width() - iconWidth - padding.width());
+
+    QSize textSize = QSize(doc.idealWidth() + iconWidth,
+                           doc.size().height() > m_avatarSize.height() ?
+                               doc.size().height() + padding.height() :
+                               m_avatarSize.height() + padding.height());
+
+    return textSize;
 }

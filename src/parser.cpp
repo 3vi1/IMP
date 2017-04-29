@@ -66,8 +66,9 @@ QStringList Parser::fromFile(const QString& fileName)
 
     if(!file.open(QIODevice::ReadOnly))
     {
-        QMessageBox::critical(NULL, "Error Opening File", "Could not open file dictionaries/" +
-                             fileName + ".");
+        QMessageBox::critical(NULL, "Error Opening File", "Could not open file " +
+                             appFilesPath() + "/dictionaries/" + fileName +
+                             ".");
         QApplication::exit(1);
     }
     else
@@ -291,7 +292,7 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
     simChat = simChat.simplified();
     QStringList words = simChat.split(" ");
 
-    messageInfo.markedUpText = "<span style=\"color: #000000\">";
+    messageInfo.markedUpText = "<info>";
 
     QString previousWord = "";
     for (int i = 0; i < words.length(); i++)
@@ -306,17 +307,17 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
         {
             messageInfo.flags.append(MessageFlag::STATUS);
 
-            messageInfo.markedUpText += "<span style=\"color: #900090\">";
+            messageInfo.markedUpText += "<status>";
             messageInfo.markedUpText += words[i];
-            messageInfo.markedUpText += "<span style=\"color: #000000\">";
+            messageInfo.markedUpText += "<info>";
         }
         else if (locationWords.contains(lowerWord))
         {
             messageInfo.flags.append(MessageFlag::LOCATION);
 
-            messageInfo.markedUpText += "<span style=\"color: #00FF00\">";
+            messageInfo.markedUpText += "<location>";
             messageInfo.markedUpText += words[i];
-            messageInfo.markedUpText += "<span style=\"color: #000000\">";
+            messageInfo.markedUpText += "<info>";
         }
         else if (clearWords.contains(lowerWord))
         {
@@ -326,17 +327,17 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
                 // "> KBP Dital gate clr!"
                 messageInfo.flags.append(MessageFlag::CLEAR);
 
-                messageInfo.markedUpText += "<span style=\"color: #00D000\">";
+                messageInfo.markedUpText += "<clear>";
                 messageInfo.markedUpText += words[i];
-                messageInfo.markedUpText += "<span style=\"color: #000000\">";
+                messageInfo.markedUpText += "<info>";
             }
         }
         else if(ships.contains(lowerWord))
         {
            theseShips.append(words[i]);
-           messageInfo.markedUpText += "<span style=\"color: #d03090\">";
+           messageInfo.markedUpText += "<ship>";
            messageInfo.markedUpText += words[i];
-           messageInfo.markedUpText += "<span style=\"color: #000000\">";
+           messageInfo.markedUpText += "<info>";
         }
         else
         {
@@ -350,33 +351,33 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
                     {
                         // "x-x gate to..."
                         theseSystems.append(systemName);
-                        messageInfo.markedUpText += "<span style=\"color: #303030\">";
+                        messageInfo.markedUpText += "<gate>";
                         messageInfo.markedUpText += words[i];
-                        messageInfo.markedUpText += "<span style=\"color: #000000\">";
+                        messageInfo.markedUpText += "<info>";
                     }
                     else {
                         // "...at x-x gate"
                         theseGates.append(systemName);
-                        messageInfo.markedUpText += "<span style=\"color: #303030\">";
+                        messageInfo.markedUpText += "<gate>";
                         messageInfo.markedUpText += words[i];
-                        messageInfo.markedUpText += "<span style=\"color: #000000\">";
+                        messageInfo.markedUpText += "<info>";
                     }
                 }
                 else
                 {
                     // System mentioned, not adjacent to word 'gate'
                     theseSystems.append(systemName);
-                    messageInfo.markedUpText += "<span style=\"color: #0000FF\">";
+                    messageInfo.markedUpText += "<system>";
                     messageInfo.markedUpText += words[i];
-                    messageInfo.markedUpText += "<span style=\"color: #000000\">";
+                    messageInfo.markedUpText += "<info>";
                 }
             }
             else if(lowerWord.length() >= 3)
             {
                 messageInfo.possiblePilots.append(words[i]);
-                messageInfo.markedUpText += "<span style=\"color: #804000\">";
+                messageInfo.markedUpText += "<info>";
                 messageInfo.markedUpText += words[i];
-                messageInfo.markedUpText += "<span style=\"color: #000000\">";
+                messageInfo.markedUpText += "<info>";
             }
         }
 

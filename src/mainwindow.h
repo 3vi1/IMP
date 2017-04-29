@@ -37,6 +37,7 @@
 #include "logcatcher.h"
 #include "map.h"
 #include "meta.h"
+#include "msgstyle.h"
 #include "options.h"
 #include "parser.h"
 #include "theme.h"
@@ -74,11 +75,16 @@ public slots:
     void gotMapRefreshChange(int msecs);
     void gotNewPilot(const QString& pilotName);
     void gotPollerRefreshChange(int msecs);
+    void gotStyleSheetChange(const QString styleName);
     void gotSystemClick(const QString& name);
     void findLocation(const QString& systemName);
     void logDirChanged(const QString& dir);
     void gotOpacity(int delta);
     void saveSettings();
+
+protected:
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
 
 private slots:
     void changeFont(const QString& fontName, int fontSize);
@@ -140,14 +146,17 @@ private:
     bool                    frameless = false;
     bool                    alwaysOnTop = false;
     bool                    overlayMode = false;
+
     QShortcut*              alwaysOnTopShortcut = NULL;
     QShortcut*              framelessShortcut = NULL;
     QShortcut*              menuShortcut = NULL;
     QShortcut*              overlayShortcut = NULL;
-//    QStyle*                 savedStyle;
 
+    QPoint                  dragPosition;
+
+    MsgStyle*               msgStyle = NULL;
     ChatModel*              chatModel;
-    ChatItemDelegate        m_cid;
+    ChatItemDelegate*       m_cid;
     QShortcut*              findShortcut;
     Theme*                  m_theme = NULL;
     ImpAudio                audio;

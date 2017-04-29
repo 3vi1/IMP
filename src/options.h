@@ -79,6 +79,8 @@ public:
     QString getLogPath();
     void setLogPath(QString path);
 
+    QString getStyle() {return m_style;}
+
     QColor getMapBackgroundColor();
     void setMapBackgroundColor(QColor color);
     QColor getMapLinesColor();
@@ -101,6 +103,7 @@ public:
     QString getSoundNoKos();
 
     void rebuildAudioFileList();
+    void rebuildStyleFileList();
 
     bool showAvatar();
 
@@ -122,6 +125,7 @@ signals:
     void mapRefreshChanged(int msecs);
     void logDirChanged(const QString&);
     void fontChanged(const QString& fontName, int fontSize);
+    void styleChanged(const QString styleName);
     void okayPressed();
 
 protected:
@@ -156,7 +160,7 @@ private:
     QList<Rule> readRules(QXmlStreamReader& reader);
 
     bool _autofollow = true;
-    bool _showAvatar;
+    bool m_showAvatar = true;
     bool _smoothAutofollow;
     bool _essAndKos;
     bool _kosDouble;
@@ -180,6 +184,7 @@ private:
     QString _mapPath;
     QString _currentRegion;
 
+    QString     m_style = "-None-";
     QString     m_themeName;
     ThemeType   m_themeType;
 

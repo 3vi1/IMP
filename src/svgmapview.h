@@ -41,6 +41,7 @@ class SvgMapView : public QGraphicsView
     Q_OBJECT
 public:
     explicit SvgMapView(QWidget *parent = 0);
+    ~SvgMapView();
 
     void setMap(Map* m){m_map = m;}
 

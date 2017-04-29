@@ -29,7 +29,7 @@
 
 MapShape::MapShape()
 {
-    renderer = new QSvgRenderer(new QObject());
+    renderer = new QSvgRenderer();
     connect(renderer, &QSvgRenderer::repaintNeeded,
             this, &MapShape::repainter );
 }
@@ -48,6 +48,10 @@ MapShape::MapShape(QSvgRenderer* svgRenderer,
 
 MapShape::~MapShape()
 {
+    if(renderer != NULL)
+    {
+        renderer->deleteLater();
+    }
 }
 
 void MapShape::repainter()

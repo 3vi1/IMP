@@ -79,14 +79,21 @@ MainWindow::MainWindow(QWidget *parent) :
     QApplication::setWindowIcon(QIcon(":/graphics/impicon.png"));
     options.setAudio(&audio);
 
+    connect(&options, &Options::styleChanged,
+            this, &MainWindow::gotStyleSheetChange);
+
     chatModel = new ChatModel(&options, this);
     chatModel->setPilotCache(&pilotCache);
-    ui->listView->setModel(chatModel);
-    m_cid.setModel(chatModel);
-    ui->listView->setItemDelegate(&m_cid);
-    ui->listView->show();
+    msgStyle = new MsgStyle(this);
+    m_cid = new ChatItemDelegate(msgStyle, this);
+    m_cid->setModel(chatModel);
 
     loadSettings();
+
+    ui->listView->setModel(chatModel);
+    ui->listView->setItemDelegate(m_cid);
+    ui->listView->show();
+
     ui->actionAuto_follow->setChecked(options.getAutofollow());
     updateRegionMenu(options.getRegion());
     changeFont(options.getFontName(), options.getFontSize());
@@ -141,7 +148,23 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     saveSettings();
+
     delete ui;
+    delete chatModel;
+    delete m_cid;
+
+    if(msgStyle != NULL)
+        delete msgStyle;
+
+    if(m_theme != NULL)
+    {
+        m_theme->deleteLater();
+    }
+
+    if(lc != NULL)
+    {
+        lc->deleteLater();
+    }
 }
 
 QString MainWindow::withoutShortcutAmpersands(const QString input)
@@ -470,12 +493,12 @@ void MainWindow::gotRblReply(QString name, bool rbl, int corpNum)
         if(corpNum > 1)
         {
             info.text = name + " is RED BY LAST!";
-            info.markedUpText = name + " is <span style=\"color: #B00000\">RED BY LAST!";
+            info.markedUpText = name + " is <warn>RED BY LAST!";
         }
         else
         {
             info.text = name + " is IN A RED CORP!";
-            info.markedUpText = name + " is <span style=\"color: #D00000\">IN A RED CORP!";
+            info.markedUpText = name + " is <warn>IN A RED CORP!";
         }
         addMessage(info);
     }
@@ -521,21 +544,21 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
         if(e.pilot.kos)
         {
             info.text = e.pilot.name + " is KOS!";
-            info.markedUpText = "<span style=\"color: #C00000\">" + e.pilot.name + " is KOS!";
+            info.markedUpText = "<warn>" + e.pilot.name + " is KOS!";
             playKos = true;
             addMessage(info);
         }
         else if(e.corp.kos)
         {
             info.text = e.pilot.name + "'s corp (" + e.corp.name + ") is KOS!";
-            info.markedUpText = e.pilot.name + "'s corp (" + e.corp.name + ") is <span style=\"color: #C00000\">KOS!";
+            info.markedUpText = e.pilot.name + "'s corp (" + e.corp.name + ") is <warn>KOS!";
             playKos = true;
             addMessage(info);
         }
         else if(e.alliance.kos)
         {
             info.text = e.pilot.name + "'s alliance (" + e.alliance.name + ") is KOS!";
-            info.markedUpText = e.pilot.name + "'s alliance (" + e.alliance.name + ") is <span style=\"color: #C00000\">KOS!";
+            info.markedUpText = e.pilot.name + "'s alliance (" + e.alliance.name + ") is <warn>KOS!";
             playKos = true;
             addMessage(info);
         }
@@ -583,7 +606,7 @@ void MainWindow::gotEssReply(const QList<KosEntry>& entries)
 
         if(e.pilot.kos || e.corp.kos || e.alliance.kos)
         {
-            info.text = e.pilot.name + " is near the ESS and is KOS!";
+            info.text = e.pilot.name + " <warn>is near the ESS and is KOS!";
             playKos = true;
             addMessage(info);
         }
@@ -873,6 +896,30 @@ void MainWindow::saveSettings()
         file.open( QIODevice::WriteOnly );
         QDataStream stream( &file );
         stream << pilotCache;
+    }
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton)
+    {
+        QSize s = size();
+        qDebug() << "s, before = " << s;
+        move(event->globalPos() - dragPosition);
+        //resize(s);
+        event->accept();
+
+        s = size();
+        qDebug() << "s, after = " << s;
+    }
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        dragPosition = event->globalPos() - frameGeometry().topLeft();
+        event->accept();
     }
 }
 
@@ -1241,10 +1288,8 @@ void MainWindow::on_actionOptions_triggered()
 {
     options.cacheSettings();
     options.rebuildAudioFileList();
+    options.rebuildStyleFileList();
 
-    /*connect(&options, &Options::okayPressed,
-            this, &MainWindow::saveSettings);
-    */
     options.show();
 }
 
@@ -1660,4 +1705,28 @@ void MainWindow::on_action_Menu_Toggle_triggered()
         ui->menuBar->hide();
     else
         ui->menuBar->show();
+}
+
+void MainWindow::gotStyleSheetChange(const QString styleName)
+{
+    if(styleName == "-None-")
+    {
+        qApp->setStyleSheet("");
+        return;
+    }
+
+    QFile file(appFilesPath() + "/styles/" + styleName);
+
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::critical(NULL, "Error Opening File", "Could not open file styles/" +
+                             styleName + ".");
+    }
+    else
+    {
+        QTextStream in(&file);
+        QString all = in.readAll();
+
+        qApp->setStyleSheet(all);
+    }
 }

@@ -39,6 +39,7 @@ Options::Options(QWidget *parent) :
     ui->intelEdit->installEventFilter(this);
 
     rebuildAudioFileList();
+    rebuildStyleFileList();
 
     ruleModel = new RuleModel(this);
     ui->tableView->setModel(ruleModel);
@@ -90,6 +91,27 @@ void Options::rebuildAudioFileList()
     ui->essCombo->setCurrentIndex(ui->essCombo->findText(m_soundEss));
 }
 
+void Options::rebuildStyleFileList()
+{
+    ui->comboStyle->clear();
+    ui->comboStyle->addItem("-None-");
+
+    QString stylePath = appFilesPath() + "/styles/";
+    QDir styleDir(stylePath);
+    styleDir.setFilter(QDir::Files);
+
+    // Load up style combo
+    foreach(QFileInfo fileInfo, styleDir.entryInfoList())
+    {
+        if(fileInfo.fileName().endsWith(".dll"))
+            continue;
+
+        ui->comboStyle->addItem(fileInfo.fileName());
+    }
+
+    ui->comboStyle->setCurrentIndex(ui->comboStyle->findText(m_style));
+}
+
 void Options::cacheSettings()
 {
     QStringList channels;
@@ -114,7 +136,7 @@ void Options::cacheSettings()
     _selfSuppress = ui->selfSuppressCheck->isChecked();
     _smoothAutofollow = ui->smoothCheck->isChecked();
     _essAndKos = ui->essBox->isChecked();
-    _showAvatar = ui->checkAvatar->isChecked();
+    m_showAvatar = ui->checkAvatar->isChecked();
 
     m_soundAlarm = ui->alarmCombo->currentText();
     m_soundStatus = ui->statusCombo->currentText();
@@ -131,6 +153,8 @@ void Options::cacheSettings()
     _fontSize = ui->fontSpinBox->value();
 
     _rules = ruleModel->getRules();
+
+    m_style = ui->comboStyle->currentText();
 }
 
 void Options::restoreSettings()
@@ -153,7 +177,7 @@ void Options::restoreSettings()
     ui->smoothCheck->setChecked(_smoothAutofollow);
     ui->essBox->setChecked(_essAndKos);
     ui->checkKosDouble->setChecked(_kosDouble);
-    ui->checkAvatar->setChecked(_showAvatar);
+    ui->checkAvatar->setChecked(m_showAvatar);
 
     ui->alarmCombo->setCurrentIndex(ui->alarmCombo->findText(m_soundAlarm));
     ui->statusCombo->setCurrentIndex(ui->statusCombo->findText(m_soundStatus));
@@ -178,6 +202,8 @@ void Options::restoreSettings()
     ui->fontSpinBox->setValue(_fontSize);
 
     ruleModel->setRules(_rules);
+
+    ui->comboStyle->setCurrentIndex(ui->comboStyle->findText(m_style));
 }
 
 
@@ -248,6 +274,12 @@ void Options::loadSettings(QSettings& settings)
                     )
                 );
 
+    ui->comboStyle->setCurrentIndex(
+                ui->comboStyle->findText(
+                    settings.value("style", "-None-").toString()
+                    )
+                );
+
     // Hack that works around a problem where null values are written if the previous run
     // exited uncleanly.  This can happen when the parser files aren't found, but
     // I'm just going to brute force fix this for now.
@@ -283,6 +315,15 @@ void Options::loadSettings(QSettings& settings)
                 ui->statusCombo->findText("radio-beep.wav")
                 );
     }
+
+    if(ui->comboStyle->currentText() == "")
+    {
+        ui->comboStyle->setCurrentIndex(
+                ui->comboStyle->findText("-None-")
+                );
+    }
+    m_style = ui->comboStyle->currentText();
+    emit styleChanged(m_style);
 
     QString logDir;
     logDir = settings.value("logPath", "").toString();
@@ -441,6 +482,8 @@ void Options::saveSettings() //QSettings& settings)
         settings.setValue("pollerRefresh", getPollerRefresh());
         settings.setValue("redundantSuppress", getRedundantSuppress());
 
+        settings.setValue("showAvatar", m_showAvatar);
+
         settings.setValue("selfSuppress", getSelfSuppress());
         settings.setValue("smoothAutofollow", getSmoothAutofollow());
         settings.setValue("essAndKos", getEssAndKos());
@@ -459,6 +502,8 @@ void Options::saveSettings() //QSettings& settings)
 
         settings.setValue("fontName", getFontName());
         settings.setValue("fontSize", getFontSize());
+
+        settings.setValue("style", getStyle());
 
         // Save rules
         QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
@@ -693,9 +738,13 @@ void Options::on_buttonBox_accepted()
         emit autoPeriodChanged(getAutoPeriod());
     }
 
-    cacheSettings();
-    //emit okayPressed();
+    if(ui->comboStyle->currentText() != m_style)
+    {
+        m_style = ui->comboStyle->currentText();
+        emit styleChanged(m_style);
+    }
 
+    cacheSettings();
     saveSettings();
 }
 
@@ -836,7 +885,7 @@ void Options::on_bridgeEdit_editingFinished()
 
 bool Options::showAvatar()
 {
-    return _showAvatar;
+    return m_showAvatar;
 }
 
 bool Options::getKosOnDouble()

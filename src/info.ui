@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>392</width>
-    <height>584</height>
+    <height>626</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,21 +20,33 @@
    <iconset resource="resources.qrc">
     <normaloff>:/graphics/impicon.png</normaloff>:/graphics/impicon.png</iconset>
   </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
+     </property>
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>1</width>
-         <height>0</height>
+         <width>13</width>
+         <height>13</height>
         </size>
        </property>
       </spacer>
@@ -72,17 +84,20 @@
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Preferred</enum>
+       </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>1</width>
-         <height>0</height>
+         <width>13</width>
+         <height>13</height>
         </size>
        </property>
       </spacer>
      </item>
     </layout>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QLabel" name="label">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -96,10 +111,19 @@
      <property name="wordWrap">
       <bool>true</bool>
      </property>
+     <property name="margin">
+      <number>0</number>
+     </property>
     </widget>
    </item>
-   <item>
+   <item row="2" column="0">
     <widget class="QLabel" name="versionInfo">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="font">
       <font>
        <weight>75</weight>
@@ -120,7 +144,7 @@
      </property>
     </widget>
    </item>
-   <item>
+   <item row="3" column="0">
     <widget class="QLabel" name="label_3">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -129,14 +153,14 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Created by Jesse Litton&lt;br/&gt;&lt;/span&gt;©&lt;span style=&quot; font-size:12pt;&quot;&gt; Copyright 2016-2017&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Icon, logo, miscellaneous sounds, and music&lt;br/&gt;by Lorelei Litton&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;100% Free to use and open source - See COPYING for details.&lt;br/&gt;Developed on Linux.&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;See CREDITS for additional attributions!&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;ISK donations to Khasm Kaotiqa will be used to improve this instead of ratting. :)&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/graphics/impicon.png&quot; width=&quot;42&quot; height=&quot;42&quot;/&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Hello Yulai Federation!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Created by Jesse Litton&lt;br/&gt;&lt;/span&gt;©&lt;span style=&quot; font-size:12pt;&quot;&gt; Copyright 2016-2017&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Icon, logo, miscellaneous sounds, and music&lt;br/&gt;by Lorelei Litton&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;100% Free to use and open source - See COPYING for details.&lt;br/&gt;Developed on Linux.&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;See CREDITS for additional attributions!&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;ISK donations to Khasm Kaotiqa will be used to improve this instead of ratting. :)&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;img src=&quot;:/graphics/impicon.png&quot; width=&quot;42&quot; height=&quot;42&quot;/&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;a href=&quot;https://github.com/3vi1/IMP&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Official GitHub/Download Site&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item>
+   <item row="4" column="0">
     <widget class="QDialogButtonBox" name="okayButton">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
