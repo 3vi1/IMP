@@ -13,7 +13,7 @@ You will need the following dependencies (Ubuntu, Debian):
 
 2. Create the makefile via qmake:
 
-        qmake ../src/imp.pro
+        qmake --qt=5 ../src/imp.pro
 
 3. Build the binary:
 
