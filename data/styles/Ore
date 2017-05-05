@@ -2,7 +2,7 @@
 #centralWidget, #dockWidget, QStatusBar
 {
 	color: white; 
-	background-color: rgba(26,44,48,120);
+	background-color: rgba(48,48,0,120);
 	font-family: "Arial Narrow", Arial, "Helvetica Condensed", Helvetica, sans-serif;
 }
 
@@ -14,14 +14,14 @@ QDockWidget
 
 QMainWindow::separator
 {
-    background-color: rgba(26,44,48,120);
+    background-color: rgba(44,44,0,120);
     width: 3;
 }
 
 QDockWidget::title {
     text-align: center;
     font: bold;
-    background-color: rgba(38,74,70,180);
+    background-color: rgba(74,74,0,180);
 /*    when text-aligning left or right, you can: */
 /*    padding-left: 10px; */
 }
@@ -34,7 +34,7 @@ QDockWidget > QWidget {
 QDockWidget::close-button, QDockWidget::float-button 
 {
     /*border: black;*/
-    background-color: #9CBABA;
+    background-color: #BABA00;
     /*icon-size: 20px;*/ 
 } 
 
@@ -47,8 +47,8 @@ QLabel, QGraphicsView
 
 QListView 
 {
-	alternate-background-color: rgba(26,34,38,80);
-	background-color: rgb(38,74,70,80);
+	alternate-background-color: rgba(38,38,0,80);
+	background-color: rgb(74,74,0,80);
 }
 
 MsgStyle
@@ -77,7 +77,7 @@ QScrollBar::sub-page:horizontal
 QScrollBar::handle:vertical,
 QScrollBar::handle:horizontal
 {
-	background: rgba(68,114,110,200);
+	background: rgba(114,114,0,200);
 }
 
 /********** ListViews **********/
@@ -88,7 +88,7 @@ QListView QScrollBar:vertical {
 }
 
 QListView QScrollBar::handle:vertical  {
-  background: #0c6765;
+  background: #67670;
   min-height: 24px;
 }
 
@@ -102,12 +102,12 @@ QListView QScrollBar::add-page:vertical, QListView QScrollBar::sub-page:vertical
 /* For Settings / Info Dialog */
 QDialog
 {
-	background-color: rgba(46,64,68,50);
+	background-color: rgba(68,68,0,50);
 }
 
 QTabWidget
 {
-    background-color: rgba(38,74,70,80);
+    background-color: rgba(74,74,0,80);
 }
 
 QCheckBox
@@ -118,17 +118,17 @@ QCheckBox
 QListWidget
 {
     color: cyan;
-    background-color: rgba(68,104,100,80);
+    background-color: rgba(104,104,0,80);
 }
 
 #Info
 {
 /*	background-color: white;*/
-	background-color: rgba(30%, 50%, 50%, 0.8);
+	background-color: rgba(50%, 50%, 0, 0.8);
 }
 
 #gridLayout
 {
-    /*background-color: rgba(50%, 80%, 80%, 0.8);*/
+    /*background-color: rgba(80%, 80%, 0, 0.8);*/
     background-color: white;
 }
