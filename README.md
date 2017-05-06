@@ -8,6 +8,8 @@ IMP converts Eve Online channel chat into audio visual queues, letting you obser
 <p align="center">
   <img align="middle" src="http://eternaldusk.com/imp/screenshots/imp_0.8.5.png">
   
+  <img align="middle" src="http://eternaldusk.com/imp/screenshots/Options.png">
+  
   Quick Video:  https://youtu.be/3U3DuLoPXMk
 </p>
 
