@@ -132,6 +132,7 @@ MainWindow::MainWindow(QWidget *parent) :
     menuShortcut = new QShortcut(QKeySequence(Qt::Key_M), this, SLOT(on_action_Menu_Toggle_triggered()));
     overlayShortcut = new QShortcut(QKeySequence(Qt::Key_O), this, SLOT(on_action_Overlay_Mode_triggered()));
     alwaysOnTopShortcut = new QShortcut(QKeySequence(Qt::Key_T), this, SLOT(on_action_Always_on_Top_triggered()));
+    messagesShortcut = new QShortcut(QKeySequence(Qt::Key_L), this, SLOT(on_action_Messages_triggered()));
 
 #ifndef QT_DEBUG
     ui->menuDebug->menuAction()->setVisible(false);
@@ -901,21 +902,28 @@ void MainWindow::saveSettings()
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
+    QRect dragRect = ui->statusBar->rect();
+    dragRect.setWidth(dragRect.width() - 32);   // Hack to allow space for size grip
+    if (!dragRect.contains(ui->statusBar->mapFromGlobal(QCursor::pos())))
+        return;
+
     if (event->buttons() & Qt::LeftButton)
     {
         QSize s = size();
-        qDebug() << "s, before = " << s;
         move(event->globalPos() - dragPosition);
-        //resize(s);
         event->accept();
 
         s = size();
-        qDebug() << "s, after = " << s;
     }
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
+    QRect dragRect = ui->statusBar->rect();
+    dragRect.setWidth(dragRect.width() - 32);   // Hack to allow space for size grip
+    if (!dragRect.contains(ui->statusBar->mapFromGlobal(QCursor::pos())))
+        return;
+
     if (event->button() == Qt::LeftButton)
     {
         dragPosition = event->globalPos() - frameGeometry().topLeft();
@@ -1558,9 +1566,11 @@ void MainWindow::gotSystemClick(const QString& name)
     chatModel->subsetForSystem(name);
 
     if(name == "")
-        ui->listLabel->setText("All Messages:");
+        ui->dockWidget->setWindowTitle("All Messages:");
+//        ui->listLabel->setText("All Messages:");
     else
-        ui->listLabel->setText(name + " Messages:");
+        ui->dockWidget->setWindowTitle(name + " Messages:");
+//        ui->listLabel->setText(name + " Messages:");
 
     ui->listView->scrollToBottom();
 }
@@ -1575,9 +1585,11 @@ void MainWindow::on_actionFindMessages_triggered()
     }
 
     if(dialog.input() == "")
-        ui->listLabel->setText("All Messages:");
+        ui->dockWidget->setWindowTitle("All Messages:");
+//        ui->listLabel->setText("All Messages:");
     else
-        ui->listLabel->setText("'" + dialog.input() + "'");
+        ui->dockWidget->setWindowTitle("'" + dialog.input() + "'");
+//        ui->listLabel->setText("'" + dialog.input() + "'");
 
     ui->listView->scrollToBottom();
 }
@@ -1640,6 +1652,9 @@ void MainWindow::on_action_Overlay_Mode_triggered()
         ui->menuBar->setAutoFillBackground(false);
         ui->centralWidget->setAutoFillBackground(false);
         ui->statusBar->setAutoFillBackground(false);
+        ui->dockWidget->setAutoFillBackground(false);
+        ui->dockWidgetContents->setAutoFillBackground(false);
+        ui->listView->setAutoFillBackground(false);
 
         if(!frameless)
         {
@@ -1658,6 +1673,9 @@ void MainWindow::on_action_Overlay_Mode_triggered()
         ui->menuBar->setAutoFillBackground(true);
         ui->centralWidget->setAutoFillBackground(true);
         ui->statusBar->setAutoFillBackground(true);
+        ui->dockWidget->setAutoFillBackground(true);
+        ui->dockWidgetContents->setAutoFillBackground(true);
+        ui->listView->setAutoFillBackground(true);
 
         Qt::WindowFlags newFlags = flags;
         if(alwaysOnTop == false && (flags & Qt::WindowStaysOnTopHint))
@@ -1729,4 +1747,18 @@ void MainWindow::gotStyleSheetChange(const QString styleName)
 
         qApp->setStyleSheet(all);
     }
+}
+
+void MainWindow::on_action_Messages_triggered()
+{
+    if(ui->dockWidget->isVisible())
+        ui->dockWidget->hide();
+    else
+        ui->dockWidget->show();
+}
+
+
+void MainWindow::on_dockWidget_visibilityChanged(bool visible)
+{
+
 }

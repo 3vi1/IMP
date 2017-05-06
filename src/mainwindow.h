@@ -112,6 +112,8 @@ private slots:
     void on_action_Overlay_Mode_triggered();
     void on_action_Frameless_Window_triggered();
     void on_action_Menu_Toggle_triggered();
+    void on_action_Messages_triggered();
+    void on_dockWidget_visibilityChanged(bool visible);
 
 private:
     void initParsing();
@@ -150,6 +152,7 @@ private:
     QShortcut*              alwaysOnTopShortcut = NULL;
     QShortcut*              framelessShortcut = NULL;
     QShortcut*              menuShortcut = NULL;
+    QShortcut*              messagesShortcut = NULL;
     QShortcut*              overlayShortcut = NULL;
 
     QPoint                  dragPosition;

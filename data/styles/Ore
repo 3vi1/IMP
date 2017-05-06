@@ -60,7 +60,7 @@ MsgStyle
 	qproperty-shipColor: DarkOrange;
 	qproperty-stampColor: white;
 	qproperty-statusColor: DarkCyan;
-	qproperty-systemColor: #A0A0FF;
+	qproperty-systemColor: #2020EF;
 	qproperty-warnColor: #FF0000;
 }
 

@@ -1,3 +1,10 @@
+0.8.5 - Modified message list to be a dockable widget.  You can now move it
+        to any side of the window, or detach it to be it's own floating
+        window.
+
+        Added a couple of additional test styles:  Blood Raider, Ore, and
+        Entellag.
+
 0.8.4 - Added skin/styles support.  This adds a new UI tab to the settings
         dialog where you can select the style.  You can add your own styles
         by placing them in the /styles subdirectory.  Take a look at

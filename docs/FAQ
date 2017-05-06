@@ -21,6 +21,7 @@ A:  The controls so far (make sure you have clicked app window to give it focus 
                       W:  Toggle on/off title bar
                       M:  Toggle on/off menu bar
                       T:  Toggle on/off Always on Top.
+                      L:  Toggle on/off Message List.
 
     There's no feature to set your current system at the moment, but I haven't needed it
     since Imp deduces your location on startup without needing to jump.
