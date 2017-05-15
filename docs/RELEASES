@@ -1,3 +1,16 @@
+0.8.6 - Fixed message view colors when resetting style to "-None-".
+
+        Fixed initialization of jump bridges when bridgemap has changed
+        during run.
+
+        Now saves jumpbridge visibility state.
+
+        Fixed another KOS checker bug, tripped when specific error returns
+        from CVA.
+
+        Added si to common words to stop notifications for that system based
+        on some pilot names.
+
 0.8.5 - Modified message list to be a dockable widget.  You can now move it
         to any side of the window, or detach it to be it's own floating
         window.
@@ -225,7 +238,7 @@
 
 Coming soon:
 
-- docking.
+- fix display of messages with backslashes.
 - additional sound/volume options for alerts, dependant on jump distance.
 - better memory cache/cleanup.
 - investigate crash on region change.

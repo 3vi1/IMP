@@ -80,6 +80,7 @@ public:
     void setZoom(float factor);
 
     void addBridge(QGraphicsLineItem *arrow);
+    void clearBridges();
     void showBridges(bool enable);
 
     void addLine(QGraphicsLineItem *line);

@@ -122,8 +122,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // function to compare the previous/current clipboard value, because
     // they cannot detect the clipboard is changed until the app is activated.
 
-    connect(QApplication::clipboard(), SIGNAL(dataChanged()),
-            this, SLOT(clipboardUpdated()));
+    connect(QApplication::clipboard(), &QClipboard::dataChanged,
+            this, &MainWindow::clipboardUpdated, Qt::UniqueConnection);
 
     // Normally, you could just set these shortcuts in the UI, but since we hide the menus they may become
     //    disabled on some Desktop Environments (like KDE) if we did it that way.
@@ -393,19 +393,24 @@ void MainWindow::changeImpStatus(const QString& text)
 
 void MainWindow::clipboardUpdated()
 {
+    QString currentText = QApplication::clipboard()->text();
     if(options.getKosCheck())
     {
+        qDebug() << "MainWindow::clipboardUpdated options.getKosOnDouble() = " << options.getKosOnDouble();
+        qDebug() << "MainWindow::clipboardUpdated m_lastClipboard = " << m_lastClipboard;
+        qDebug() << "MainWindow::clipboardUpdated QApplication::clipboard()->text() = " << currentText;
         if(options.getKosOnDouble() &&
-                QApplication::clipboard()->text() != m_lastClipboard)
+                m_lastClipboard != currentText)
         {
-            m_lastClipboard = QApplication::clipboard()->text();
+            m_lastClipboard = currentText;
+            qDebug() << "Clipboard has changed, and we're only firing on double-ctrl-c.  Exiting";
             return;
         }
 
         kosSoundPlayed = false;
 
         QStringList lines, names;
-        lines = QApplication::clipboard()->text().split('\n');
+        lines = currentText.split('\n');
 
         foreach(QString line, lines)
         {
@@ -506,8 +511,9 @@ void MainWindow::gotRblReply(QString name, bool rbl, int corpNum)
 
     qDebug() << "MainWindow::gotRblReply - Finished checking" << name;
 
-    if(--pilotsBeingChecked == 0)
+    if(--pilotsBeingChecked <= 0)
     {
+        //pilotsBeingChecked = 0
         if(kosSoundPlayed)
         {
             kosSoundPlayed = false;
@@ -534,8 +540,6 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
     bool playKos = false;
     foreach(KosEntry e, entries)
     {
-        pilots.remove(e.pilot.name);
-
         qDebug() << "MainWindow::gotKosReply - " << e.pilot.name;
         MessageInfo info;
         info.sender = "Khasm Kaotiqa";
@@ -548,6 +552,9 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
             info.markedUpText = "<warn>" + e.pilot.name + " is KOS!";
             playKos = true;
             addMessage(info);
+            qDebug() << "MainWindow::gotKosReply - Finished checking" << e.pilot.name;
+            pilots.remove(e.pilot.name);
+            pilotsBeingChecked--;
         }
         else if(e.corp.kos)
         {
@@ -555,6 +562,9 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
             info.markedUpText = e.pilot.name + "'s corp (" + e.corp.name + ") is <warn>KOS!";
             playKos = true;
             addMessage(info);
+            qDebug() << "MainWindow::gotKosReply - Finished checking" << e.pilot.name;
+            pilots.remove(e.pilot.name);
+            pilotsBeingChecked--;
         }
         else if(e.alliance.kos)
         {
@@ -562,6 +572,9 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
             info.markedUpText = e.pilot.name + "'s alliance (" + e.alliance.name + ") is <warn>KOS!";
             playKos = true;
             addMessage(info);
+            qDebug() << "MainWindow::gotKosReply - Finished checking" << e.pilot.name;
+            pilots.remove(e.pilot.name);
+            pilotsBeingChecked--;
         }
         else
         {
@@ -573,8 +586,6 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
             }
         }
 
-        qDebug() << "MainWindow::gotKosReply - Finished checking" << e.pilot.name;
-        pilotsBeingChecked--;
     }
 
     // Do red-by-last checks on any pilots the CVA checker didn't know about.
@@ -726,6 +737,12 @@ void MainWindow::gotRegionFile()
     ui->mapView->setTransform(m_mapTransform);
     ui->mapView->rotateSystems(m_savedSystemRotation);
 
+    if(options.getShowBridges())
+    {
+        ui->actionShow_Bridges->setChecked(true);
+        on_actionShow_Bridges_triggered(true);
+    }
+
     regionMap->startUpdates();
 }
 
@@ -787,6 +804,7 @@ void MainWindow::gotBridgeFile()
         errorRetrievingBridgeFile = false;
     }
 
+    ui->mapView->clearBridges();
     foreach(QGraphicsLineItem* arrow, bridgeMap->arrows)
     {
         ui->mapView->addBridge(arrow);
@@ -866,6 +884,9 @@ void MainWindow::saveSettings()
         settings.setValue("center", ui->mapView->getViewportCenter());
 
         settings.setValue("windowOpacity", windowOpacity());
+
+        settings.setValue("showBridges", options.getShowBridges());
+
     }
 
     QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
@@ -876,7 +897,7 @@ void MainWindow::saveSettings()
         QDateTime oldestTime = QDateTime::currentDateTimeUtc();
         if(options.getHistoryMax() > 0)
         {
-            oldestTime.addDays(-1 * (options.getAvatarExpiration() - 1));
+            oldestTime = oldestTime.addDays(-1 * (options.getAvatarExpiration() - 1));
         }
 
         QMap<QString, PilotEntry>::iterator i;
@@ -1461,6 +1482,7 @@ void MainWindow::logDirChanged(const QString& dir)
 
 void MainWindow::on_actionShow_Bridges_triggered(bool checked)
 {
+    options.showBridges(checked);
     if(checked)
         loadBridges();
     else
@@ -1729,6 +1751,7 @@ void MainWindow::gotStyleSheetChange(const QString styleName)
 {
     if(styleName == "-None-")
     {
+        msgStyle->reset();
         qApp->setStyleSheet("");
         return;
     }
@@ -1758,7 +1781,8 @@ void MainWindow::on_action_Messages_triggered()
 }
 
 
-void MainWindow::on_dockWidget_visibilityChanged(bool visible)
+/*void MainWindow::on_dockWidget_visibilityChanged(bool visible)
 {
 
 }
+*/

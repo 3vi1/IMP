@@ -63,6 +63,9 @@ public:
 
     QString getBridgePath();
 
+    bool getShowBridges(){return m_showBridges;}
+    void showBridges(bool b){m_showBridges = b;}
+
     bool getEssAndKos();
     int getHistoryMax();
     bool getKosCheck();
@@ -161,6 +164,7 @@ private:
 
     bool _autofollow = true;
     bool m_showAvatar = true;
+    bool m_showBridges = false;
     bool _smoothAutofollow;
     bool _essAndKos;
     bool _kosDouble;

@@ -123,7 +123,15 @@ void AsyncInfo::error(QNetworkReply::NetworkError err)
 {
     // Manage error here.
     qDebug() << "*** In AsyncInfo::error:  " << err;
-    emit kosCheckFailed(checkNames);
+
+    if(err == QNetworkReply::UnknownContentError)
+    {
+        qDebug() << "An unknown error related to the remote content was detected.";
+    }
+    else
+    {
+        emit kosCheckFailed(checkNames);
+    }
     this->deleteLater();
 }
 
@@ -136,19 +144,26 @@ void AsyncInfo::kosCheck(const QString &reqNames)
 void AsyncInfo::kosCheck(const QString &reqNames,
                          const char* slot,
                          QString queryType)
-{
+{    
     QString names = reqNames;
+
+    int nameCount = 1;
+    foreach (QChar c, names)
+      if (c == '\n') nameCount++;
+    if (nameCount > 1 && queryType == "unit")
+        queryType = "multi";
+
     names.replace('\n',',');
-    //qDebug() << "* kosCheck requested for " << names;
+    qDebug() << "* kosCheck requested for " << names;
 
     QUrl url("http://kos.cva-eve.org/api/");
     QUrlQuery query;
     query.addQueryItem("c", "json");
     query.addQueryItem("type", queryType);
-    query.addQueryItem("q", names);
+    query.addQueryItem("q", names); //QUrl::toPercentEncoding(names, ","));
     url.setQuery(query);
 
-    //qDebug() << "Query = " << url.query();
+    qDebug() << "Query = " << url.query();
 
     QNetworkRequest request(url);
     request.setRawHeader("User-Agent", meta.agentString.toUtf8());
@@ -165,7 +180,7 @@ void AsyncInfo::gotKosCheckReply()
     QByteArray b = kosReply->readAll();
     kosReply->deleteLater();
 
-    //qDebug() << "gotKosCheckReply = " << b;
+    qDebug() << "gotKosCheckReply = " << b;
 
     if(b.length() == 0)
     {
@@ -233,7 +248,7 @@ void AsyncInfo::rblCheck(const QString& name, int id)
 
 void AsyncInfo::rblCheck(int id)
 {
-    qDebug() << "AsyncInfo::rblCheck() - " << id;
+    qDebug() << "AsyncInfo::rblCheck(" << id << ")";
 
     // Request the Character Information
     QUrl url("https://api.eveonline.com/eve/CharacterInfo.xml.aspx");
@@ -259,6 +274,8 @@ void AsyncInfo::rblIdRetrieved()
     QByteArray b = reply->readAll();
     reply->deleteLater();
 
+    qDebug() << "AsyncInfo::rblIdRetrieved - b = " << b;
+
     QXmlQuery query;
     query.setFocus(b);
     query.setQuery("//*:row/@characterID/string()");
@@ -281,7 +298,7 @@ void AsyncInfo::rblInfoRetrieved()
     QByteArray b = infoReply->readAll();
     infoReply->deleteLater();
 
-    //qDebug() << "AsyncInfo::rblInfoRetrieved() - " << b;
+    qDebug() << "AsyncInfo::rblInfoRetrieved() - " << b;
 
     if(b.length() == 0)
     {

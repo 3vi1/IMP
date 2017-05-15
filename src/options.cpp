@@ -355,6 +355,8 @@ void Options::loadSettings(QSettings& settings)
     ui->mapEdit->setText(settings.value("mapPath", "http://evemaps.dotlan.net/svg/").toString());
     ui->bridgeEdit->setText(settings.value("bridgePath", "http://eternaldusk.com/imp/jb/").toString());
 
+    m_showBridges = settings.value("showBridges", false).toBool();
+
     // Font settings
     ui->fontComboBox->setCurrentIndex(
                 ui->fontComboBox->findText(

@@ -293,6 +293,11 @@ void SvgMapView::showBridges(bool enable)
     }
 }
 
+void SvgMapView::clearBridges()
+{
+    arrows.clear();
+}
+
 void SvgMapView::addBridge(QGraphicsLineItem* arrow)
 {
     arrows.append(arrow);

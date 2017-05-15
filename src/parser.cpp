@@ -339,6 +339,10 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
            messageInfo.markedUpText += words[i];
            messageInfo.markedUpText += "<info>";
         }
+        else if(lowerWord.startsWith("http://"))
+        {
+            //hhh
+        }
         else
         {
             QString systemName = regionMap->getSystemByAbbreviation(words[i].toUpper());

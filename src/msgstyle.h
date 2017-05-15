@@ -46,21 +46,23 @@ public:
     QColor getWarnColor() const { return m_warnColor; }
     void setWarnColor( const QColor c ) { m_warnColor = c; }
 
+    void reset();
+
 signals:
 
 public slots:
 
 private:
 
-    QColor  m_clearColor = Qt::green;
-    QColor  m_gateColor = Qt::darkBlue;
-    QColor  m_infoColor = Qt::darkMagenta;
-    QColor  m_locationColor = Qt::darkRed;
-    QColor  m_shipColor = Qt::darkYellow;
-    QColor  m_stampColor = Qt::black;
-    QColor  m_statusColor = Qt::darkCyan;
-    QColor  m_systemColor = Qt::blue;
-    QColor  m_warnColor = Qt::red;
+    QColor  m_clearColor;
+    QColor  m_gateColor;
+    QColor  m_infoColor;
+    QColor  m_locationColor;
+    QColor  m_shipColor;
+    QColor  m_stampColor;
+    QColor  m_statusColor;
+    QColor  m_systemColor;
+    QColor  m_warnColor;
 };
 
 #endif // MSGSTYLE_H

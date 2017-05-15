@@ -130,7 +130,7 @@ private:
     int m_corpNum = 0;
 
     void requestId(const QString& name, const char* slot);
-    void kosCheck(const QString &reqNames, const char* slot, QString queryType  = "multi");
+    void kosCheck(const QString &reqNames, const char* slot, QString queryType  = "unit");
 };
 
 #endif // ASYNCINFO_H

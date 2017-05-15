@@ -113,7 +113,7 @@ private slots:
     void on_action_Frameless_Window_triggered();
     void on_action_Menu_Toggle_triggered();
     void on_action_Messages_triggered();
-    void on_dockWidget_visibilityChanged(bool visible);
+    //void on_dockWidget_visibilityChanged(bool visible);
 
 private:
     void initParsing();
