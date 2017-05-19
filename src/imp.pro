@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = imp
 TEMPLATE = app
 
-VERSION = 0.8.6
+VERSION = 0.8.7
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
 QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton
@@ -44,7 +44,8 @@ SOURCES += \
     findmessagesdialog.cpp \
     abstract_os.cpp \
     themecustomizationdialog.cpp \
-    msgstyle.cpp
+    msgstyle.cpp \
+    utility.cpp
     
 HEADERS  += \
     mainwindow.h \
@@ -70,7 +71,8 @@ HEADERS  += \
     findmessagesdialog.h \
     abstract_os.h \
     themecustomizationdialog.h \
-    msgstyle.h
+    msgstyle.h \
+    utility.h
     
 FORMS    += \
     mainwindow.ui \

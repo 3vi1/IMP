@@ -42,6 +42,7 @@
 #include "parser.h"
 #include "theme.h"
 #include "themedialog.h"
+#include "utility.h"
 
 namespace Ui {
 class MainWindow;
@@ -113,7 +114,6 @@ private slots:
     void on_action_Frameless_Window_triggered();
     void on_action_Menu_Toggle_triggered();
     void on_action_Messages_triggered();
-    //void on_dockWidget_visibilityChanged(bool visible);
 
 private:
     void initParsing();
@@ -202,6 +202,8 @@ private:
     int timeToScroll = 4000;
 
     LogInfo impLogInfo = { "*IMP*", QFileInfo(), "Khasm Kaotiqa", "None", 0 };
+
+    QMap<QString, QStringList> pockets;
 
     // Used to restore system rotation until I take the time to figure out
     // how to pull it out of the transform matrix and level systems at

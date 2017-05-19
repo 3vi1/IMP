@@ -18,23 +18,11 @@
  *
  */
 
-#ifndef META_H
-#define META_H
+#ifndef UTILITY_H
+#define UTILITY_H
 
 #include <QString>
 
-static const struct Version
-{
-    Version(){}
+QStringList fromFile(const QString& fileName);
 
-    QString release = "0.8.7"; //VERSION;
-    QString name = "Lupine Fresh Scent";
-
-    QString styleHeader1 = "<span style=\" color:#0000ff;\">";
-    QString styleFooter1 = "</span>";
-
-    QString agentString = "IMP/" + release + " (EternalDusk; Qt)";
-    QString versionInfo = styleHeader1 + "v" + release + " - " + name + styleFooter1;
-} meta;
-
-#endif // META_H
+#endif // UTILITY_H

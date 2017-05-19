@@ -20,6 +20,7 @@
 
 #include "parser.h"
 #include "abstract_os.h"
+#include "utility.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -33,7 +34,7 @@ using namespace std;
 
 Parser::Parser(QObject *parent) : QObject(parent)
 {
-    ignoreChars = "[\\\\_=!@#$%^&\\*,\\./\\[\\]\\(\\)\\{\\}\\?]";   // "\\_=!@#$%^&*,./[](){}?"
+    ignoreChars = "[\\\\_=!@#$%^&\\*,\\.\\[\\]\\(\\)\\{\\}\\?]";   // "\\_=!@#$%^&*,./[](){}?"
 
     // Load words, channels, and ships from files
     ignoreWords = QSet<QString>::fromList(fromFile("common"));
@@ -43,14 +44,6 @@ Parser::Parser(QObject *parent) : QObject(parent)
     statusWords = QSet<QString>::fromList(fromFile("status"));
     ships = QSet<QString>::fromList(fromFile("ships"));
 
-    QStringList pocketsList = fromFile("pockets");
-    foreach(QString pocket, pocketsList)
-    {
-        QStringList pocketList = pocket.split(",");
-        QString pocketName = pocketList[0];
-        pocketList.removeFirst();
-        pockets.insert(pocketName.trimmed(),pocketList);
-    }
 }
 
 void Parser::setMap(Map &map)
@@ -58,38 +51,6 @@ void Parser::setMap(Map &map)
     regionMap = &map;
 }
 
-QStringList Parser::fromFile(const QString& fileName)
-{
-    QStringList stringList;
-
-    QFile file(appFilesPath() + "/dictionaries/" + fileName);
-
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        QMessageBox::critical(NULL, "Error Opening File", "Could not open file " +
-                             appFilesPath() + "/dictionaries/" + fileName +
-                             ".");
-        QApplication::exit(1);
-    }
-    else
-    {
-        QTextStream in(&file);
-        QString all = in.readAll();
-        stringList = all.split('\n');
-        stringList.removeAll("");
-
-        for(int i=stringList.length()-1; i>=0; i--)
-        {
-            if(stringList[i].trimmed()[0]=='#')
-            {
-                // Discard comments
-                stringList.removeAt(i);
-            }
-        }
-    }
-
-    return stringList;
-}
 
 QSet<QString> Parser::getLocalChannels()
 {
@@ -229,10 +190,6 @@ MessageInfo Parser::parseLine(const QString& line)
                 messageInfo.flags.append(MessageFlag::SYSTEM_CHANGE);
                 return messageInfo;
             }
-            else
-            {
-                //qDebug() << "   is not a system change message.";
-            }
 
             // Test to see if this is a MOTD message:
 
@@ -339,10 +296,19 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
            messageInfo.markedUpText += words[i];
            messageInfo.markedUpText += "<info>";
         }
-        else if(lowerWord.startsWith("http://"))
+        else if(lowerWord == "pocket")
         {
-            //hhh
+            messageInfo.flags.append(MessageFlag::POCKET);
         }
+/* Coming soon...
+ *         else if(lowerWord.contains(QRegExp("^.{3,5}://.+")))
+        {
+            messageInfo.markedUpText += "<a href=" + words[i] + ">";
+            messageInfo.markedUpText += words[i];
+            messageInfo.markedUpText += "</a>";
+
+            messageInfo.flags.append(MessageFlag::LINK);
+        } */
         else
         {
             QString systemName = regionMap->getSystemByAbbreviation(words[i].toUpper());
@@ -376,7 +342,7 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
                     messageInfo.markedUpText += "<info>";
                 }
             }
-            else if(lowerWord.length() >= 3)
+            else if(lowerWord.length() >= 2)
             {
                 messageInfo.possiblePilots.append(words[i]);
                 messageInfo.markedUpText += "<info>";
@@ -394,12 +360,4 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
     messageInfo.systems = theseSystems;
     messageInfo.ships = theseShips;
     messageInfo.gates = theseGates;
-
-    // If this message pertains to a pocket, expand the systems.
-    if(messageInfo.text.toLower().contains("pocket") &&
-            messageInfo.systems.length() == 1)
-    {
-        messageInfo.systems.append(pockets[messageInfo.systems[0]]);
-    }
-
 }

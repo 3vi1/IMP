@@ -143,6 +143,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->mapView, &SvgMapView::sendOpacity,
             this, &MainWindow::gotOpacity);
 
+
+    // Load pocket definitions
+    QStringList pocketsList = fromFile("pockets");
+    foreach(QString pocket, pocketsList)
+    {
+        QStringList pocketList = pocket.split(",");
+        QString pocketName = pocketList[0];
+        pocketList.removeFirst();
+        pockets.insert(pocketName.trimmed(),pocketList);
+    }
+
     ui->mapView->show();
 }
 
@@ -1065,12 +1076,24 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
             case MessageFlag::MOTD:
                 break;
 
+            case MessageFlag::POCKET:
+                // Handled by STATUS.
+                break;
+
             case MessageFlag::QUERY:
             case MessageFlag::STATUS:
             {
                 if (!options.getIntelChannels().contains(message.logInfo->channel))
                 {
                     break;
+                }
+
+                // Expand pockets, if necessary
+                if (message.flags.contains(MessageFlag::POCKET) &&
+                        message.systems.count() >= 1 &&
+                        pockets.contains(message.systems[0]))
+                {
+                    message.systems.append(pockets[message.systems[0]]);
                 }
 
                 bool play = false;
@@ -1182,6 +1205,10 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
                     }
                     toBeAddedToList = true;
                 }
+                break;
+
+            case MessageFlag::LINK:
+                toBeAddedToList = true;
                 break;
 
             default:

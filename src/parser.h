@@ -34,8 +34,10 @@
 #include "map.h"
 
 enum MessageFlag { UNKNOWN = 0, CLEAR, ESS,
-                   LEFT, LOCATION, MOTD, POCKET, QUERY,
-                   STATUS, SYSTEM_CHANGE, WARNING };
+                   LEFT, LINK, LOCATION,
+                   MOTD, POCKET, QUERY,
+                   STATUS, SYSTEM_CHANGE, WARNING
+                 };
 
 struct LogInfo
 {
@@ -65,7 +67,6 @@ struct MessageInfo
     QStringList possiblePilots;
 
     QList<MessageFlag> flags;
-
 };
 
 class Parser : public QObject
@@ -100,9 +101,6 @@ private:
     QMap<QString, LogInfo> fileMap;
     Map* regionMap;
 
-    QMap<QString, QStringList> pockets;
-
-    QStringList fromFile(const QString& fileName);
     void loadSet(QSet<QString>& set, QString& string);
     void identifyObjects(MessageInfo& messageInfo);
     QString systemAbbreviation(const QString& word);

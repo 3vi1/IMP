@@ -1,3 +1,16 @@
+0.8.7 - Fixed avatars not showing for some users on Windows due to missing
+        DLLs.
+
+        Modified pocket expansion to only occur for status messages, since
+        people are too often sending free-form messages to intel with the
+        word "pocket" in them.  This will stop the entire pocket from going
+        red and us all getting an earful of red alert.
+
+        Changed the parser to not ignore two letter words as potentially
+        being part of a pilots name.  At least one red created an alt with
+        a two char first and two char last name to fly under the
+        radar.
+
 0.8.6 - Fixed message view colors when resetting style to "-None-".
 
         Fixed initialization of jump bridges when bridgemap has changed
@@ -239,6 +252,7 @@
 Coming soon:
 
 - fix display of messages with backslashes.
+- add support for hyperlinks in message list.
 - additional sound/volume options for alerts, dependant on jump distance.
 - better memory cache/cleanup.
 - investigate crash on region change.
