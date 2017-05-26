@@ -50,8 +50,9 @@ struct LogInfo
 
 struct MessageInfo
 {
+    uint    parserGeneration = 0;
     QString originalLine;
-    bool indecipherable = false;
+    bool    indecipherable = false;
 
     LogInfo* logInfo;
 
@@ -73,7 +74,7 @@ class Parser : public QObject
 {
     Q_OBJECT
 public:
-    explicit Parser(QObject *parent = 0);
+    explicit Parser(uint generation, QObject *parent = 0);
     void setMap(Map& map);
     QList<MessageInfo> fileChanged(const QString& path, int maxEntries = 0, bool initialLoad = false);
     QSet<QString> getLocalChannels();
@@ -87,6 +88,8 @@ signals:
 public slots:
 
 private:
+    uint    generation = 0;
+
     QString lastListener;
     QString lastLocalSystem;
 

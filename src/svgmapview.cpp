@@ -430,6 +430,9 @@ void SvgMapView::gotPilotLocation(const QString& pilotName, const QString& syste
 
 void SvgMapView::gotSystemShapesFile(QString shapesFile)
 {
+    qDebug() << "SvgMapView::gotSystemShapesFile(" << shapesFile <<
+                ") - systemRenderer = " << systemRenderer;
+
     if(systemRenderer != NULL)
     {
         systemRenderer->deleteLater();
@@ -650,6 +653,8 @@ void SvgMapView::gotSystem(const QString& mixedName, QPointF position, const QSt
 {
     // TODO:  Make a new starSystem item that encapsulates all these components?
 
+    qDebug() << "SvgMapView::gotSystem(" << mixedName << "," << position << "," << systemClass << "," << description << ")";
+
     QString name = mixedName.toUpper();
     SystemShape* shape = new SystemShape(systemRenderer,
                                          name,
@@ -699,6 +704,18 @@ void SvgMapView::gotSystemPosition(
 
     setTextPosition(m_texts[name + ":name"], position, nameOffset);
     setTextPosition(m_texts[name + ":time"], position, timeOffset);
+}
+
+void SvgMapView::setMap(Map* m)
+{
+    m_map = m;
+
+    connect(m_map, &Map::lineAdded,
+            this, &SvgMapView::gotLine);
+    connect(m_map, &Map::systemAdded,
+            this, &SvgMapView::gotSystem);
+    connect(m_map, &Map::systemPosition,
+            this, &SvgMapView::gotSystemPosition);
 }
 
 void SvgMapView::setTextPosition(QGraphicsTextItem* ti, QPointF position, QPointF offset)

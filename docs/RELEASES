@@ -1,3 +1,6 @@
+0.8.8 - Fixes crashes when changing regions due to access of invalidated
+        logInfo pointers.
+
 0.8.7 - Fixed avatars not showing for some users on Windows due to missing
         DLLs.
 

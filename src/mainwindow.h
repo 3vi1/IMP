@@ -170,6 +170,7 @@ private:
 
     LogCatcher*             lc = NULL;
     Parser*                 parser = NULL;
+    uint                    parserGeneration = 0;
 
     QNetworkAccessManager   manager;
     QNetworkReply*          reply;

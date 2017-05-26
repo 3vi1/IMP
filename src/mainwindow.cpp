@@ -344,14 +344,7 @@ void MainWindow::loadMap()
         regionMap = NULL;
     }
     regionMap = new Map(this);
-
     ui->mapView->setMap(regionMap);
-    connect(regionMap, &Map::lineAdded,
-            ui->mapView, &SvgMapView::gotLine);
-    connect(regionMap, &Map::systemAdded,
-            ui->mapView, &SvgMapView::gotSystem);
-    connect(regionMap, &Map::systemPosition,
-            ui->mapView, &SvgMapView::gotSystemPosition);
 
     QNetworkRequest request(QUrl(options.getMapPath() +
                                  options.getRegion() + ".svg"));
@@ -648,7 +641,7 @@ void MainWindow::initParsing()
     {
         parser->deleteLater();
     }
-    parser = new Parser(this);
+    parser = new Parser(++parserGeneration, this);
     parser->setMap(*regionMap);
 
     if(lc != NULL)
@@ -1009,6 +1002,11 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
     foreach (MessageInfo message, messages)
     {
+        // If they switch regions while parsing messages,
+        // discard the ones on the queue.
+        if(message.parserGeneration != parserGeneration)
+            break;
+
         if(!mapLoading)
             doUserActions(message);
 

@@ -36,14 +36,6 @@ Map::Map(QObject *parent) : QObject(parent)
 void Map::setRefresh(int msecs)
 {
     m_timer->setInterval(msecs);
-    /*
-    if(m_timer != NULL)
-    {
-        m_timer->deleteLater();
-    }
-    m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(updateActiveSystems()));
-*/
 }
 
 void Map::startUpdates()

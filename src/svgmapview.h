@@ -43,7 +43,7 @@ public:
     explicit SvgMapView(QWidget *parent = 0);
     ~SvgMapView();
 
-    void setMap(Map* m){m_map = m;}
+    void setMap(Map* m);
 
     void clearLines();
     void clearMap();

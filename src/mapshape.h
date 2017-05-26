@@ -32,11 +32,11 @@
 class MapShape : public QGraphicsSvgItem
 {
 public:
-    explicit MapShape();
+    explicit MapShape(QGraphicsItem *parentItem = nullptr);
     MapShape(QSvgRenderer* svgRenderer,
-             const QString& name,
-             const QString& itemId);//,
-             //QGraphicsView *view);
+             QString name,
+             QString itemId,
+             QGraphicsItem *parentItem = nullptr);
     ~MapShape();
 
     void paint(QPainter * painter,
@@ -67,7 +67,6 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
     QString shapeName;
-    QSvgRenderer* renderer;
 
 private:
     bool rotationLocked;

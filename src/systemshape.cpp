@@ -5,15 +5,13 @@
 
 SystemShape::SystemShape(QSvgRenderer* svgRenderer,
                          QString name,
-                         QString c)
-    : MapShape(svgRenderer, name, c)
+                         QString c,
+                         QGraphicsItem *parentItem)
+    : MapShape(svgRenderer, name, c, parentItem)
 {
     shapeName = name + ":system";
     className = c;
 
-//    renderer = svgRenderer;
-//    setSharedRenderer(renderer);
-//    setElementId(className);
     setFlags(QGraphicsItem::ItemClipsToShape);
     setZValue(0);
     setGraphicsEffect(0);

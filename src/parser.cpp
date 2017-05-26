@@ -32,8 +32,10 @@
 
 using namespace std;
 
-Parser::Parser(QObject *parent) : QObject(parent)
+Parser::Parser(uint generation, QObject *parent) : QObject(parent)
 {
+    this->generation = generation;
+
     ignoreChars = "[\\\\_=!@#$%^&\\*,\\.\\[\\]\\(\\)\\{\\}\\?]";   // "\\_=!@#$%^&*,./[](){}?"
 
     // Load words, channels, and ships from files
@@ -101,6 +103,7 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
             if (sysIdRegExp.indexIn(line) != -1 && localChannels.contains(channel))
             {
                 MessageInfo systemChange;
+                systemChange.parserGeneration = generation;
                 systemChange.flags.append(MessageFlag::SYSTEM_CHANGE);
                 systemChange.systems.append(regionMap->getSystemById(sysIdRegExp.cap(1)));
                 systemChange.text = "System changed to " + systemChange.systems[0];
@@ -134,6 +137,7 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
 
         MessageInfo newMessage = parseLine(lines[i].trimmed().remove(0xfeff));
 
+        newMessage.parserGeneration = generation;
         newMessage.logInfo = &fileMap[path];
         if(newMessage.systems.length() > 0)
         {

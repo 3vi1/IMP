@@ -27,31 +27,26 @@
 #include <QStandardPaths>
 #include <QSvgRenderer>
 
-MapShape::MapShape()
+MapShape::MapShape(QGraphicsItem *parentItem) : QGraphicsSvgItem(parentItem)
 {
-    renderer = new QSvgRenderer();
-    connect(renderer, &QSvgRenderer::repaintNeeded,
-            this, &MapShape::repainter );
 }
 
 MapShape::MapShape(QSvgRenderer* svgRenderer,
-            const QString& name,
-            const QString& itemId)
+                   QString name,
+                   QString itemId,
+                   QGraphicsItem* parentItem) : QGraphicsSvgItem(parentItem)
 {
-    renderer = svgRenderer;
+    this->setSharedRenderer(svgRenderer);
+
     shapeName = name;
-    setSharedRenderer(renderer);
     setElementId(itemId);
-    connect(renderer, &QSvgRenderer::repaintNeeded,
-            this, &MapShape::repainter);
+
+    /*connect(renderer, &QSvgRenderer::repaintNeeded,
+            this, &MapShape::repainter);*/
 }
 
 MapShape::~MapShape()
 {
-    if(renderer != NULL)
-    {
-        renderer->deleteLater();
-    }
 }
 
 void MapShape::repainter()
@@ -103,8 +98,7 @@ void MapShape::load(const QString& fileName)
 
 void MapShape::rebuildSvg()
 {
-    renderer->load(domDoc.toByteArray());
-    setSharedRenderer(renderer);
+    renderer()->load(domDoc.toByteArray());
     setElementId("");
 
     setFlags(QGraphicsItem::ItemClipsToShape);

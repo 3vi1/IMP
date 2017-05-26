@@ -10,7 +10,8 @@ class SystemShape : public MapShape
 public:
     SystemShape(QSvgRenderer* svgRenderer,
                 QString name,
-                QString className);
+                QString className,
+                QGraphicsItem *parentItem = nullptr);
     ~SystemShape();
 
     void setColor(const QColor& c);
