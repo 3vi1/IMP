@@ -24,28 +24,66 @@
 //#include <QAudio>
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
+#include <QFileInfo>
 #include <QStandardPaths>
 
 ImpAudio::ImpAudio(QObject *parent) : QObject(parent)
 {
+    cacheSounds();
 }
 
-QSoundEffect* ImpAudio::playLocalFile(const QString& fileName)
+void ImpAudio::cacheSounds()
+{
+    QString path = appFilesPath() + "/audio/";
+
+    QDir audioDir(path);
+    audioDir.setFilter(QDir::Files);
+
+    // Load up style combo
+    foreach(QFileInfo fileInfo, audioDir.entryInfoList())
+    {
+        if(fileInfo.fileName().endsWith(".dll"))
+            continue;
+
+        QSoundEffect* effect = new QSoundEffect(this);
+        effect->setSource(QUrl::fromLocalFile(fileInfo.absoluteFilePath()));
+
+        if(!effects.contains(fileInfo.fileName()))
+            effects.insert(fileInfo.fileName(), effect);
+    }
+}
+
+void ImpAudio::playLocalFile(const QString& fileName)
+{
+    if(!effects.contains(fileName))
+    {
+        QString path = appFilesPath() + "/audio/" + fileName;
+        QSoundEffect* effect = new QSoundEffect(this);
+        effect->setSource(QUrl::fromLocalFile(path));
+        effects.insert(fileName, effect);
+    }
+
+    effects[fileName]->setVolume(volume);
+    effects[fileName]->play();
+}
+
+QSoundEffect* ImpAudio::oldPlayLocalFile(const QString& fileName)
 {
     QString path = appFilesPath() + "/audio/" + fileName;
 
-    qDebug() << "Playing " << path;
+    qDebug() << "ImpAudio::playLocalFile - Playing " << path;
 
 
     QSoundEffect* effect = new QSoundEffect(this);
     effect->setSource(QUrl::fromLocalFile(path));
 
-    qDebug() << "Setting volume on effect to " << QString::number(volume, 'g', 2);
+    qDebug() << "ImpAudio::playLocalFile - Setting volume on effect to " << QString::number(volume, 'g', 2);
     effect->setVolume(volume);
+    connect(effect, &QSoundEffect::playingChanged, this, &ImpAudio::playingChanged);
     effect->play();
 
-    connect(effect, SIGNAL(playingChanged()), this, SLOT(playingChanged()));
-
+    qDebug() << "ImpAudio::playLocalFile - played " << &effect;
     return effect;
 }
 
@@ -54,7 +92,8 @@ void ImpAudio::playingChanged()
     QSoundEffect *s = qobject_cast<QSoundEffect *> (sender());
     if (!s->isPlaying())
     {
-          s->deleteLater();
+        qDebug() << "ImpAudio::playingChanged - cleaning up " << &s;
+        s->deleteLater();
     }
 }
 

@@ -32,12 +32,15 @@ class ImpAudio : public QObject
 public:
     explicit ImpAudio(QObject *parent = 0);
 
-    QSoundEffect* playLocalFile(const QString& fileName);
+    void playLocalFile(const QString& fileName);
+    QSoundEffect* oldPlayLocalFile(const QString& fileName);
 
     void playLocalMedia(const QString& fileName);
     void stopMusic();
 
     void setVolume(int i);
+
+    void cacheSounds();
 
 signals:
 
@@ -48,6 +51,7 @@ private:
     qreal volume = 1.0f;
 
     QMediaPlayer* player;
+    QMap<QString, QSoundEffect*> effects;
 };
 
 #endif // AUDIO_H

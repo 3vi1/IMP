@@ -1449,7 +1449,7 @@ void MainWindow::switchToRegion(const QString& currentRegion)
 void MainWindow::updateRegionMenu(const QString& currentRegion)
 {
     // Set menu checks
-    foreach(QAction* action, ui->menuRegion->actions())
+    foreach(QAction* action, ui->menuMap->actions())
     {
         if(action->text() == "&" + currentRegion)
         {
@@ -1482,7 +1482,7 @@ void MainWindow::on_actionQuerious_triggered()
     switchToRegion("Querious");
 }
 
-void MainWindow::on_actionSystem_triggered()
+void MainWindow::on_actionFindSystem_triggered()
 {
     find.setList(regionMap->getSystemNames());
     find.show();

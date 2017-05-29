@@ -2,6 +2,7 @@
 
 MsgStyle::MsgStyle(QWidget *parent) : QWidget(parent)
 {
+    resize(0,0);
     reset();
 }
 

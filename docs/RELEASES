@@ -1,3 +1,8 @@
+0.8.9 - Fixes the bug where the first two menu dropdowns were no longer
+        working for Windows users.
+
+        Sound fixes and optimization.
+
 0.8.8 - Fixes crashes when changing regions due to access of invalidated
         logInfo pointers.
 
@@ -254,8 +259,9 @@
 
 Coming soon:
 
+- Checkbox to only read local logs on startup.
+- Ignore system when worded like "from kbp", "was n-r"
 - fix display of messages with backslashes.
 - add support for hyperlinks in message list.
 - additional sound/volume options for alerts, dependant on jump distance.
-- better memory cache/cleanup.
-- investigate crash on region change.
+- better pilot cache/cleanup.

@@ -102,7 +102,7 @@ private slots:
     void on_actionProvidence_triggered();
     void on_actionCatch_triggered();
     void on_actionQuerious_triggered();
-    void on_actionSystem_triggered();
+    void on_actionFindSystem_triggered();
     void on_actionShow_Bridges_triggered(bool checked);
     void on_actionSave_As_Theme_triggered();
     void on_actionFindMessages_triggered();

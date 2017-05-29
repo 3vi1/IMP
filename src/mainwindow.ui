@@ -126,7 +126,7 @@
     </widget>
     <addaction name="menuSet_Location"/>
    </widget>
-   <widget class="QMenu" name="menuRegion">
+   <widget class="QMenu" name="menuMap">
     <property name="title">
      <string>&amp;Map</string>
     </property>
@@ -143,7 +143,7 @@
      <string>&amp;Find</string>
     </property>
     <addaction name="actionFindMessages"/>
-    <addaction name="actionSystem"/>
+    <addaction name="actionFindSystem"/>
    </widget>
    <widget class="QMenu" name="menuTheme">
     <property name="title">
@@ -167,14 +167,14 @@
     <addaction name="action_Menu_Toggle"/>
     <addaction name="action_Overlay_Mode"/>
    </widget>
-   <addaction name="menuDebug"/>
    <addaction name="menuPilots"/>
    <addaction name="menuFind"/>
-   <addaction name="menuRegion"/>
+   <addaction name="menuMap"/>
    <addaction name="menuOptions"/>
    <addaction name="menuTheme"/>
    <addaction name="menu_Window"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuDebug"/>
   </widget>
   <widget class="QStatusBar" name="statusBar">
    <property name="autoFillBackground">
@@ -273,10 +273,16 @@
    <property name="text">
     <string>&amp;About</string>
    </property>
+   <property name="toolTip">
+    <string>About IMP...</string>
+   </property>
   </action>
   <action name="actionOptions">
    <property name="text">
     <string>&amp;Options</string>
+   </property>
+   <property name="toolTip">
+    <string>Change IMP options and configuration.</string>
    </property>
   </action>
   <action name="actionAuto_follow">
@@ -289,10 +295,8 @@
    <property name="text">
     <string>Auto-follow</string>
    </property>
-  </action>
-  <action name="actionSet_Location_F_Y">
-   <property name="text">
-    <string>Set Location: F-YH5B</string>
+   <property name="toolTip">
+    <string>Recenter map when changing systems.</string>
    </property>
   </action>
   <action name="actionF_YH5B">
@@ -315,6 +319,9 @@
    <property name="text">
     <string>&amp;Providence</string>
    </property>
+   <property name="toolTip">
+    <string>Show Providence region.</string>
+   </property>
   </action>
   <action name="actionCatch">
    <property name="checkable">
@@ -322,6 +329,9 @@
    </property>
    <property name="text">
     <string>&amp;Catch</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Catch region.</string>
    </property>
   </action>
   <action name="actionQuerious">
@@ -331,8 +341,11 @@
    <property name="text">
     <string>&amp;Querious</string>
    </property>
+   <property name="toolTip">
+    <string>Show Querious region.</string>
+   </property>
   </action>
-  <action name="actionSystem">
+  <action name="actionFindSystem">
    <property name="text">
     <string>&amp;System (Ctrl+F)</string>
    </property>
@@ -348,94 +361,17 @@
     <string>Show &amp;Bridges</string>
    </property>
   </action>
-  <action name="action_Background">
-   <property name="text">
-    <string>&amp;Color</string>
-   </property>
-  </action>
-  <action name="actionLineColor">
-   <property name="text">
-    <string>Color</string>
-   </property>
-  </action>
   <action name="actionSave_As_Theme">
    <property name="text">
     <string>Save &amp;As Theme</string>
    </property>
-  </action>
-  <action name="actionPilotGraphic">
-   <property name="text">
-    <string>Indicator</string>
-   </property>
-  </action>
-  <action name="actionFindGraphic">
-   <property name="text">
-    <string>Indicator</string>
-   </property>
-  </action>
-  <action name="actionFindScale">
-   <property name="text">
-    <string>Scale</string>
-   </property>
-  </action>
-  <action name="actionFindOpacity">
-   <property name="text">
-    <string>Opacity</string>
-   </property>
-  </action>
-  <action name="actionPilotOpacity">
-   <property name="text">
-    <string>Opacity</string>
-   </property>
-  </action>
-  <action name="actionPilotScale">
-   <property name="text">
-    <string>Scale</string>
-   </property>
-  </action>
-  <action name="actionLineOpacity">
-   <property name="text">
-    <string>Opacity</string>
-   </property>
-  </action>
-  <action name="actionLineWidth">
-   <property name="text">
-    <string>Width</string>
-   </property>
-  </action>
-  <action name="actionFindX_Y_Offsets">
-   <property name="text">
-    <string>X/Y/Z Offsets</string>
-   </property>
-  </action>
-  <action name="actionPilotX_Y_Offsets">
-   <property name="text">
-    <string>X/Y/Z Offsets</string>
-   </property>
-  </action>
-  <action name="actionFontSystemName">
-   <property name="text">
-    <string>System Name</string>
-   </property>
-  </action>
-  <action name="actionFontTimer">
-   <property name="text">
-    <string>Timer</string>
+   <property name="toolTip">
+    <string>Save current theme customizations.</string>
    </property>
   </action>
   <action name="actionFindMessages">
    <property name="text">
     <string>Messages</string>
-   </property>
-  </action>
-  <action name="actionBackgroundColor">
-   <property name="text">
-    <string>Color</string>
-   </property>
-  </action>
-  <action name="actionBackgroundImage">
-   <property name="text">
-    <string>Image</string>
    </property>
   </action>
   <action name="actionCustomize">
