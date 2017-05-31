@@ -304,15 +304,14 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
         {
             messageInfo.flags.append(MessageFlag::POCKET);
         }
-/* Coming soon...
- *         else if(lowerWord.contains(QRegExp("^.{3,5}://.+")))
+        else if(lowerWord.contains(QRegExp("^.{3,5}://.+")))
         {
             messageInfo.markedUpText += "<a href=" + words[i] + ">";
             messageInfo.markedUpText += words[i];
             messageInfo.markedUpText += "</a>";
 
             messageInfo.flags.append(MessageFlag::LINK);
-        } */
+        }
         else
         {
             QString systemName = regionMap->getSystemByAbbreviation(words[i].toUpper());

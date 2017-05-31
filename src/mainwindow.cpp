@@ -660,8 +660,9 @@ void MainWindow::initParsing()
     // Initialize with last session if not old...
     foreach(QString absoluteFilePath, lc->files())
     {
-        if(options.getIntelChannels().contains(shortName(absoluteFilePath)) ||
-                parser->getLocalChannels().contains(shortName(absoluteFilePath)))
+        if((options.getIntelChannels().contains(shortName(absoluteFilePath)) &&
+                options.getInitOldIntel()) ||
+            parser->getLocalChannels().contains(shortName(absoluteFilePath)))
         {
             fileChanged(absoluteFilePath);
         }

@@ -1,3 +1,6 @@
+0.8.10 - Added on Poller tab to skip loading of old intel channels at
+         restart.
+
 0.8.9 - Fixes the bug where the first two menu dropdowns were no longer
         working for Windows users.
 
@@ -259,8 +262,7 @@
 
 Coming soon:
 
-- Checkbox to only read local logs on startup.
-- Ignore system when worded like "from kbp", "was n-r"
+- Ignore system when worded like "from kbp", "was n-r", "left o-y"
 - fix display of messages with backslashes.
 - add support for hyperlinks in message list.
 - additional sound/volume options for alerts, dependant on jump distance.

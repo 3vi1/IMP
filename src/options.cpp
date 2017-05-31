@@ -138,6 +138,8 @@ void Options::cacheSettings()
     _essAndKos = ui->essBox->isChecked();
     m_showAvatar = ui->checkAvatar->isChecked();
 
+    m_initOldIntel = ui->checkOldIntel->isChecked();
+
     m_soundAlarm = ui->alarmCombo->currentText();
     m_soundStatus = ui->statusCombo->currentText();
     m_soundIncomplete = ui->comboIncomplete->currentText();
@@ -178,6 +180,7 @@ void Options::restoreSettings()
     ui->essBox->setChecked(_essAndKos);
     ui->checkKosDouble->setChecked(_kosDouble);
     ui->checkAvatar->setChecked(m_showAvatar);
+    ui->checkOldIntel->setChecked(m_initOldIntel);
 
     ui->alarmCombo->setCurrentIndex(ui->alarmCombo->findText(m_soundAlarm));
     ui->statusCombo->setCurrentIndex(ui->statusCombo->findText(m_soundStatus));
@@ -237,6 +240,7 @@ void Options::loadSettings(QSettings& settings)
     ui->essBox->setChecked(settings.value("essAndKos", true).toBool());
     ui->checkKosDouble->setChecked(settings.value("kosDouble", true).toBool());
     ui->checkAvatar->setChecked(settings.value("showAvatar", true).toBool());
+    ui->checkOldIntel->setChecked(settings.value("initOldIntel", true).toBool());
 
     ui->volume->setValue(settings.value("volume", 100).toInt());
     audio->setVolume(ui->volume->value());
@@ -485,6 +489,7 @@ void Options::saveSettings() //QSettings& settings)
         settings.setValue("redundantSuppress", getRedundantSuppress());
 
         settings.setValue("showAvatar", m_showAvatar);
+        settings.setValue("initOldIntel", m_initOldIntel);
 
         settings.setValue("selfSuppress", getSelfSuppress());
         settings.setValue("smoothAutofollow", getSmoothAutofollow());

@@ -68,6 +68,7 @@ public:
 
     bool getEssAndKos();
     int getHistoryMax();
+    bool getInitOldIntel() {return m_initOldIntel;}
     bool getKosCheck();
     bool getKosOnDouble();
     int getMapRefresh();
@@ -163,6 +164,7 @@ private:
     QList<Rule> readRules(QXmlStreamReader& reader);
 
     bool _autofollow = true;
+    bool m_initOldIntel = true;
     bool m_showAvatar = true;
     bool m_showBridges = false;
     bool _smoothAutofollow;
