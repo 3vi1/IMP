@@ -61,7 +61,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="SvgMapView" name="mapView" native="true">
+     <widget class="SvgMapView" name="mapView">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>1</horstretch>
@@ -130,13 +130,6 @@
     <property name="title">
      <string>&amp;Map</string>
     </property>
-    <addaction name="actionCatch"/>
-    <addaction name="actionProvidence"/>
-    <addaction name="actionQuerious"/>
-    <addaction name="separator"/>
-    <addaction name="actionShow_Bridges"/>
-    <addaction name="separator"/>
-    <addaction name="actionReset_Rotation"/>
    </widget>
    <widget class="QMenu" name="menuFind">
     <property name="title">
@@ -167,11 +160,19 @@
     <addaction name="action_Menu_Toggle"/>
     <addaction name="action_Overlay_Mode"/>
    </widget>
+   <widget class="QMenu" name="menu_View">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="actionShow_Bridges"/>
+    <addaction name="actionReset_Rotation"/>
+   </widget>
    <addaction name="menuPilots"/>
    <addaction name="menuFind"/>
    <addaction name="menuMap"/>
    <addaction name="menuOptions"/>
    <addaction name="menuTheme"/>
+   <addaction name="menu_View"/>
    <addaction name="menu_Window"/>
    <addaction name="menuHelp"/>
    <addaction name="menuDebug"/>
@@ -218,7 +219,7 @@
       <number>0</number>
      </property>
      <item row="0" column="0">
-      <widget class="QListView" name="listView">
+      <widget class="ChatView" name="listView">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -420,8 +421,13 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>ChatView</class>
+   <extends>QListView</extends>
+   <header>chatview.h</header>
+  </customwidget>
+  <customwidget>
    <class>SvgMapView</class>
-   <extends>QWidget</extends>
+   <extends>QGraphicsView</extends>
    <header>svgmapview.h</header>
   </customwidget>
  </customwidgets>

@@ -41,11 +41,11 @@ Parser::Parser(uint generation, QObject *parent) : QObject(parent)
     // Load words, channels, and ships from files
     ignoreWords = QSet<QString>::fromList(fromFile("common"));
     clearWords = QSet<QString>::fromList(fromFile("clear"));
+    left = QSet<QString>::fromList(fromFile("left"));
     localChannels = QSet<QString>::fromList(fromFile("local"));
     locationWords = QSet<QString>::fromList(fromFile("location"));
     statusWords = QSet<QString>::fromList(fromFile("status"));
     ships = QSet<QString>::fromList(fromFile("ships"));
-
 }
 
 void Parser::setMap(Map &map)
@@ -304,7 +304,7 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
         {
             messageInfo.flags.append(MessageFlag::POCKET);
         }
-        else if(lowerWord.contains(QRegExp("^.{3,5}://.+")))
+        else if(lowerWord.contains(QRegExp("[^ ]{3,5}://.+")))
         {
             messageInfo.markedUpText += "<a href=" + words[i] + ">";
             messageInfo.markedUpText += words[i];
@@ -336,9 +336,17 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
                         messageInfo.markedUpText += "<info>";
                     }
                 }
+                else if(i > 0 && left.contains(words[i-1].toLower()) )
+                {
+                    // Check to see if it is "left *system*", "from *system*", etc.
+                    messageInfo.markedUpText += "<system>";
+                    messageInfo.markedUpText += words[i];
+                    messageInfo.markedUpText += "<info>";
+                }
                 else
                 {
-                    // System mentioned, not adjacent to word 'gate'
+                    // System mentioned, not adjacent to word 'gate' or one of
+                    // the words indicating they left a system.
                     theseSystems.append(systemName);
                     messageInfo.markedUpText += "<system>";
                     messageInfo.markedUpText += words[i];

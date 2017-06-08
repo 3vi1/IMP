@@ -96,6 +96,7 @@ private:
     QString ignoreChars;
     QSet<QString> clearWords;
     QSet<QString> ignoreWords;
+    QSet<QString> left;
     QSet<QString> localChannels;
     QSet<QString> locationWords;
     QSet<QString> statusWords;

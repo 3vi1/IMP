@@ -1,5 +1,24 @@
-0.8.10 - Added on Poller tab to skip loading of old intel channels at
-         restart.
+0.9.0 - Automatic update checking!  Versions beyond 0.9.0 should alert you
+        when a new release has been uploaded/committed.
+
+        Support for all systems!  There is a 'maps' file in the
+        dictionaries directory that controls which maps are on the Maps
+        menu.  You can customize it to add new ones, or pair it down
+        to only the ones you want to see.
+
+        Hyperlinks in the message view now work!  You can click DScans
+        and other links from IMP now.  They will open in the default
+        browser for your system.  In the future I will let you
+        override that and/or open them in a tab within IMP itself.
+
+        Added option on Poller tab to skip loading of old intel channel
+        messages at restart.  Some people without SSD's have complained
+        about the speed of the loading in the past, so this is a
+        workaround until I can investigate more.
+
+        Improved parsing so that IMP won't alert for system-a when people
+        say things like "red went from system-a to system-b", or
+        "red left system-a", or "red system-b was system-a".
 
 0.8.9 - Fixes the bug where the first two menu dropdowns were no longer
         working for Windows users.
@@ -262,8 +281,6 @@
 
 Coming soon:
 
-- Ignore system when worded like "from kbp", "was n-r", "left o-y"
 - fix display of messages with backslashes.
-- add support for hyperlinks in message list.
 - additional sound/volume options for alerts, dependant on jump distance.
 - better pilot cache/cleanup.

@@ -27,6 +27,8 @@
 #include <QShortcut>
 #include <QString>
 
+#include <QSimpleUpdater.h>
+
 #include "asyncinfo.h"
 #include "audio.h"
 #include "bridgemap.h"
@@ -79,6 +81,7 @@ public slots:
     void gotStyleSheetChange(const QString styleName);
     void gotSystemClick(const QString& name);
     void findLocation(const QString& systemName);
+    void linkActivated(QString link);
     void logDirChanged(const QString& dir);
     void gotOpacity(int delta);
     void saveSettings();
@@ -90,6 +93,7 @@ protected:
 private slots:
     void changeFont(const QString& fontName, int fontSize);
     void clipboardUpdated();
+    void mapSelected();
     void pilotSelected();
     void themeSelected();
     void updatePosition();
@@ -99,9 +103,6 @@ private slots:
     void on_actionF_YH5B_triggered();
     void on_actionN_RMSH_triggered();
     void on_actionAuto_follow_triggered();
-    void on_actionProvidence_triggered();
-    void on_actionCatch_triggered();
-    void on_actionQuerious_triggered();
     void on_actionFindSystem_triggered();
     void on_actionShow_Bridges_triggered(bool checked);
     void on_actionSave_As_Theme_triggered();
@@ -115,11 +116,16 @@ private slots:
     void on_action_Menu_Toggle_triggered();
     void on_action_Messages_triggered();
 
+    void updateChangelog (const QString& url);
+    void displayAppcast (QString s, QByteArray ba);
+
+
 private:
     void initParsing();
     void initThemes();
     void addThemesFromSubdirectories(QDir dir, ThemeType themeType);
     void addThemeToMenu(QString name, ThemeType);
+    void buildMapMenu();
     void opacityChange(QString obj, ThemeObject objType);
     void scaleChange(QString obj, ThemeObject objType);
     void customizeShape(QString obj, ThemeObject objType);
@@ -148,6 +154,9 @@ private:
     bool                    frameless = false;
     bool                    alwaysOnTop = false;
     bool                    overlayMode = false;
+
+    QSimpleUpdater*         m_updater;
+    const QString           DEFS_URL = "http://eternaldusk.com/imp/imp_update.json";
 
     QShortcut*              alwaysOnTopShortcut = NULL;
     QShortcut*              framelessShortcut = NULL;
@@ -204,6 +213,7 @@ private:
 
     LogInfo impLogInfo = { "*IMP*", QFileInfo(), "Khasm Kaotiqa", "None", 0 };
 
+    QMap<QString, QString> available_maps;
     QMap<QString, QStringList> pockets;
 
     // Used to restore system rotation until I take the time to figure out

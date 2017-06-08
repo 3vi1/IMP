@@ -12,13 +12,15 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = imp
 TEMPLATE = app
 
-VERSION = 0.8.10
+VERSION = 0.9.0
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
 QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton
 QMAKE_TARGET_PRODUCT = IMP
 
 DEFINES += VERSION=\\\"$VERSION\\\"
+
+include(../ThirdParty/QSimpleUpdater/QSimpleUpdater.pri)
 
 SOURCES += \
     main.cpp\
@@ -45,7 +47,8 @@ SOURCES += \
     abstract_os.cpp \
     themecustomizationdialog.cpp \
     msgstyle.cpp \
-    utility.cpp
+    utility.cpp \
+    chatview.cpp
     
 HEADERS  += \
     mainwindow.h \
@@ -72,7 +75,8 @@ HEADERS  += \
     abstract_os.h \
     themecustomizationdialog.h \
     msgstyle.h \
-    utility.h
+    utility.h \
+    chatview.h
     
 FORMS    += \
     mainwindow.ui \
@@ -86,8 +90,10 @@ FORMS    += \
 DISTFILES += \
     ../data/dictionaries/clear \
     ../data/dictionaries/common \
+    ../data/dictionaries/left \
     ../data/dictionaries/local \
     ../data/dictionaries/location \
+    ../data/dictionaries/maps \
     ../data/dictionaries/pockets \
     ../data/dictionaries/ships \
     ../data/dictionaries/status \
@@ -96,7 +102,8 @@ DISTFILES += \
     ../docs/RELEASES \
     ../docs/RULES \
     ../docs/THEMES \
-    ../docs/CREDITS
+    ../docs/CREDITS \
+    ../docs/DICTIONARIES
     
 RESOURCES += \
     resources.qrc

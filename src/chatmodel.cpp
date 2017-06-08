@@ -117,7 +117,7 @@ bool ChatModel::removeRows(int row, int count, const QModelIndex &parent)
         return true;
     }
 
-    Q_ASSERT(row < row+count-1);
+    Q_ASSERT(row <= row+count-1);
     beginRemoveRows(parent, row, (row + count) - 1);
     if(row == 0 && count == items.count())
     {

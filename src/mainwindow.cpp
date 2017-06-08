@@ -25,6 +25,7 @@
 #include "themecustomizationdialog.h"
 
 #include <QColorDialog>
+#include <QDesktopServices>
 #include <QFontDialog>
 #include <QKeySequence>
 #include <QListWidget>
@@ -70,6 +71,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Initialize lastAlertTime
     lastAlertTime = QDateTime::currentDateTimeUtc().addDays(-1);
+
+    // Load available maps
+    // Load pocket definitions
+    QStringList mapLines = fromFile("maps");
+    foreach(QString mline, mapLines)
+    {
+        QStringList mlist = mline.split(' ');
+        available_maps.insert(mlist[0],mlist[1]);
+    }
+    buildMapMenu();
+
 
     initThemes();
 
@@ -127,7 +139,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Normally, you could just set these shortcuts in the UI, but since we hide the menus they may become
     //    disabled on some Desktop Environments (like KDE) if we did it that way.
-    findShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this, SLOT(on_actionSystem_triggered()));
+    findShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this, SLOT(on_actionFindSystem_triggered()));
     framelessShortcut = new QShortcut(QKeySequence(Qt::Key_W), this, SLOT(on_action_Frameless_Window_triggered()));
     menuShortcut = new QShortcut(QKeySequence(Qt::Key_M), this, SLOT(on_action_Menu_Toggle_triggered()));
     overlayShortcut = new QShortcut(QKeySequence(Qt::Key_O), this, SLOT(on_action_Overlay_Mode_triggered()));
@@ -143,6 +155,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->mapView, &SvgMapView::sendOpacity,
             this, &MainWindow::gotOpacity);
 
+    connect(ui->listView, &ChatView::linkActivated,
+            this, &MainWindow::linkActivated);
 
     // Load pocket definitions
     QStringList pocketsList = fromFile("pockets");
@@ -155,6 +169,21 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     ui->mapView->show();
+
+    // Updater
+    m_updater = QSimpleUpdater::getInstance();
+    connect (m_updater, SIGNAL (checkingFinished  (QString)),
+             this,        SLOT (updateChangelog   (QString)));
+    connect (m_updater, SIGNAL (appcastDownloaded (QString, QByteArray)),
+             this,        SLOT (displayAppcast    (QString, QByteArray)));
+
+    m_updater->setModuleVersion (DEFS_URL, meta.Version::release);
+    m_updater->setNotifyOnFinish (DEFS_URL, false);
+    m_updater->setNotifyOnUpdate (DEFS_URL, true);
+    m_updater->setUseCustomAppcast (DEFS_URL, false);
+    m_updater->setDownloaderEnabled (DEFS_URL, false);
+
+    m_updater->checkForUpdates (DEFS_URL);
 }
 
 MainWindow::~MainWindow()
@@ -346,8 +375,8 @@ void MainWindow::loadMap()
     regionMap = new Map(this);
     ui->mapView->setMap(regionMap);
 
-    QNetworkRequest request(QUrl(options.getMapPath() +
-                                 options.getRegion() + ".svg"));
+    QNetworkRequest request(QUrl(available_maps[options.getRegion()]));
+
     reply = manager.get(request);
     connect(reply, SIGNAL(finished()),
             this, SLOT(gotRegionFile()) );
@@ -1452,7 +1481,8 @@ void MainWindow::updateRegionMenu(const QString& currentRegion)
     // Set menu checks
     foreach(QAction* action, ui->menuMap->actions())
     {
-        if(action->text() == "&" + currentRegion)
+        if(action->text() == "&" + currentRegion ||
+                action->text() == currentRegion)
         {
             action->setChecked(true);
         }
@@ -1466,21 +1496,6 @@ void MainWindow::updateRegionMenu(const QString& currentRegion)
             action->setChecked(false);
         }
     }
-}
-
-void MainWindow::on_actionProvidence_triggered()
-{
-    switchToRegion("Providence");
-}
-
-void MainWindow::on_actionCatch_triggered()
-{
-    switchToRegion("Catch");
-}
-
-void MainWindow::on_actionQuerious_triggered()
-{
-    switchToRegion("Querious");
 }
 
 void MainWindow::on_actionFindSystem_triggered()
@@ -1538,6 +1553,53 @@ void MainWindow::on_actionN_RMSH_triggered()
 
 // ------------------------------------------------------------------------------
 
+void MainWindow::buildMapMenu()
+{
+    foreach(QString key, available_maps.keys())
+    {
+        QAction* newAct = new QAction(key, this);
+        newAct->setCheckable(true);
+        newAct->setChecked(true);
+        newAct->data() = available_maps[key];
+
+        connect(newAct, SIGNAL(triggered()), this, SLOT(mapSelected()));
+
+        foreach(QAction* action, ui->menuMap->actions())
+        {
+            qDebug() << action->text();
+            if(action->text() == key)
+            {
+                // Map was already in menu
+                break;
+            }
+            if(action->text() > key ||
+                    action->text().length() == 0)
+            {
+                ui->menuMap->insertAction(action, newAct);
+                if(options.getRegion() != key)
+                {
+                    newAct->setChecked(false);
+                }
+                break;
+            }
+        }
+
+        // It wasn't inserted before any existing actions, so add it now.
+        ui->menuMap->addAction(newAct);
+        if(options.getRegion() != key)
+        {
+            newAct->setChecked(false);
+        }
+    }
+}
+
+void MainWindow::mapSelected()
+{
+    QAction *s = qobject_cast<QAction *> (sender());
+    qDebug() << "MainWindow::mapSelected - for " << s->text();
+
+    switchToRegion(s->text());
+}
 
 void MainWindow::gotNewPilot(const QString& pilotName)
 {
@@ -1615,10 +1677,8 @@ void MainWindow::gotSystemClick(const QString& name)
 
     if(name == "")
         ui->dockWidget->setWindowTitle("All Messages:");
-//        ui->listLabel->setText("All Messages:");
     else
         ui->dockWidget->setWindowTitle(name + " Messages:");
-//        ui->listLabel->setText(name + " Messages:");
 
     ui->listView->scrollToBottom();
 }
@@ -1634,10 +1694,8 @@ void MainWindow::on_actionFindMessages_triggered()
 
     if(dialog.input() == "")
         ui->dockWidget->setWindowTitle("All Messages:");
-//        ui->listLabel->setText("All Messages:");
     else
         ui->dockWidget->setWindowTitle("'" + dialog.input() + "'");
-//        ui->listLabel->setText("'" + dialog.input() + "'");
 
     ui->listView->scrollToBottom();
 }
@@ -1806,9 +1864,23 @@ void MainWindow::on_action_Messages_triggered()
         ui->dockWidget->show();
 }
 
-
-/*void MainWindow::on_dockWidget_visibilityChanged(bool visible)
+void MainWindow::linkActivated(QString link)
 {
-
+    qDebug() << "MainWindow::linkActivated - " << link;
+    QDesktopServices::openUrl(QUrl(link));
 }
-*/
+
+void MainWindow::updateChangelog (const QString& url)
+{
+    if (url == DEFS_URL)
+    {
+        qDebug() << "MainWindow::updateChangelog - Latest Version = " << m_updater->getLatestVersion(url);
+        qDebug() << "updateChangelog:  New version - " << (m_updater->getChangelog (url));
+    }
+}
+
+void MainWindow::displayAppcast (QString s, QByteArray ba)
+{
+    qDebug() << "MainWindow::displayAppcast(" << s << ", " << ba << ")";
+}
+

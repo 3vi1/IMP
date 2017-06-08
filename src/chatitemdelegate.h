@@ -23,6 +23,7 @@
 
 #include <QItemDelegate>
 #include <QObject>
+#include <QTextDocument>
 #include <QStyledItemDelegate>
 
 #include "chatmodel.h"
@@ -39,6 +40,8 @@ public:
     void setModel(ChatModel* model);
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
+    QString anchorAt(const QStyleOptionViewItem &option, const QModelIndex &index, const QPoint &point);
+
 signals:
 public slots:
 
@@ -48,6 +51,8 @@ private:
     QSize       padding = QSize(2,1);
 
     const MsgStyle* m_msgStyle;
+
+    QTextDocument* document(const QStyleOptionViewItem &options) const;
 };
 
 #endif // CHATITEMDELEGATE_H
