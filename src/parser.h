@@ -26,6 +26,7 @@
 #include <QFileInfo>
 #include <QList>
 #include <QMap>
+#include <QRegExp>
 #include <QSet>
 #include <QString>
 #include <QTextStream>
@@ -51,6 +52,8 @@ struct LogInfo
 struct MessageInfo
 {
     uint    parserGeneration = 0;
+    bool    skipOutput = false;
+    
     QString originalLine;
     bool    indecipherable = false;
 
@@ -68,6 +71,16 @@ struct MessageInfo
     QStringList possiblePilots;
 
     QList<MessageFlag> flags;
+};
+
+struct ImpWord
+{
+    QString raw;
+    QString prefix;
+    int     prefixStart;
+    QString actual;
+    QString postfix;
+    int     postfixStart;
 };
 
 class Parser : public QObject
@@ -90,6 +103,9 @@ public slots:
 private:
     uint    generation = 0;
 
+    //QRegExp listener = QRegExp("^\\[ (.{19}) \\] ([^>]+) > ([^\\.\\?!]*)(.*)$");
+    QRegExp listener = QRegExp("^\\[ (.{19}) \\] ([^>]+) > (.*)$");
+
     QString lastListener;
     QString lastLocalSystem;
 
@@ -106,9 +122,9 @@ private:
     Map* regionMap;
 
     void loadSet(QSet<QString>& set, QString& string);
-    void identifyObjects(MessageInfo& messageInfo);
+    QString identifyObjects(MessageInfo& messageInfo, QList<ImpWord>& sentence);
     QString systemAbbreviation(const QString& word);
-    MessageInfo parseLine(const QString& line);
+    QList<MessageInfo> parseLine(const QString& line);
 };
 
 #endif // PARSER_H

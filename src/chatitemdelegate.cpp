@@ -65,7 +65,7 @@ void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         doc->documentLayout()->draw(painter, ctx);
         painter->restore();
 
-        doc->deleteLater();
+        delete doc;
     }
 }
 
@@ -114,6 +114,7 @@ QSize ChatItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QMode
                                doc->size().height() + padding.height() :
                                m_avatarSize.height() + padding.height());
 
+    delete doc;
     return textSize;
 }
 
@@ -126,7 +127,6 @@ QString ChatItemDelegate::anchorAt(const QStyleOptionViewItem& option,
 
     QTextDocument* doc = document(options);
     QAbstractTextDocumentLayout* textLayout = doc->documentLayout();
-    doc->deleteLater();
 
     Q_ASSERT(textLayout != 0);
 
@@ -135,5 +135,7 @@ QString ChatItemDelegate::anchorAt(const QStyleOptionViewItem& option,
     QPoint p = point;
     p.setX(p.x() - iconWidth - padding.width());
 
-    return textLayout->anchorAt(p);
+    QString anchor = textLayout->anchorAt(p);
+    delete doc;
+    return anchor;
 }

@@ -26,7 +26,6 @@
 #include <QDebug>
 #include <QDir>
 #include <QMessageBox>
-#include <QRegExp>
 #include <QTextStream>
 #include <QtXmlPatterns/QXmlQuery>
 
@@ -35,6 +34,8 @@ using namespace std;
 Parser::Parser(uint generation, QObject *parent) : QObject(parent)
 {
     this->generation = generation;
+    
+    listener.setMinimal(true);
 
     ignoreChars = "[\\\\_=!@#$%^&\\*,\\.\\[\\]\\(\\)\\{\\}\\?]";   // "\\_=!@#$%^&*,./[](){}?"
 
@@ -135,23 +136,28 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
 
     for (int i=startLine; i<lines.length()-1; i++) {
 
-        MessageInfo newMessage = parseLine(lines[i].trimmed().remove(0xfeff));
+        QList<MessageInfo> newMessages = parseLine(lines[i].trimmed().remove(0xfeff));
 
-        newMessage.parserGeneration = generation;
-        newMessage.logInfo = &fileMap[path];
-        if(newMessage.systems.length() > 0)
+        // Okay, these aren't really separate user-messages...  they are
+        // messages to be processed by main window... clean up later.
+        foreach(MessageInfo newMessage, newMessages)
         {
-            newMessage.logInfo->systemLastMentioned = newMessage.systems[0];
-        }
-
-        if (!newMessage.indecipherable)
-        {
-            messageInfoList.append(newMessage);
-        }
-        else
-        {
-            qDebug() << "Parser::fileChanged() - Indecipherable message:  " <<
-                        fileMap[path].channel << "> " << lines[i] << endl;
+            newMessage.parserGeneration = generation;
+            newMessage.logInfo = &fileMap[path];
+            if(newMessage.systems.length() > 0)
+            {
+                newMessage.logInfo->systemLastMentioned = newMessage.systems[0];
+            }
+    
+            if (!newMessage.indecipherable)
+            {
+                messageInfoList.append(newMessage);
+            }
+            else
+            {
+                qDebug() << "Parser::fileChanged() - Indecipherable message:  " <<
+                            fileMap[path].channel << "> " << lines[i] << endl;
+            }
         }
     }
     fileMap[path].position = input.pos();
@@ -159,64 +165,167 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
     return messageInfoList;
 }
 
-MessageInfo Parser::parseLine(const QString& line)
+QList<MessageInfo> Parser::parseLine(const QString& line)
 {
-    MessageInfo messageInfo;
-    messageInfo.originalLine = line;
+    QList<MessageInfo> messages;
+    
+    QDateTime dateTime;
+    QString sender, text;
 
-    // Get timestamp
-    QRegExp listener("^\\[ (.{19}) \\] ([^>]+) > ([^\\.\\?!]*)(.*)$");
-    listener.setMinimal(true);
+    // Does message look valid?
     if (listener.indexIn(line.trimmed()) != -1)
     {
-        messageInfo.indecipherable = false;
+        dateTime = QDateTime::fromString(listener.cap(1), "yyyy.MM.dd HH:mm:ss");
+        dateTime.setTimeSpec(Qt::UTC);
+        sender = listener.cap(2);
+        text = listener.cap(3);
+    }
+    else
+    {
+        // Can't make heads or tails of this, return upstream.
+        MessageInfo messageInfo;
+        messageInfo.originalLine = line;
+        messageInfo.indecipherable = true;
+        messages.append(messageInfo);
+        return messages;
+    }
 
-        QString cap1 = listener.cap(1);
-        messageInfo.dateTime = QDateTime::fromString(listener.cap(1), "yyyy.MM.dd HH:mm:ss");
+
+    // Is this a system message?
+    if (sender == "EVE System")
+    {
+        MessageInfo messageInfo;
+        messageInfo.originalLine = line;
+        messageInfo.dateTime = dateTime;
         messageInfo.dateTime.setTimeSpec(Qt::UTC);
-        messageInfo.sender = listener.cap(2);
+        messageInfo.sender = sender;
+        messageInfo.text = text;
 
-        messageInfo.text = listener.cap(3);
+        // Test to see if this is a system change message:
+        //     EVE System > Channel changed to Local : JEIV-E
 
-        if (messageInfo.sender == "EVE System")
+        QRegExp sysMsgRegExp("^Channel changed to .* : (.*)$");
+        sysMsgRegExp.setMinimal(true);
+        if (sysMsgRegExp.indexIn(text.trimmed()) != -1)
         {
-            //qDebug() << "Parser::parseLine(" << line << ")";
-
-            // Test to see if this is a system change message:
-            //     EVE System > Channel changed to Local : JEIV-E
-
-            QRegExp sysMsgRegExp("^Channel changed to .* : (.*)$");
-            sysMsgRegExp.setMinimal(true);
-            if (sysMsgRegExp.indexIn(messageInfo.text.trimmed()) != -1)
-            {
-                //qDebug() << "   is a system change message.";
-                messageInfo.systems.append(sysMsgRegExp.cap(1));
-                messageInfo.flags.append(MessageFlag::SYSTEM_CHANGE);
-                return messageInfo;
-            }
-
-            // Test to see if this is a MOTD message:
-
-            QRegExp motdRegExp("^Channel MOTD: (.*)$");
-            if (motdRegExp.indexIn(messageInfo.text.trimmed()) != -1)
-            {
-                messageInfo.flags.append(MOTD);
-                return messageInfo;
-            }
-
-            // Test to see if this is an ESS message:
-            QRegExp essRegExp("(.*) is now in proximity of the Encounter Surveillance System$");
-            if (essRegExp.indexIn(messageInfo.text.trimmed()) != -1)
-            {
-                messageInfo.flags.append(ESS);
-                messageInfo.related.append(essRegExp.cap(1));
-                return messageInfo;
-            }
-
+            //qDebug() << "   is a system change message.";
+            messageInfo.systems.append(sysMsgRegExp.cap(1));
+            messageInfo.flags.append(MessageFlag::SYSTEM_CHANGE);
+            messages.append(messageInfo);
+            return messages;
         }
 
+        // Test to see if this is a MOTD message:
+
+        QRegExp motdRegExp("^Channel MOTD: (.*)$");
+        if (motdRegExp.indexIn(messageInfo.text.trimmed()) != -1)
+        {
+            messageInfo.flags.append(MOTD);
+            messages.append(messageInfo);
+            return messages;
+        }
+
+        // Test to see if this is an ESS message:
+        QRegExp essRegExp("(.*) is now in proximity of the Encounter Surveillance System$");
+        if (essRegExp.indexIn(messageInfo.text.trimmed()) != -1)
+        {
+            messageInfo.flags.append(ESS);
+            messageInfo.related.append(essRegExp.cap(1));
+            messages.append(messageInfo);
+            return messages;
+        }
+    }
+
+
+    // Valid, non-system message.  Deconstruct it into sentences and words.
+    QRegExp puncPreExp("^" + ignoreChars + "+");
+    QRegExp puncPostExp(ignoreChars + "+$");
+
+    int currentPos = 0,
+            nextSpace = 0;
+    QList<ImpWord>* impSentence = new QList<ImpWord>;
+    QList<QList<ImpWord>> impSentences;
+
+    // Build sentences and their word info.
+    while(currentPos <= text.length())
+    {
+        ImpWord impWord;
+
+        nextSpace = text.indexOf(' ', currentPos+1);
+        if(nextSpace == -1)
+            nextSpace = text.length();
+
+        if(text[currentPos] == ' ')
+        {
+            currentPos++;
+            continue;
+        }
+
+        impWord.raw = text.mid(currentPos, nextSpace-currentPos);
+        qDebug() << "Parser::identifyObjects - raw =" << impWord.raw;
+
+        if (puncPostExp.indexIn(impWord.raw) != -1)
+            impWord.postfix = puncPostExp.cap();
+        else
+            impWord.postfix = "";
+        impWord.postfixStart = currentPos + impWord.raw.length() - impWord.postfix.length();
+
+        // Only build prefix punctuation, if entire string wasn't punctuation.
+        if(impWord.postfix != impWord.raw)
+        {
+            if (puncPreExp.indexIn(impWord.raw) != -1)
+                impWord.prefix = puncPreExp.cap();
+            else
+                impWord.prefix = "";
+        }
+        impWord.prefixStart = currentPos;
+
+        qDebug() << "Parser::identifyObjects - prefix =" << impWord.prefix <<
+                    ", prefixStart =" << impWord.prefixStart <<
+                    ", postfix =" << impWord.postfix <<
+                    ", postfixStart =" << impWord.postfixStart;
+
+        impWord.actual = impWord.raw.mid(impWord.prefix.length(),
+                                  impWord.raw.length()-impWord.postfix.length());
+
+        qDebug() << "Parser::identifyObjects - actual =" << impWord.actual;
+
+        currentPos = nextSpace + 1;
+        impSentence->append(impWord);
+
+        if(nextSpace >= text.length())
+            impSentences.append(*impSentence);
+        else if(impWord.postfix.endsWith('.') ||
+                impWord.postfix.endsWith('!') ||
+                impWord.postfix.endsWith('?'))
+        {
+            impSentences.append(*impSentence);
+            delete impSentence;
+            impSentence = new QList<ImpWord>;
+        }
+    }
+    delete impSentence;
+    
+    // Now process each sentence in the message and return a message for each.
+
+    QString markedUpText = "";
+    foreach(QList<ImpWord> s, impSentences)
+    {
+        qDebug() << "impSentence:";
+        foreach (ImpWord iw, s) {
+            qDebug() << '\t' << iw.prefix << iw.actual << iw.postfix;
+        }
+
+        MessageInfo messageInfo;
+        messageInfo.originalLine = line;
+        messageInfo.dateTime = dateTime;
+        messageInfo.dateTime.setTimeSpec(Qt::UTC);
+        messageInfo.sender = sender;
+        messageInfo.text = text;
+        messageInfo.skipOutput = true;
+
         // Bring in some bison later and dump this simple placeholder
-        identifyObjects(messageInfo);
+        markedUpText += identifyObjects(messageInfo, s);
 
         QString endingPunctuation = listener.cap(4);
         //qDebug() << "endingPunctuation = " << endingPunctuation;
@@ -231,74 +340,73 @@ MessageInfo Parser::parseLine(const QString& line)
         {
             messageInfo.flags.append(MessageFlag::WARNING);
         }
-    }
-    else
-    {
-        messageInfo.indecipherable = true;
+
+        messages.append(messageInfo);
     }
 
-    return messageInfo;
+    messages[messages.count()-1].markedUpText = markedUpText;
+    messages[messages.count()-1].skipOutput = false;
+    return messages;
 }
 
-void Parser::identifyObjects(MessageInfo& messageInfo)
+QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &sentence)
 {
+    QString markedUpText = "<info>";
     QStringList theseSystems;
     QStringList theseShips;
     QStringList theseGates;
 
-    // Turn any punctuation into whitespace and remove all redundant whitespace.
-    // Makes things like "name in XX-XXX...svipul" not get misparsed.
-    QString simChat = messageInfo.text;
-    simChat = simChat.replace(QRegExp(ignoreChars), " ");
-    simChat = simChat.simplified();
-    QStringList words = simChat.split(" ");
+    // New parsing
+    qDebug() << "Parser::identifyObjects - Parsing sentence in: " << messageInfo.text;
 
-    messageInfo.markedUpText = "<info>";
-
-    QString previousWord = "";
-    for (int i = 0; i < words.length(); i++)
+    for(int i=0; i<sentence.length(); i++)
     {
-        QString lowerWord = words[i].toLower();
-        if (ignoreWords.contains(lowerWord) || words[i].length() < 2)
+        QString lowerWord = sentence[i].actual.toLower();
+        if (ignoreWords.contains(lowerWord) || sentence[i].actual.length() < 2)
         {
             // Common word to ignore, skip it and go to next word.
-            messageInfo.markedUpText += words[i];
+            markedUpText += sentence[i].prefix + sentence[i].actual + sentence[i].postfix;
         }
         else if (statusWords.contains(lowerWord))
         {
             messageInfo.flags.append(MessageFlag::STATUS);
-
-            messageInfo.markedUpText += "<status>";
-            messageInfo.markedUpText += words[i];
-            messageInfo.markedUpText += "<info>";
+            markedUpText += sentence[i].prefix;
+            markedUpText += "<status>";
+            markedUpText += sentence[i].actual;
+            markedUpText += "<info>";
+            markedUpText += sentence[i].postfix;
         }
         else if (locationWords.contains(lowerWord))
         {
             messageInfo.flags.append(MessageFlag::LOCATION);
-
-            messageInfo.markedUpText += "<location>";
-            messageInfo.markedUpText += words[i];
-            messageInfo.markedUpText += "<info>";
+            markedUpText += sentence[i].prefix;
+            markedUpText += "<location>";
+            markedUpText += sentence[i].actual;
+            markedUpText += "<info>";
+            markedUpText += sentence[i].postfix;
         }
         else if (clearWords.contains(lowerWord))
         {
-            if(previousWord != "gate")
+            if(i > 0 && sentence[i].actual.toLower() != "gate")
             {
                 // We don't want to clear a system if someone says a gate is clear.
                 // "> KBP Dital gate clr!"
                 messageInfo.flags.append(MessageFlag::CLEAR);
-
-                messageInfo.markedUpText += "<clear>";
-                messageInfo.markedUpText += words[i];
-                messageInfo.markedUpText += "<info>";
+                markedUpText += sentence[i].prefix;
+                markedUpText += "<clear>";
+                markedUpText += sentence[i].actual;
+                markedUpText += "<info>";
+                markedUpText += sentence[i].postfix;
             }
         }
         else if(ships.contains(lowerWord))
         {
-           theseShips.append(words[i]);
-           messageInfo.markedUpText += "<ship>";
-           messageInfo.markedUpText += words[i];
-           messageInfo.markedUpText += "<info>";
+           theseShips.append(sentence[i].actual);
+           markedUpText += sentence[i].prefix;
+           markedUpText += "<ship>";
+           markedUpText += sentence[i].actual;
+           markedUpText += "<info>";
+           markedUpText += sentence[i].postfix;
         }
         else if(lowerWord == "pocket")
         {
@@ -306,69 +414,78 @@ void Parser::identifyObjects(MessageInfo& messageInfo)
         }
         else if(lowerWord.contains(QRegExp("[^ ]{3,5}://.+")))
         {
-            messageInfo.markedUpText += "<a href=" + words[i] + ">";
-            messageInfo.markedUpText += words[i];
-            messageInfo.markedUpText += "</a>";
+            markedUpText += "<a href=\"" + sentence[i].raw + "\">";
+            markedUpText += sentence[i].raw;
+            markedUpText += "</a>";
 
             messageInfo.flags.append(MessageFlag::LINK);
         }
         else
         {
-            QString systemName = regionMap->getSystemByAbbreviation(words[i].toUpper());
+            QString systemName = regionMap->getSystemByAbbreviation(sentence[i].actual.toUpper());
 
             if(systemName.length() > 0)
             {
-                if(i < (words.length()-1) && words[i+1].toLower() == "gate")
+                if(i < (sentence.length()-1) && sentence[i+1].actual.toLower() == "gate")
                 {
-                    if(i < (words.length()-2) && words[i+2].toLower() == "to")
+                    if(i < (sentence.length()-2) && sentence[i+2].actual.toLower() == "to")
                     {
                         // "x-x gate to..."
                         theseSystems.append(systemName);
-                        messageInfo.markedUpText += "<gate>";
-                        messageInfo.markedUpText += words[i];
-                        messageInfo.markedUpText += "<info>";
+                        markedUpText += sentence[i].prefix;
+                        markedUpText += "<gate>";
+                        markedUpText += sentence[i].actual;
+                        markedUpText += "<info>";
+                        markedUpText += sentence[i].postfix;
                     }
                     else {
                         // "...at x-x gate"
                         theseGates.append(systemName);
-                        messageInfo.markedUpText += "<gate>";
-                        messageInfo.markedUpText += words[i];
-                        messageInfo.markedUpText += "<info>";
+                        markedUpText += sentence[i].prefix;
+                        markedUpText += "<gate>";
+                        markedUpText += sentence[i].actual;
+                        markedUpText += "<info>";
+                        markedUpText += sentence[i].postfix;
                     }
                 }
-                else if(i > 0 && left.contains(words[i-1].toLower()) )
+                else if(i > 0 && left.contains(sentence[i-1].actual.toLower()) )
                 {
                     // Check to see if it is "left *system*", "from *system*", etc.
-                    messageInfo.markedUpText += "<system>";
-                    messageInfo.markedUpText += words[i];
-                    messageInfo.markedUpText += "<info>";
+                    markedUpText += sentence[i].prefix;
+                    markedUpText += "<system>";
+                    markedUpText += sentence[i].actual;
+                    markedUpText += "<info>";
+                    markedUpText += sentence[i].postfix;
                 }
                 else
                 {
                     // System mentioned, not adjacent to word 'gate' or one of
                     // the words indicating they left a system.
                     theseSystems.append(systemName);
-                    messageInfo.markedUpText += "<system>";
-                    messageInfo.markedUpText += words[i];
-                    messageInfo.markedUpText += "<info>";
+                    markedUpText += sentence[i].prefix;
+                    markedUpText += "<system>";
+                    markedUpText += sentence[i].actual;
+                    markedUpText += "<info>";
+                    markedUpText += sentence[i].postfix;
                 }
             }
             else if(lowerWord.length() >= 2)
             {
-                messageInfo.possiblePilots.append(words[i]);
-                messageInfo.markedUpText += "<info>";
-                messageInfo.markedUpText += words[i];
-                messageInfo.markedUpText += "<info>";
+                messageInfo.possiblePilots.append(sentence[i].actual);
+                markedUpText += "<info>";
+                markedUpText += sentence[i].prefix;
+                markedUpText += sentence[i].actual;
+                markedUpText += sentence[i].postfix;
             }
         }
 
-        previousWord = lowerWord;
-
-        if(i < words.length())
-            messageInfo.markedUpText += " ";
+        if(i < sentence.length())
+            markedUpText += " ";
     }
 
     messageInfo.systems = theseSystems;
     messageInfo.ships = theseShips;
     messageInfo.gates = theseGates;
+
+    return markedUpText;
 }

@@ -72,6 +72,7 @@ SvgMapView::SvgMapView(QWidget *parent) : QGraphicsView(parent)
 
 SvgMapView::~SvgMapView()
 {
+    qDeleteAll(pilotShapes.begin(), pilotShapes.end());
     findShape->deleteLater();
 }
 

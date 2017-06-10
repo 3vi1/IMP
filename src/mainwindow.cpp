@@ -1245,7 +1245,7 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
             }
         }
-        if(toBeAddedToList)
+        if(toBeAddedToList && message.skipOutput != true)
         {
             addMessage(message);
         }
