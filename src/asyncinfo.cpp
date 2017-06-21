@@ -66,8 +66,8 @@ void AsyncInfo::requestId(const QString &name, const char* slot)
     QNetworkReply* idReply = manager->get(request);
     connect(idReply, SIGNAL(finished()),
                 this, slot);
-    connect(idReply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(error(QNetworkReply::NetworkError)));
+    connect(idReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+                this, &AsyncInfo::error);
 }
 
 void AsyncInfo::idRetrieved()
@@ -93,10 +93,10 @@ void AsyncInfo::idRetrieved()
     QNetworkRequest request(imageUrl);
     request.setRawHeader("User-Agent", meta.agentString.toUtf8());
     QNetworkReply* pixmapReply = manager->get(request);
-    connect(pixmapReply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(error(QNetworkReply::NetworkError)));
-    connect(pixmapReply, SIGNAL(finished()),
-                this, SLOT(pixmapRetrieved()));
+    connect(pixmapReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+                this, &AsyncInfo::error);
+    connect(pixmapReply, &QNetworkReply::finished,
+            this, &AsyncInfo::pixmapRetrieved);
 
     // Resumes Asynchronously in pixmapRetrieved()
 }
@@ -168,8 +168,8 @@ void AsyncInfo::kosCheck(const QString &reqNames,
     QNetworkRequest request(url);
     request.setRawHeader("User-Agent", meta.agentString.toUtf8());
     kosReply = manager->get(request);
-    connect(kosReply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(error(QNetworkReply::NetworkError)));
+    connect(kosReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+                this, &AsyncInfo::error);
     connect(kosReply, SIGNAL(finished()),
                 this, slot);
 
@@ -259,10 +259,10 @@ void AsyncInfo::rblCheck(int id)
     QNetworkRequest request(url);
     request.setRawHeader("User-Agent", meta.agentString.toUtf8());
     QNetworkReply* infoReply = manager->get(request);
-    connect(infoReply, SIGNAL(error(QNetworkReply::NetworkError)),
-                this, SLOT(error(QNetworkReply::NetworkError)));
-    connect(infoReply, SIGNAL(finished()),
-                this, SLOT(rblInfoRetrieved()));
+    connect(infoReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+                this, &AsyncInfo::error);
+    connect(infoReply, &QNetworkReply::finished,
+            this, &AsyncInfo::rblInfoRetrieved);
 }
 
 void AsyncInfo::rblIdRetrieved()

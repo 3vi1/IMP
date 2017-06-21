@@ -118,17 +118,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&options, &Options::pollerRefreshChanged,
             this, &MainWindow::gotPollerRefreshChange);
-    connect(&options, SIGNAL(logDirChanged(const QString&)),
-            this, SLOT(logDirChanged(const QString&)));
-    connect(&options, SIGNAL(fontChanged(QString,int)),
-            this, SLOT(changeFont(QString,int)));
+    connect(&options, &Options::logDirChanged,
+            this, &MainWindow::logDirChanged);
+    connect(&options, &Options::fontChanged,
+            this, &MainWindow::changeFont);
     connect(&options, &Options::mapRefreshChanged,
             this, &MainWindow::gotMapRefreshChange);
     connect(&options, &Options::autoPeriodChanged,
             this, &MainWindow::gotAutoPeriodChange);
 
     // Connect find dialog's button to our search function
-    connect(&find, SIGNAL(searchRequested(QString)), this, SLOT(findLocation(QString)));
+    connect(&find, &FindDialog::searchRequested,
+            this, &MainWindow::findLocation);
 
     // If we do a macOS port later, we will need to set up a timer and another
     // function to compare the previous/current clipboard value, because
@@ -172,10 +173,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Updater
     m_updater = QSimpleUpdater::getInstance();
-    connect (m_updater, SIGNAL (checkingFinished  (QString)),
-             this,        SLOT (updateChangelog   (QString)));
-    connect (m_updater, SIGNAL (appcastDownloaded (QString, QByteArray)),
-             this,        SLOT (displayAppcast    (QString, QByteArray)));
+    connect (m_updater, &QSimpleUpdater::checkingFinished,
+             this, &MainWindow::updateChangelog, Qt::UniqueConnection);
+    connect (m_updater, &QSimpleUpdater::appcastDownloaded,
+             this, &MainWindow::displayAppcast, Qt::UniqueConnection);
 
     m_updater->setModuleVersion (DEFS_URL, meta.Version::release);
     m_updater->setNotifyOnFinish (DEFS_URL, false);
@@ -183,7 +184,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_updater->setUseCustomAppcast (DEFS_URL, false);
     m_updater->setDownloaderEnabled (DEFS_URL, false);
 
-    m_updater->checkForUpdates (DEFS_URL);
+    connect(&options, &Options::checkForUpdate,
+            this, &MainWindow::checkForUpdate);
+
+    if(options.getCheckForUpdate())
+    {
+        checkForUpdate();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -206,6 +213,11 @@ MainWindow::~MainWindow()
     {
         lc->deleteLater();
     }
+}
+
+void MainWindow::checkForUpdate()
+{
+    m_updater->checkForUpdates (DEFS_URL);
 }
 
 QString MainWindow::withoutShortcutAmpersands(const QString input)
@@ -287,7 +299,8 @@ void MainWindow::on_actionSave_As_Theme_triggered()
 void MainWindow::addThemeToMenu(QString name, ThemeType themeType)
 {
     QAction* newAct = new QAction(name, this);
-    connect(newAct, SIGNAL(triggered()), this, SLOT(themeSelected()));
+    connect(newAct, &QAction::triggered,
+            this, &MainWindow::themeSelected);
     newAct->setData(themeType);
 
     foreach(QAction* action, ui->menuTheme->actions())
@@ -378,10 +391,10 @@ void MainWindow::loadMap()
     QNetworkRequest request(QUrl(available_maps[options.getRegion()]));
 
     reply = manager.get(request);
-    connect(reply, SIGNAL(finished()),
-            this, SLOT(gotRegionFile()) );
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            this, SLOT(failedGettingRegionFile(QNetworkReply::NetworkError)));
+    connect(reply, &QNetworkReply::finished,
+            this, &MainWindow::gotRegionFile);
+    connect(reply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+            this, &MainWindow::failedGettingRegionFile);
 
     changeImpStatus("Attempting to download map for " + options.getRegion() + "...");
 
@@ -408,10 +421,10 @@ void MainWindow::loadBridges()
 
     QNetworkRequest request(QUrl((QString)fullPath));
     reply = manager.get(request);
-    connect(reply, SIGNAL(finished()),
-            this, SLOT(gotBridgeFile()) );
-    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)),
-            this, SLOT(failedGettingBridgeFile(QNetworkReply::NetworkError)));
+    connect(reply, &QNetworkReply::finished,
+            this, &MainWindow::gotBridgeFile);
+    connect(reply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+            this, &MainWindow::failedGettingBridgeFile);
 
     changeImpStatus("Attempting to bridge data for " + options.getRegion() + "...");
 
@@ -638,7 +651,7 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
     }   
 }
 
-void MainWindow::gotEssReply(const QList<KosEntry>& entries)
+void MainWindow::gotEssReply(const QString&, const QList<KosEntry>& entries)
 {
     bool playKos = false;
     foreach(KosEntry e, entries)
@@ -684,7 +697,8 @@ void MainWindow::initParsing()
     lc->setPollerRefresh(options.getPollerRefresh());
 #endif
 
-    connect(lc, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+    connect(lc, &LogCatcher::fileChanged,
+            this, &MainWindow::fileChanged);
 
     // Initialize with last session if not old...
     foreach(QString absoluteFilePath, lc->files())
@@ -1082,8 +1096,8 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
                     if(options.getEssAndKos())
                     {
                         AsyncInfo* kosInfo = new AsyncInfo(manager, this);
-                        connect(kosInfo, SIGNAL(kosResultReady(const QList<KosEntry>&)),
-                                this, SLOT(gotEssReply(const QList<KosEntry>&)));
+                        connect(kosInfo, &AsyncInfo::kosResultReady,
+                                this, &MainWindow::gotEssReply);
                         kosInfo->kosCheck(message.related[0]);
                     }
                     else
@@ -1236,7 +1250,8 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
                 break;
 
             case MessageFlag::LINK:
-                toBeAddedToList = true;
+                if (options.getIntelChannels().contains(message.logInfo->channel))
+                    toBeAddedToList = true;
                 break;
 
             default:
@@ -1350,8 +1365,8 @@ void MainWindow::addMessage(const MessageInfo& message)
     if (!pilotCache.contains(message.sender))
     {
         AsyncInfo* pilotInfo = new AsyncInfo(manager, this);
-        connect(pilotInfo, SIGNAL(resultReady(PilotEntry*)),
-                this, SLOT(gotAvatar(PilotEntry*)));
+        connect(pilotInfo, &AsyncInfo::resultReady,
+                this, &MainWindow::gotAvatar);
 
         pilotInfo->cacheAvatar(message.sender);
     }
@@ -1403,7 +1418,8 @@ void MainWindow::positionTo(const QString& systemName)
         startPos = ui->mapView->getViewportCenter();
 
         positionTimer = new QTimer(this);
-        connect(positionTimer, SIGNAL(timeout()), this, SLOT(updatePosition()));
+        connect(positionTimer, &QTimer::timeout,
+                this, &MainWindow::updatePosition);
         positionTimer->start(33);
     }
 
@@ -1516,7 +1532,8 @@ void MainWindow::logDirChanged(const QString& dir)
 {
     lc->deleteLater();
     lc = new LogCatcher(&options);
-    connect(lc, SIGNAL(fileChanged(QString)), this, SLOT(fileChanged(QString)));
+    connect(lc, &LogCatcher::fileChanged,
+            this, &MainWindow::fileChanged);
     lc->setLogDir(dir);
 }
 
@@ -1562,7 +1579,8 @@ void MainWindow::buildMapMenu()
         newAct->setChecked(true);
         newAct->data() = available_maps[key];
 
-        connect(newAct, SIGNAL(triggered()), this, SLOT(mapSelected()));
+        connect(newAct, &QAction::triggered,
+                this, &MainWindow::mapSelected);
 
         foreach(QAction* action, ui->menuMap->actions())
         {
@@ -1608,7 +1626,8 @@ void MainWindow::gotNewPilot(const QString& pilotName)
     newAct->setCheckable(true);
     newAct->setChecked(true);
 
-    connect(newAct, SIGNAL(triggered()), this, SLOT(pilotSelected()));
+    connect(newAct, &QAction::triggered,
+            this, &MainWindow::pilotSelected);
 
     foreach(QAction* action, ui->menuPilots->actions())
     {

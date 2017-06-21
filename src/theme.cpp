@@ -90,9 +90,6 @@ void Theme::load(const QString& name, ThemeType themeType)
         dir = m_userDir;
     }
 
-    //setBackColor(Qt::white);
-    //setLineColor(Qt::black);
-
     // Background/Map attributes
     setAttribute("backColor",   MAP, "back", "color", defaults["backColor"]);
     setAttribute("backGraphic", MAP, "back", "graphic",  defaults["backGraphic"]);

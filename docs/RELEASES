@@ -1,3 +1,14 @@
+0.9.2 - Fixed parser bug where questions where not being marked as such.
+
+        Fixed bug where all messages with links were being added to the all
+        messages.
+
+        Added missing code so that Update checking toggle and Check Now
+        button will actually work.
+
+        Cleanup:  Changed all slot/signals to use new-style connect format,
+        except for the dynamic connections in AsyncInfo.
+
 0.9.1 - Fixed the bug I totally missed when implementing hyperlink support
         yesterday.  They should now work properly.
 
@@ -291,6 +302,5 @@
 Coming soon:
 
 - fix display of messages with backslashes.
-- fix bug where map starts updating only every 5 seconds.
 - additional sound/volume options for alerts, dependant on jump distance.
 - better pilot cache/cleanup.

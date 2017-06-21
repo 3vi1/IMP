@@ -74,7 +74,7 @@ public slots:
     void gotKosError(const QString &pilotName);
     void gotKosReply(const QString &pilotName, const QList<KosEntry>& entries);
     void gotRblReply(QString name, bool rbl, int corpNum = 0);
-    void gotEssReply(const QList<KosEntry>& entries);
+    void gotEssReply(const QString &name, const QList<KosEntry>& entries);
     void gotMapRefreshChange(int msecs);
     void gotNewPilot(const QString& pilotName);
     void gotPollerRefreshChange(int msecs);
@@ -121,6 +121,7 @@ private slots:
 
 
 private:
+    void checkForUpdate();
     void initParsing();
     void initThemes();
     void addThemesFromSubdirectories(QDir dir, ThemeType themeType);

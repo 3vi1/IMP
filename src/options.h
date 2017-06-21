@@ -66,6 +66,7 @@ public:
     bool getShowBridges(){return m_showBridges;}
     void showBridges(bool b){m_showBridges = b;}
 
+    bool getCheckForUpdate();
     bool getEssAndKos();
     int getHistoryMax();
     bool getInitOldIntel() {return m_initOldIntel;}
@@ -125,6 +126,7 @@ public:
 
 signals:
     void autoPeriodChanged(int msecs);
+    void checkForUpdate();
     void pollerRefreshChanged(int msecs);
     void mapRefreshChanged(int msecs);
     void logDirChanged(const QString&);
@@ -154,6 +156,8 @@ private slots:
     void on_bridgeEdit_editingFinished();
     void on_incompleteTestButton_clicked();
 
+    void on_buttonCheck_clicked();
+
 private:
     Ui::Options *ui;
 
@@ -164,6 +168,7 @@ private:
     QList<Rule> readRules(QXmlStreamReader& reader);
 
     bool _autofollow = true;
+    bool m_checkForUpdate = true;
     bool m_initOldIntel = true;
     bool m_showAvatar = true;
     bool m_showBridges = false;

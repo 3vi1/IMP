@@ -40,7 +40,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>7</number>
      </property>
      <widget class="QWidget" name="alerts_tab">
       <attribute name="title">
@@ -1252,6 +1252,9 @@
          </property>
          <property name="text">
           <string>Check for application updates at startup.</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

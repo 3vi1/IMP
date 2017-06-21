@@ -132,6 +132,7 @@ void Options::cacheSettings()
     _pollerRefresh = ui->pollerSpinBox->value();
     _redundantSuppress = ui->redundantSpinBox->value();
 
+    m_checkForUpdate = ui->checkUpdates->isChecked();
     _kosDouble = ui->checkKosDouble->isChecked();
     _selfSuppress = ui->selfSuppressCheck->isChecked();
     _smoothAutofollow = ui->smoothCheck->isChecked();
@@ -175,6 +176,7 @@ void Options::restoreSettings()
     ui->pollerSpinBox->setValue(_pollerRefresh);
     ui->redundantSpinBox->setValue(_redundantSuppress);
 
+    ui->checkUpdates->setChecked(m_checkForUpdate);
     ui->selfSuppressCheck->setChecked(_selfSuppress);
     ui->smoothCheck->setChecked(_smoothAutofollow);
     ui->essBox->setChecked(_essAndKos);
@@ -235,6 +237,7 @@ void Options::loadSettings(QSettings& settings)
     ui->pollerSpinBox->setValue(settings.value("pollerRefresh", 500).toInt());
     ui->redundantSpinBox->setValue(settings.value("redundantSuppress", 30).toInt());
 
+    ui->checkUpdates->setChecked(settings.value("checkForUpdate", true).toBool());
     ui->selfSuppressCheck->setChecked(settings.value("selfSuppress", true).toBool());
     ui->smoothCheck->setChecked(settings.value("smoothAutofollow", true).toBool());
     ui->essBox->setChecked(settings.value("essAndKos", true).toBool());
@@ -488,6 +491,7 @@ void Options::saveSettings() //QSettings& settings)
         settings.setValue("pollerRefresh", getPollerRefresh());
         settings.setValue("redundantSuppress", getRedundantSuppress());
 
+        settings.setValue("checkForUpdate", m_checkForUpdate);
         settings.setValue("showAvatar", m_showAvatar);
         settings.setValue("initOldIntel", m_initOldIntel);
 
@@ -558,6 +562,11 @@ int Options::getAvatarExpiration()
 int Options::getAlarmDistance()
 {
     return ui->distanceSpinBox->value();
+}
+
+bool Options::getCheckForUpdate()
+{
+    return ui->checkUpdates->isChecked();
 }
 
 bool Options::getEssAndKos()
@@ -918,4 +927,9 @@ bool Options::pilotIsDisabled(const QString &pilotName)
 QStringList Options::getDisabledPilots()
 {
     return m_disabledPilots.toList();
+}
+
+void Options::on_buttonCheck_clicked()
+{
+    emit checkForUpdate();
 }

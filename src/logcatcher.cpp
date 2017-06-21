@@ -34,7 +34,8 @@ void LogCatcher::setLogDir(QString logDir)
     this->logDir = logDir;
 
     dirWatcher.addPath(logDir);
-    connect(&dirWatcher, SIGNAL(directoryChanged(const QString&)), this, SLOT(findCurrentLogs(const QString&)));
+    connect(&dirWatcher, &QFileSystemWatcher::directoryChanged,
+            this, &LogCatcher::findCurrentLogs);
 
 #ifdef USE_FALLBACK_POLLER
     fileSizes = new QMap<QString, qint64>;
@@ -43,7 +44,8 @@ void LogCatcher::setLogDir(QString logDir)
 
     fallbackPollTimer = new QTimer(this);
     fallbackPollTimer->setInterval(1000);
-    connect(fallbackPollTimer, SIGNAL(timeout()), this, SLOT(fallbackPoller()));
+    connect(fallbackPollTimer, &QTimer::timeout,
+            this, &LogCatcher::fallbackPoller);
     fallbackPollTimer->start();
 
 #else
@@ -52,7 +54,8 @@ void LogCatcher::setLogDir(QString logDir)
     // Windows because they don't update the file modification time.  So on Linux we
     // can just do this:
 
-    connect(&dirWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(gotFileChanged(const QString&)));
+    connect(&dirWatcher, &QFileSystemWatcher::fileChanged,
+            this, &LogCatcher::gotFileChanged);
 
 #endif
 

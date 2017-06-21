@@ -117,7 +117,6 @@ void ImpAudio::playLocalMedia(const QString& fileName)
     qDebug() << "Playing " << path;
 
     player = new QMediaPlayer;
-    //connect(player, SIGNAL(positionChanged(qint64)), this, SLOT(positionChanged(qint64)));
     player->setMedia(QUrl::fromLocalFile(path));
     player->setVolume(50);
     player->play();

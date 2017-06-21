@@ -327,7 +327,7 @@ QList<MessageInfo> Parser::parseLine(const QString& line)
         // Bring in some bison later and dump this simple placeholder
         markedUpText += identifyObjects(messageInfo, s);
 
-        QString endingPunctuation = listener.cap(4);
+        QString endingPunctuation = s[s.count()-1].postfix;
         //qDebug() << "endingPunctuation = " << endingPunctuation;
 
         if (endingPunctuation.contains('?'))

@@ -30,7 +30,8 @@ Map::Map(QObject *parent) : QObject(parent)
 {
     m_timer = new QTimer(this);
     setRefresh(1000);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(updateActiveSystems()));
+    connect(m_timer, &QTimer::timeout,
+            this, &Map::updateActiveSystems);
 }
 
 void Map::setRefresh(int msecs)
