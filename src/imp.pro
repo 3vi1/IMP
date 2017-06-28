@@ -45,10 +45,10 @@ SOURCES += \
     mapscene.cpp \
     findmessagesdialog.cpp \
     abstract_os.cpp \
-    themecustomizationdialog.cpp \
     msgstyle.cpp \
     utility.cpp \
-    chatview.cpp
+    chatview.cpp \
+    themecustomizer.cpp
     
 HEADERS  += \
     mainwindow.h \
@@ -73,10 +73,10 @@ HEADERS  += \
     mapscene.h \
     findmessagesdialog.h \
     abstract_os.h \
-    themecustomizationdialog.h \
     msgstyle.h \
     utility.h \
-    chatview.h
+    chatview.h \
+    themecustomizer.h
     
 FORMS    += \
     mainwindow.ui \
@@ -85,7 +85,7 @@ FORMS    += \
     info.ui \
     themedialog.ui \
     findmessagesdialog.ui \
-    themecustomizationdialog.ui
+    themecustomizer.ui
     
 DISTFILES += \
     ../data/dictionaries/clear \

@@ -44,6 +44,7 @@
 #include "parser.h"
 #include "theme.h"
 #include "themedialog.h"
+#include "themecustomizer.h"
 #include "utility.h"
 
 namespace Ui {
@@ -145,6 +146,8 @@ private:
     void changeImpStatus(const QString& text);
     void changeTheme(const QString& themeName, ThemeType themeType);
 
+    void setAutoFill(bool b);
+
     QString shortName(const QString &absoluteFilePath);
     void switchToRegion(const QString& currentRegion);
     void updateRegionMenu(const QString& currentRegion);
@@ -158,6 +161,9 @@ private:
 
     QSimpleUpdater*         m_updater;
     const QString           DEFS_URL = "http://eternaldusk.com/imp/imp_update.json";
+
+    ThemeCustomizer         themeCustomizer;
+    QDockWidget             *tdw = NULL;
 
     QShortcut*              alwaysOnTopShortcut = NULL;
     QShortcut*              framelessShortcut = NULL;

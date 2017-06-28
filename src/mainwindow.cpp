@@ -256,6 +256,7 @@ void MainWindow::changeTheme(const QString& themeName, ThemeType themeType)
     }
     m_theme->load(themeName, themeType);
     ui->mapView->setTheme(m_theme);
+    themeCustomizer.loadValues(m_theme);
 }
 
 
@@ -1721,12 +1722,25 @@ void MainWindow::on_actionFindMessages_triggered()
 
 void MainWindow::on_actionCustomize_triggered()
 {
-    ThemeCustomizationDialog dialog;
-    dialog.loadValues(m_theme);
-
-    if(dialog.exec() == QDialog::Accepted)
+    if(tdw == NULL)
     {
-        dialog.sendChanges(m_theme);
+        tdw = new QDockWidget(this);
+        tdw->setObjectName("themeCustomizerDock");
+        tdw->setWindowTitle("Theme Customizer");
+        tdw->setAutoFillBackground(true);
+
+        themeCustomizer.loadValues(m_theme);
+
+        tdw->setWidget(&themeCustomizer);
+
+        Qt::DockWidgetArea dwa = dockWidgetArea(ui->dockWidget) == Qt::RightDockWidgetArea ?
+                    Qt::LeftDockWidgetArea : Qt::RightDockWidgetArea;
+
+        this->addDockWidget(dwa, tdw);
+    }
+    else
+    {
+        tdw->show();
     }
 }
 
@@ -1764,6 +1778,16 @@ void MainWindow::gotOpacity(int delta)
     setWindowOpacity(factor);
 }
 
+void MainWindow::setAutoFill(bool b)
+{
+    ui->menuBar->setAutoFillBackground(b);
+    ui->centralWidget->setAutoFillBackground(b);
+    ui->statusBar->setAutoFillBackground(b);
+    ui->dockWidget->setAutoFillBackground(b);
+    ui->dockWidgetContents->setAutoFillBackground(b);
+    ui->listView->setAutoFillBackground(b);
+}
+
 void MainWindow::on_action_Overlay_Mode_triggered()
 {
     overlayMode = !overlayMode;
@@ -1774,12 +1798,7 @@ void MainWindow::on_action_Overlay_Mode_triggered()
     Qt::WindowFlags flags = this->windowFlags();
     if(overlayMode)
     {
-        ui->menuBar->setAutoFillBackground(false);
-        ui->centralWidget->setAutoFillBackground(false);
-        ui->statusBar->setAutoFillBackground(false);
-        ui->dockWidget->setAutoFillBackground(false);
-        ui->dockWidgetContents->setAutoFillBackground(false);
-        ui->listView->setAutoFillBackground(false);
+        setAutoFill(false);
 
         if(!frameless)
         {

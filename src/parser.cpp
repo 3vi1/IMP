@@ -203,8 +203,9 @@ QList<MessageInfo> Parser::parseLine(const QString& line)
 
         // Test to see if this is a system change message:
         //     EVE System > Channel changed to Local : JEIV-E
+        //     EVE-System > Chatkanal geändert zu Lokal: JEIV-E*
 
-        QRegExp sysMsgRegExp("^Channel changed to .* : (.*)$");
+        QRegExp sysMsgRegExp("^Ch.*Lo[ck]al ?: (.*)\*?$");
         sysMsgRegExp.setMinimal(true);
         if (sysMsgRegExp.indexIn(text.trimmed()) != -1)
         {

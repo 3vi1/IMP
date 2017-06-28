@@ -1,21 +1,61 @@
 
-#centralWidget, #dockWidget, QStatusBar
+#centralWidget, #dockWidget, #themeCustomizerDock, QStatusBar
 {
 	color: white; 
 	background-color: rgba(26,44,48,120);
 	font-family: "Arial Narrow", Arial, "Helvetica Condensed", Helvetica, sans-serif;
 }
 
-QDockWidget
+QMainWindow::separator
+{
+        /* QDockWidget separator */
+	background-color: rgba(26,44,48,200);
+	width: 3;
+}
+
+QMenuBar {
+        color: white;
+        background-color: rgba(26,44,48,250);
+        
+        /*
+        background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                      stop:0 rgba(26,44,48,255), stop:1 rgba(26,44,48,50));
+                                      */
+}
+
+#dockWidget
 {
         /*titlebar-close-icon: url(:/new/Icon/Icon/Crop.jpg);*/
         /*titlebar-normal-icon: url(:/new/Icon/Icon/F_Circlensm_Icon.jpg);*/
 }
 
-QMainWindow::separator
+#themeCustomizerDock
 {
-    background-color: rgba(26,44,48,120);
-    width: 3;
+/*    border: 5px solid red; */
+    background-color: rgba(38,74,70,255);
+}
+
+#themeCustomizerDock QWidget
+{
+    color: white;
+    background-color: rgba(38,74,70,255);
+}
+
+#themeCustomizerDock QToolBox
+{
+    color: white;
+/*    background-color: rgba(38,74,70,180); */
+}
+
+#themeCustomizerDock QScrollArea>QWidget>QWidget
+{
+    color: white;
+}
+
+#themeCustomizerDock QLabel
+{
+	color: white;
+	font-family: "Arial Narrow", Arial, "Helvetica Condensed", Helvetica, sans-serif;
 }
 
 QDockWidget::title {
@@ -26,7 +66,7 @@ QDockWidget::title {
 /*    padding-left: 10px; */
 }
 
-QDockWidget > QWidget {
+QDockWidget {
     /* If you wanted a solid border around the message list: */
     /* border: 5px solid red; */
 }
@@ -38,7 +78,7 @@ QDockWidget::close-button, QDockWidget::float-button
     /*icon-size: 20px;*/ 
 } 
 
-QLabel, QGraphicsView 
+QGraphicsView 
 {
 	color: white;
 	background-color: transparent;

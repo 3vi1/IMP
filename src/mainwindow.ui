@@ -31,6 +31,9 @@
   <property name="documentMode">
    <bool>false</bool>
   </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="enabled">
     <bool>true</bool>
@@ -308,42 +311,6 @@
   <action name="actionN_RMSH">
    <property name="text">
     <string>N-RMSH</string>
-   </property>
-  </action>
-  <action name="actionProvidence">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Providence</string>
-   </property>
-   <property name="toolTip">
-    <string>Show Providence region.</string>
-   </property>
-  </action>
-  <action name="actionCatch">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Catch</string>
-   </property>
-   <property name="toolTip">
-    <string>Show Catch region.</string>
-   </property>
-  </action>
-  <action name="actionQuerious">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Querious</string>
-   </property>
-   <property name="toolTip">
-    <string>Show Querious region.</string>
    </property>
   </action>
   <action name="actionFindSystem">
