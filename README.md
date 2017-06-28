@@ -22,6 +22,7 @@ The latest binary releases are available on [the releases page](https://github.c
 
 * IMP reads recent logs and primes the system statuses with all recent activity on restart.
 * IMP automatically detects your pilots current system at startup.
+* IMP supports maps for all regions as well as custom maps that follow dotlan's svg format.
 * IMP's map:
   * Automatically scrolls to follow your current pilot.
   * Is themeable and rotatable.
