@@ -1,3 +1,5 @@
-/src/imp.pro.user
+/src/imp.pro.user*
 /build/*
 /debian/*
+/ThirdParty/build-QSimpleUpdater-Desktop-Debug
+/ThirdParty/QSimpleUpdater

@@ -22,7 +22,6 @@
 #include "ui_mainwindow.h"
 #include "abstract_os.h"
 #include "findmessagesdialog.h"
-#include "themecustomizationdialog.h"
 
 #include <QColorDialog>
 #include <QDesktopServices>
