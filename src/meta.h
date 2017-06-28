@@ -28,7 +28,7 @@ static const struct Version
     Version(){}
 
     QString release = "0.9.2"; //VERSION;
-    QString name = "The sponsored by Erasmus edition.";
+    QString name = "The sponsored by Erasmus edition";
 
     QString styleHeader1 = "<span style=\" color:#0000ff;\">";
     QString styleFooter1 = "</span>";
