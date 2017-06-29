@@ -362,11 +362,14 @@ QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &senten
 
     for(int i=0; i<sentence.length(); i++)
     {
+        bool handled = false;
+
         QString lowerWord = sentence[i].actual.toLower();
         if (ignoreWords.contains(lowerWord) || sentence[i].actual.length() < 2)
         {
             // Common word to ignore, skip it and go to next word.
             markedUpText += sentence[i].prefix + sentence[i].actual + sentence[i].postfix;
+            handled = true;
         }
         else if (statusWords.contains(lowerWord))
         {
@@ -376,6 +379,7 @@ QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &senten
             markedUpText += sentence[i].actual;
             markedUpText += "<info>";
             markedUpText += sentence[i].postfix;
+            handled = true;
         }
         else if (locationWords.contains(lowerWord))
         {
@@ -385,16 +389,35 @@ QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &senten
             markedUpText += sentence[i].actual;
             markedUpText += "<info>";
             markedUpText += sentence[i].postfix;
+            handled = true;
         }
         else if (clearWords.contains(lowerWord))
         {
-            if(i > 0 && sentence[i].actual.toLower() != "gate")
+            if(i > 0)
             {
-                // We don't want to clear a system if someone says a gate is clear.
-                // "> KBP Dital gate clr!"
-                messageInfo.flags.append(MessageFlag::CLEAR);
-                markedUpText += sentence[i].prefix;
-                markedUpText += "<clear>";
+                if(sentence[i-1].actual.toLower() == "not")
+                {
+                    // This isn't a clear message at all.
+                    //    "> KBP not clear!"
+                    // Fall out and let normal processing light up the system.
+                    handled = false;
+                }
+                else if(sentence[i-1].actual.toLower() != "gate")
+                {
+                    // We don't want to clear a system if someone says a gate is clear
+                    //    "> KBP Dital gate clr!"
+                    markedUpText += sentence[i].prefix;
+                    handled = true;
+                }
+                else {
+                    messageInfo.flags.append(MessageFlag::CLEAR);
+                    markedUpText += sentence[i].prefix;
+                    markedUpText += "<clear>";
+                    handled = true;
+                }
+            }
+            if(handled)
+            {
                 markedUpText += sentence[i].actual;
                 markedUpText += "<info>";
                 markedUpText += sentence[i].postfix;
@@ -408,10 +431,12 @@ QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &senten
            markedUpText += sentence[i].actual;
            markedUpText += "<info>";
            markedUpText += sentence[i].postfix;
+           handled = true;
         }
         else if(lowerWord == "pocket")
         {
             messageInfo.flags.append(MessageFlag::POCKET);
+            handled = true;
         }
         else if(lowerWord.contains(QRegExp("[^ ]{3,5}://.+")))
         {
@@ -420,9 +445,10 @@ QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &senten
             markedUpText += "</a>";
 
             messageInfo.flags.append(MessageFlag::LINK);
+            handled = true;
         }
-        else
-        {
+
+        if(!handled) {
             QString systemName = regionMap->getSystemByAbbreviation(sentence[i].actual.toUpper());
 
             if(systemName.length() > 0)
