@@ -137,7 +137,6 @@ void AsyncInfo::error(QNetworkReply::NetworkError err)
 
 void AsyncInfo::kosCheck(const QString &reqNames)
 {
-    checkNames = reqNames;
     kosCheck(reqNames, SLOT(gotKosCheckReply()));
 }
 
@@ -145,6 +144,7 @@ void AsyncInfo::kosCheck(const QString &reqNames,
                          const char* slot,
                          QString queryType)
 {    
+    checkNames = reqNames;
     QString names = reqNames;
 
     int nameCount = 1;
@@ -198,8 +198,18 @@ void AsyncInfo::gotKosCheckReply()
 
     QJsonArray jsonArray = jsonObject["results"].toArray();
 
+    QStringList names = checkNames.toLower().split('\n');
     foreach (const QJsonValue& value, jsonArray) {
+
         QJsonObject obj = value.toObject();
+
+        // Move on if this doesn't match one of our *specific* *pilot*s
+        if(obj["type"].toString() != "pilot" ||
+                !names.contains(obj["label"].toString().toLower()))
+        {
+            continue;
+        }
+
         KosEntry KosEntry;
         KosEntry.pilot.eveId = obj["eveid"].toInt();
         KosEntry.pilot.icon = obj["icon"].toString();
