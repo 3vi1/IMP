@@ -32,6 +32,7 @@ The latest binary releases are available on [the releases page](https://github.c
 * All audio alerts are customizable.
   * New files can be added to imp/audio and will appear as options in the GUI.
   * Imp can be configured to suppress redundant alerts and/or alerts created by your own pilots.
+  * You can configure a different sound and/or volume for each number of jumps away that reds are reported.
 * Rules can be created to fire user defined actions for channel messages.
   * Rules can be configured to act upon any open channel, not just intel channels.
   * Rules use regular-expressions in every field for extreme flexibility.
