@@ -18,30 +18,30 @@
  *
  */
 
-#ifndef MAPSCENE_H
-#define MAPSCENE_H
+#ifndef PLAYDELEGATE_H
+#define PLAYDELEGATE_H
 
 #include <QObject>
-#include <QGraphicsScene>
-#include <QGraphicsSceneMouseEvent>
+#include <QStyledItemDelegate>
 
-class MapScene : public QGraphicsScene
+class PlayDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
+
 public:
-    explicit MapScene(QObject *parent = 0);
+    PlayDelegate(QObject *parent);
+
+    void paint(QPainter *painter,
+               const QStyleOptionViewItem &option,
+               const QModelIndex &index) const;
+
+    bool editorEvent(QEvent *event,
+                     QAbstractItemModel *model,
+                     const QStyleOptionViewItem &option,
+                     const QModelIndex &index);
 
 signals:
-    void systemClicked(const QString& name);
-
-public slots:
-
-protected:
-    void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-    void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-
-private:
+    void playSound(const QString& soundFile, float volume);
 };
 
-#endif // MAPSCENE_H
+#endif // PLAYDELEGATE_H

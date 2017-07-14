@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>675</width>
-    <height>438</height>
+    <width>1104</width>
+    <height>571</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QTabWidget" name="tabOptions">
+    <widget class="QTabWidget" name="options">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -40,82 +40,50 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>7</number>
+      <number>0</number>
      </property>
+     <widget class="QWidget" name="tabProximity">
+      <attribute name="title">
+       <string>Proximity</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_12">
+       <item row="0" column="0" colspan="2">
+        <widget class="QTableView" name="tableProxAlarms">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Sounds that are played when enemies are reported at varying distances.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="btnRemoveProx">
+         <property name="text">
+          <string>Remove Selected</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="btnInsertProx">
+         <property name="text">
+          <string>Insert Alert</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="alerts_tab">
       <attribute name="title">
        <string>Alerts</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Alarm Distance:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QSpinBox" name="distanceSpinBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="value">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Alarm:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QComboBox" name="alarmCombo">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QToolButton" name="alarmTestButton">
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="icon">
-          <iconset resource="resources.qrc">
-           <normaloff>:/graphics/volume-icon.png</normaloff>:/graphics/volume-icon.png</iconset>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <layout class="QGridLayout" name="gridLayout_7">
-         <item row="0" column="0">
+       <item row="0" column="1" colspan="3">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
           <widget class="QLabel" name="label_26">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -124,11 +92,11 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Suppress redundant if within</string>
+            <string>Suppress alarms redundant if within</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
+         <item>
           <widget class="QSpinBox" name="redundantSpinBox">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -144,10 +112,10 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
+         <item>
           <widget class="QLabel" name="label_27">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
              <horstretch>2</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -159,10 +127,10 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="1">
+       <item row="1" column="1" colspan="3">
         <widget class="QCheckBox" name="selfSuppressCheck">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -175,7 +143,7 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="2" column="3">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -188,7 +156,7 @@
          </property>
         </spacer>
        </item>
-       <item row="5" column="0">
+       <item row="3" column="0" colspan="2">
         <widget class="QLabel" name="label_3">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -204,7 +172,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="3" column="2">
         <widget class="QComboBox" name="statusCombo">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -214,7 +182,7 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="2">
+       <item row="3" column="4">
         <widget class="QToolButton" name="statusTestButton">
          <property name="text">
           <string>...</string>
@@ -225,7 +193,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
+       <item row="4" column="0" colspan="2">
         <widget class="QLabel" name="label_14">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -241,7 +209,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
+       <item row="4" column="2">
         <widget class="QComboBox" name="essCombo">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -251,7 +219,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="2">
+       <item row="4" column="4">
         <widget class="QToolButton" name="essTestButton">
          <property name="text">
           <string>...</string>
@@ -262,7 +230,7 @@
          </property>
         </widget>
        </item>
-       <item row="7" column="1">
+       <item row="5" column="2" colspan="2">
         <widget class="QCheckBox" name="essBox">
          <property name="text">
           <string>Only alert on ESS when person is KOS.</string>
@@ -272,7 +240,7 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
+       <item row="6" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
           <string>Volume:</string>
@@ -282,7 +250,7 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="1">
+       <item row="6" column="2">
         <widget class="QSlider" name="volume">
          <property name="maximum">
           <number>100</number>
@@ -292,6 +260,40 @@
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="rules_tab">
+      <attribute name="title">
+       <string>Rules</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0" colspan="2">
+        <widget class="QTableView" name="tableView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Rules to take action when expressions are seen in channels.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="ruleRemoveButton">
+         <property name="text">
+          <string>Remove Rule</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="ruleInsertButton">
+         <property name="text">
+          <string>Insert Rule</string>
          </property>
         </widget>
        </item>
@@ -538,7 +540,7 @@
           <number>10000</number>
          </property>
          <property name="value">
-          <number>3000</number>
+          <number>1000</number>
          </property>
         </widget>
        </item>
@@ -1173,37 +1175,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="rules_tab">
-      <attribute name="title">
-       <string>Rules</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0" colspan="2">
-        <widget class="QTableView" name="tableView">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="ruleRemoveButton">
-         <property name="text">
-          <string>Remove Rule</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QPushButton" name="ruleInsertButton">
-         <property name="text">
-          <string>Insert Rule</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
        <string>User Interface</string>
@@ -1272,8 +1243,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>alarmCombo</tabstop>
-  <tabstop>alarmTestButton</tabstop>
   <tabstop>statusCombo</tabstop>
   <tabstop>statusTestButton</tabstop>
   <tabstop>essCombo</tabstop>

@@ -69,11 +69,6 @@ void ChatItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     }
 }
 
-void ChatItemDelegate::setModel(ChatModel* model)
-{
-    m_model = model;
-}
-
 QTextDocument* ChatItemDelegate::document(const QStyleOptionViewItem &option) const
 {
     QStyleOptionViewItem options = option;

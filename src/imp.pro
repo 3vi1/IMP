@@ -48,7 +48,11 @@ SOURCES += \
     msgstyle.cpp \
     utility.cpp \
     chatview.cpp \
-    themecustomizer.cpp
+    themecustomizer.cpp \
+    alarmmodel.cpp \
+    combodelegate.cpp \
+    volumedelegate.cpp \
+    playdelegate.cpp
     
 HEADERS  += \
     mainwindow.h \
@@ -76,7 +80,11 @@ HEADERS  += \
     msgstyle.h \
     utility.h \
     chatview.h \
-    themecustomizer.h
+    themecustomizer.h \
+    alarmmodel.h \
+    combodelegate.h \
+    volumedelegate.h \
+    playdelegate.h
     
 FORMS    += \
     mainwindow.ui \
@@ -103,7 +111,9 @@ DISTFILES += \
     ../docs/RULES \
     ../docs/THEMES \
     ../docs/CREDITS \
-    ../docs/DICTIONARIES
+    ../docs/DICTIONARIES \
+    ../INSTALL.md \
+    ../data/dictionaries/dumbnames
     
 RESOURCES += \
     resources.qrc

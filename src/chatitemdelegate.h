@@ -37,7 +37,7 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index ) const override;
-    void setModel(ChatModel* model);
+
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
     QString anchorAt(const QStyleOptionViewItem &option, const QModelIndex &index, const QPoint &point);
@@ -46,7 +46,6 @@ signals:
 public slots:
 
 private:
-    ChatModel*  m_model;
     QSize       m_avatarSize = QSize(64,64);
     QSize       padding = QSize(2,1);
 

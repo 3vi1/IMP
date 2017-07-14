@@ -97,7 +97,6 @@ MainWindow::MainWindow(QWidget *parent) :
     chatModel->setPilotCache(&pilotCache);
     msgStyle = new MsgStyle(this);
     m_cid = new ChatItemDelegate(msgStyle, this);
-    m_cid->setModel(chatModel);
 
     loadSettings();
 
@@ -544,8 +543,8 @@ void MainWindow::gotRblReply(QString name, bool rbl, int corpNum)
 
         if(corpNum > 1)
         {
-            info.text = name + " is RED BY LAST!";
-            info.markedUpText = name + " is <warn>RED BY LAST!";
+            info.text = name + " RED BY LAST (" + name +")!";
+            info.markedUpText = " <warn>RED BY LAST (" + name + ") !";
         }
         else
         {
@@ -1201,7 +1200,6 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
                                     ) / 1000;
                         if(secondsDiff < 10)
                         {
-                            bool play = false;
                             foreach(QString system, message.systems)
                             {
                                 // Test each pilot location to see if it is near affected system
@@ -1213,7 +1211,7 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
                                     QString pilotLoc = regionMap->pilotsSystem(pilot);
                                     if(regionMap->contains(pilotLoc) &&
-                                       regionMap->distanceBetween(pilotLoc, system) <= options.getAlarmDistance()
+                                       options.withinAlarmDistance(regionMap->distanceBetween(pilotLoc, system))
                                       )
                                     {
                                         changeImpStatus("Setting " + system + " to red.");
@@ -1230,7 +1228,9 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
                                             qDebug() << "-pilotLoc: " << pilotLoc << "  system: " << system;
                                             lastAlertTime = QDateTime::currentDateTimeUtc();
                                             lastAlertSystem = system;
-                                            play = true;
+
+                                            Alarm alarm = options.getAlarmForDistance(regionMap->distanceBetween(pilotLoc, system));
+                                            audio.playLocalFile(alarm.file, alarm.volume);
                                         }
 
                                         // If this is within alarm distance, let's update the map NOW.
@@ -1238,10 +1238,6 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
                                             regionMap->update();
                                     }
                                 }
-                            }
-                            if (play)
-                            {
-                                audio.playLocalFile(options.getSoundAlarm());
                             }
                         }
                     }

@@ -21,9 +21,13 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
+#include "alarmmodel.h"
 #include "audio.h"
+#include "combodelegate.h"
+#include "playdelegate.h"
 #include "rulemodel.h"
 #include "theme.h"
+#include "volumedelegate.h"
 
 #include <QDialog>
 #include <QFileDialog>
@@ -50,9 +54,6 @@ public:
     void saveSettings(); //QSettings& settings);
 
     void setAudio(ImpAudio* impAudio);
-
-    int getAlarmDistance();
-    int getAlarmVolume();
 
     bool getAutofollow();
     void setAutofollow(bool checked);
@@ -100,7 +101,6 @@ public:
     bool getSelfSuppress();
     bool getSmoothAutofollow();
 
-    QString getSoundAlarm();
     QString getSoundEss();
     QString getSoundStatus();
     QString getSoundIncompleteKos();
@@ -122,6 +122,10 @@ public:
     void setTheme(const QString& n, ThemeType t){
         m_themeName = n; m_themeType = t; }
 
+    bool withinAlarmDistance(int distance);
+    const Alarm& getAlarmForDistance(int distance);
+
+    AlarmModel* alarmModel;
     RuleModel* ruleModel;
 
 signals:
@@ -138,11 +142,10 @@ protected:
     bool eventFilter(QObject *, QEvent *evt);
 
 private slots:
+    void testSound(const QString& soundFileName, float volume);
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
-    void on_alarmTestButton_clicked();
     void on_statusTestButton_clicked();
-    void on_volume_sliderReleased();
     void on_clipKosTestButton_clicked();
     void on_clipNotKosTestButton_clicked();
     void on_ruleInsertButton_clicked();
@@ -155,16 +158,23 @@ private slots:
     void on_intelWidget_itemClicked(QListWidgetItem *item);
     void on_bridgeEdit_editingFinished();
     void on_incompleteTestButton_clicked();
-
     void on_buttonCheck_clicked();
+    void on_btnInsertProx_clicked();
+    void on_btnRemoveProx_clicked();
 
 private:
     Ui::Options *ui;
+    ComboDelegate* comboDelegate;
+    PlayDelegate* playDelegate;
+    VolumeDelegate* volumeDelegate;
 
     ImpAudio* audio;
     QString audioPath;
 
-    void readTextElements(QXmlStreamReader& reader, Rule& rule);
+    void readAlarmTextElements(QXmlStreamReader& reader, Alarm& rule);
+    QList<Alarm> readAlarms(QXmlStreamReader& reader);
+
+    void readRuleTextElements(QXmlStreamReader& reader, Rule& rule);
     QList<Rule> readRules(QXmlStreamReader& reader);
 
     bool _autofollow = true;
@@ -203,14 +213,15 @@ private:
     QSet<QString> m_disabledPilots;
 
     QList<Rule> _rules;
+    QList<Alarm> m_alarms;
 
-    QString m_soundAlarm;
+    QStringList m_soundList;
+    QString m_soundAlarm = "";
     QString m_soundEss;
     QString m_soundIncomplete;
     QString m_soundIsKos;
     QString m_soundNoKos;
     QString m_soundStatus;
-
 };
 
 #endif // OPTIONS_H

@@ -7,19 +7,26 @@ You will need the following dependencies (Ubuntu, Debian):
 
 # Compiling on Linux
 
-1. Change into the out-of-tree build subdirectory of the source tree:
+1. Clone source and dependencies
 
-        mkdir IMP/build; cd IMP/build
+        git clone https://...
+        cd IMP
+        git submodule init
+        git submodule update
 
-2. Create the makefile via qmake:
+2. Change into the out-of-tree build subdirectory of the source tree:
+
+        mkdir build; cd build
+
+3. Create the makefile via qmake:
 
         qmake --qt=5 ../src/imp.pro
 
-3. Build the binary:
+4. Build the binary:
 
         make
 
-4. For the easiest install, just run make install to automatically set up the shared data and desktop launcher.
+5. For the easiest install, just run make install to automatically set up the shared data and desktop launcher.
 
         sudo make install
 

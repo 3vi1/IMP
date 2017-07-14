@@ -33,7 +33,7 @@ QVariant RuleModel::headerData(int section, Qt::Orientation orientation, int rol
             switch (section)
             {
             case 0:
-                return QString("");
+                return QString("E");
             case 1:
                 return QString("Channel");
             case 2:
@@ -41,7 +41,7 @@ QVariant RuleModel::headerData(int section, Qt::Orientation orientation, int rol
             case 3:
                 return QString("Action");
             case 4:
-                return QString("");
+                return QString("C");
             }
         }
         else
@@ -182,6 +182,9 @@ Qt::ItemFlags RuleModel::flags(const QModelIndex &index) const
 
 bool RuleModel::insertRows(int row, int count, const QModelIndex &parent)
 {
+    if(row < 0)
+        row = rules.count();
+
     beginInsertRows(parent, row, row + count - 1);
     rules.insert(row, Rule{false, "", "", "", true});
     endInsertRows();
@@ -191,8 +194,10 @@ bool RuleModel::insertRows(int row, int count, const QModelIndex &parent)
 
 bool RuleModel::removeRows(int row, int count, const QModelIndex &parent)
 {
+    if(row < 0)
+        row = rules.count() - 1;
+
     beginRemoveRows(parent, row, row + count - 1);
-    //rules.removeAt(row);
     if(row == 0 && count == rules.count())
     {
         rules.clear();
@@ -209,18 +214,18 @@ bool RuleModel::removeRows(int row, int count, const QModelIndex &parent)
     return true;
 }
 
-void RuleModel::insertRule(const QModelIndexList indexList)
+void RuleModel::insertRule(bool enabled,
+                           QString channel,
+                           QString match,
+                           QString action,
+                           bool cont)
 {
-    int row = indexList.count() > 0 ?
-                indexList[0].row() : rules.count();
-    insertRows(row, 1, QModelIndex());
-}
+    beginInsertRows(QModelIndex(), rules.count(), rules.count());
 
-void RuleModel::removeRule(const QModelIndexList indexList)
-{
-    int row = indexList.count() > 0 ?
-                indexList[0].row() : rules.count() - 1;
-    removeRows(row, 1, QModelIndex());
+    rules.insert(rules.count(),
+                 Rule{enabled, channel, match, action, cont});
+
+    endInsertRows();
 }
 
 QList<Rule> RuleModel::getRules()

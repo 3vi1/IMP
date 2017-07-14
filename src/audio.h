@@ -33,7 +33,9 @@ public:
     explicit ImpAudio(QObject *parent = 0);
 
     void playLocalFile(const QString& fileName);
-    QSoundEffect* oldPlayLocalFile(const QString& fileName);
+    void playLocalFile(const QString& fileName, float volume);
+
+    //QSoundEffect* oldPlayLocalFile(const QString& fileName);
 
     void playLocalMedia(const QString& fileName);
     void stopMusic();
@@ -48,7 +50,7 @@ public slots:
     void playingChanged();
 
 private:
-    qreal volume = 1.0f;
+    qreal m_volume = 1.0f;
 
     QMediaPlayer* player;
     QMap<QString, QSoundEffect*> effects;

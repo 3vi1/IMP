@@ -1,8 +1,21 @@
-0.9.3 - Fixed false KOS results when CVA checker has a partial name match
+0.9.3 - New feature:  Instead of one alert sound, you can now configure
+        differing sounds (or the same sound) at differing (or the same)
+        volumes for each jump away you wish to be alerted.  If you've
+        previously configured alerts, IMP will set the proximity
+        configuration to give you the same results.  New users get two
+        defaults (for zero and one jump) that they can amend.
+
+        Fixed false KOS results when CVA checker has a partial name match
         or if a pilot's name matches an Alliance/Corp.
 
         Parser improvements for when people are saying a system is *not*
-        or are just saying a gate is clear.
+        clear or are just saying a gate is clear.
+
+        No longer warns new users that rules file doesn't exist.  Instead
+        it creates one default rule that plays a sound if someone says
+        things like " red" or "kos!" in local.
+
+        Updated Linux build instructions to include submodules.
 
 0.9.2 - Fixed parser bug where questions where not being marked as such.
 
@@ -314,7 +327,17 @@
 
 Coming soon:
 
+- kos msg for red by last should show person and corp.
 - fix display of messages with backslashes.
-- additional sound/volume options for alerts, dependant on jump distance.
 - better pilot cache/cleanup.
 - if at war, and going hisec, play a "bad idea" sound.
+- theme customization for system images
+- TTS support
+- Maybe an option to auto-change region?
+- Poll/repoll pilots option
+- WH icon for system (xxx-xx contains/has a wh|wormhole|hole)
+- Clear wh:  (xxx-xx wh closed|collapsed|gone)
+- Make mini militia faction count (RBL npc corps)?
+- Add some intelligence to handle dumb names like R3 Clear
+- Add option to autobuild jumpbridge list from dotlan instead of files.
+- Break follow transistion mode on screen reposition.

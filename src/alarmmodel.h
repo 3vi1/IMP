@@ -18,26 +18,28 @@
  *
  */
 
-#ifndef RULEMODEL_H
-#define RULEMODEL_H
+#ifndef ALARMMODEL_H
+#define ALARMMODEL_H
 
+#include <QComboBox>
 #include <QAbstractTableModel>
 
-struct Rule
+struct Alarm
 {
-    bool enabled;
-    QString channel;
-    QString match;
-    QString action;
-    bool continueOnMatch;
+    uint    jumps;
+    QString file;
+    float   volume;
 };
 
-class RuleModel : public QAbstractTableModel
+class AlarmModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit RuleModel(QObject *parent = 0);
+    explicit AlarmModel(QObject *parent = 0);
+
+    const Alarm& at(int distance) {return alarms[distance];}
+    int count() {return alarms.count();}
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -60,17 +62,15 @@ public:
     // Remove data:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
-    void insertRule(bool enabled,
-                    QString channel,
-                    QString match,
-                    QString action,
-                    bool cont);
+    void insertAlarm(QString filename, float volume);
+    //void removeAlarm(const QModelIndexList indexList);
+    QList<Alarm> getAlarms();
+    void setAlarms(QList<Alarm> newAlarms);
 
-    QList<Rule> getRules();
-    void setRules(QList<Rule> rules);
+    QList<QComboBox> alarmCombos;
 
 private:
-    QList<Rule> rules;
+    QList<Alarm> alarms;
 };
 
-#endif // RULEMODEL_H
+#endif // AlarmModel_H

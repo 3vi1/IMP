@@ -21,6 +21,7 @@
 #include "options.h"
 #include "ui_options.h"
 #include "abstract_os.h"
+#include "combodelegate.h"
 
 #include <QDebug>
 #include <QDir>
@@ -38,16 +39,37 @@ Options::Options(QWidget *parent) :
     ui->setupUi(this);
     ui->intelEdit->installEventFilter(this);
 
+    comboDelegate = new ComboDelegate(this);
+    volumeDelegate = new VolumeDelegate(this);
+    playDelegate = new PlayDelegate(this);
+    connect(playDelegate, &PlayDelegate::playSound,
+            this, &Options::testSound);
+
     rebuildAudioFileList();
     rebuildStyleFileList();
 
+    alarmModel = new AlarmModel(this);
+    ui->tableProxAlarms->setModel(alarmModel);
+    ui->tableProxAlarms->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    ui->tableProxAlarms->verticalHeader()->hide();
+    ui->tableProxAlarms->setItemDelegateForColumn(1, comboDelegate);
+    ui->tableProxAlarms->setItemDelegateForColumn(2, volumeDelegate);
+    ui->tableProxAlarms->setItemDelegateForColumn(3, playDelegate);
+    ui->tableProxAlarms->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    ui->tableProxAlarms->setColumnWidth(0, 50);
+    ui->tableProxAlarms->setColumnWidth(2, 300);
+    ui->tableProxAlarms->setColumnWidth(3, 50);
+    //ui->tableProxAlarms->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    //ui->tableProxAlarms->verticalHeader()->setDefaultSectionSize(48);
+    ui->tableProxAlarms->show();
+
     ruleModel = new RuleModel(this);
     ui->tableView->setModel(ruleModel);
-    ui->tableView->setColumnWidth(0, 25);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+    ui->tableView->setColumnWidth(0, 30);
     ui->tableView->setColumnWidth(1, 100);
-    ui->tableView->setColumnWidth(2, 100);
-    ui->tableView->setColumnWidth(3, 310);
-    ui->tableView->setColumnWidth(4, 25);
+    ui->tableView->setColumnWidth(4, 30);
     ui->tableView->show();
 }
 
@@ -58,7 +80,6 @@ Options::~Options()
 
 void Options::rebuildAudioFileList()
 {
-    ui->alarmCombo->clear();
     ui->comboIncomplete->clear();
     ui->clipKosCombo->clear();
     ui->clipNotKosCombo->clear();
@@ -75,20 +96,22 @@ void Options::rebuildAudioFileList()
         if(fileInfo.fileName().endsWith(".dll"))
             continue;
 
-        ui->alarmCombo->addItem(fileInfo.fileName());
         ui->comboIncomplete->addItem(fileInfo.fileName());
         ui->clipKosCombo->addItem(fileInfo.fileName());
         ui->clipNotKosCombo->addItem(fileInfo.fileName());
         ui->statusCombo->addItem(fileInfo.fileName());
         ui->essCombo->addItem(fileInfo.fileName());
+
+        m_soundList.append(fileInfo.fileName());
     }
 
-    ui->alarmCombo->setCurrentIndex(ui->alarmCombo->findText(m_soundAlarm));
     ui->statusCombo->setCurrentIndex(ui->statusCombo->findText(m_soundStatus));
     ui->comboIncomplete->setCurrentIndex(ui->comboIncomplete->findText(m_soundIncomplete));
     ui->clipKosCombo->setCurrentIndex(ui->clipKosCombo->findText(m_soundIsKos));
     ui->clipNotKosCombo->setCurrentIndex(ui->clipNotKosCombo->findText(m_soundNoKos));
     ui->essCombo->setCurrentIndex(ui->essCombo->findText(m_soundEss));
+
+    comboDelegate->setItems(m_soundList);
 }
 
 void Options::rebuildStyleFileList()
@@ -121,8 +144,6 @@ void Options::cacheSettings()
     }
     _intelChannels = channels;
 
-    _alarmDistance = ui->distanceSpinBox->value();
-    _volume = ui->volume->value();
     _avatarExpiration = ui->avatarBox->value();
     _historyCount = ui->historySpinBox->value();
     _autoPeriod = ui->autoPeriodSpin->value();
@@ -141,7 +162,6 @@ void Options::cacheSettings()
 
     m_initOldIntel = ui->checkOldIntel->isChecked();
 
-    m_soundAlarm = ui->alarmCombo->currentText();
     m_soundStatus = ui->statusCombo->currentText();
     m_soundIncomplete = ui->comboIncomplete->currentText();
     m_soundIsKos = ui->clipKosCombo->currentText();
@@ -155,6 +175,7 @@ void Options::cacheSettings()
     _fontName = ui->fontComboBox->currentText();
     _fontSize = ui->fontSpinBox->value();
 
+    m_alarms = alarmModel->getAlarms();
     _rules = ruleModel->getRules();
 
     m_style = ui->comboStyle->currentText();
@@ -165,8 +186,6 @@ void Options::restoreSettings()
     ui->intelWidget->clear();
     ui->intelWidget->addItems(_intelChannels);
 
-    ui->distanceSpinBox->setValue(_alarmDistance);
-    ui->volume->setValue(_volume);
     ui->avatarBox->setValue(_avatarExpiration);
     ui->historySpinBox->setValue(_historyCount);
     ui->autoPeriodSpin->setValue(_autoPeriod);
@@ -184,7 +203,6 @@ void Options::restoreSettings()
     ui->checkAvatar->setChecked(m_showAvatar);
     ui->checkOldIntel->setChecked(m_initOldIntel);
 
-    ui->alarmCombo->setCurrentIndex(ui->alarmCombo->findText(m_soundAlarm));
     ui->statusCombo->setCurrentIndex(ui->statusCombo->findText(m_soundStatus));
     ui->comboIncomplete->setCurrentIndex(ui->comboIncomplete->findText(m_soundIncomplete));
     ui->clipKosCombo->setCurrentIndex(ui->clipKosCombo->findText(m_soundIsKos));
@@ -206,6 +224,7 @@ void Options::restoreSettings()
     ui->fontComboBox->setCurrentIndex(ui->fontComboBox->findText(_fontName));
     ui->fontSpinBox->setValue(_fontSize);
 
+    alarmModel->setAlarms(m_alarms);
     ruleModel->setRules(_rules);
 
     ui->comboStyle->setCurrentIndex(ui->comboStyle->findText(m_style));
@@ -228,7 +247,7 @@ void Options::loadSettings(QSettings& settings)
     m_disabledPilots = m_disabledPilots.fromList(dpList);
 
     ui->avatarBox->setValue(settings.value("avatarExpiration", 0).toInt());
-    ui->distanceSpinBox->setValue(settings.value("alarmDistance", 1).toInt());
+
     ui->historySpinBox->setValue(settings.value("historyCount", 0).toInt());
     ui->autoPeriodSpin->setValue(settings.value("autoPeriod", 4000).toInt());
     ui->autoRefreshSpin->setValue(settings.value("autoRefresh", 33).toInt());
@@ -245,16 +264,14 @@ void Options::loadSettings(QSettings& settings)
     ui->checkAvatar->setChecked(settings.value("showAvatar", true).toBool());
     ui->checkOldIntel->setChecked(settings.value("initOldIntel", true).toBool());
 
-    ui->volume->setValue(settings.value("volume", 100).toInt());
-    audio->setVolume(ui->volume->value());
+    // Deprecated - remove after a few versions
+    _alarmDistance = settings.value("alarmDistance", 1).toInt();
+    _volume = settings.value("volume", 100).toInt();
+    audio->setVolume(_volume);
+    m_soundAlarm = settings.value("soundAlarm", "red-alert.wav").toString();
 
     // On Linux, you can just setCurrentText(), but there appears to be a Qt bug on Windows
     // such that it doesn't update the index.
-    ui->alarmCombo->setCurrentIndex(
-                ui->alarmCombo->findText(
-                    settings.value("soundAlarm", "red-alert.wav").toString()
-                    )
-                );
     ui->essCombo->setCurrentIndex(
                 ui->essCombo->findText(
                     settings.value("soundEss", "sci-fi-alarm.wav").toString()
@@ -290,12 +307,6 @@ void Options::loadSettings(QSettings& settings)
     // Hack that works around a problem where null values are written if the previous run
     // exited uncleanly.  This can happen when the parser files aren't found, but
     // I'm just going to brute force fix this for now.
-
-    if(ui->alarmCombo->currentText() == "") {
-        ui->alarmCombo->setCurrentIndex(
-                    ui->alarmCombo->findText("red-alert.wav")
-                    );
-    }
     if(ui->essCombo->currentText() == "") {
         ui->essCombo->setCurrentIndex(
                     ui->essCombo->findText("sci-fi-alarm.wav")
@@ -372,14 +383,15 @@ void Options::loadSettings(QSettings& settings)
                 );
     ui->fontSpinBox->setValue(settings.value("fontSize", 10).toInt());
 
-    // Load rules
     QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
     QDir dataDir{dataPath};
-    QFile file(dataDir.absoluteFilePath("imp_rules"));
 
-    if (file.open(QFile::ReadOnly | QFile::Text))
+    // Load rules
+    QFile ruleFile(dataDir.absoluteFilePath("imp_rules"));
+
+    if (ruleFile.open(QFile::ReadOnly | QFile::Text))
     {
-        QXmlStreamReader reader(&file);
+        QXmlStreamReader reader(&ruleFile);
 
         while (!reader.atEnd() && !reader.hasError())
         {
@@ -395,20 +407,74 @@ void Options::loadSettings(QSettings& settings)
     }
     else
     {
-        QMessageBox::information(NULL, "IMP Rules not found", "An existing "
-                                 "IMP rule file was not found.  This is normal "
-                                 "when running IMP for the first time.  A rules "
-                                 "file will be created when the program exits.",
-                                 QMessageBox::Ok);
+        ruleModel->insertRule(true, "Lo[ck]al", " ([Rr][Ee][Dd]|[Kk][Oo][Ss])[\\.!]?$", "play system-grind-01.wav", true);
     }
 
+    // Load alarms
+    QFile alarmFile(dataDir.absoluteFilePath("imp_alarms"));
+
+    if (alarmFile.open(QFile::ReadOnly | QFile::Text))
+    {
+        QXmlStreamReader reader(&alarmFile);
+
+        while (!reader.atEnd() && !reader.hasError())
+        {
+            reader.readNext();
+            if (reader.isStartElement())
+            {
+                if (reader.name() == "Alarms")
+                {
+                    alarmModel->setAlarms(readAlarms(reader));
+                }
+            }
+        }
+    }
+    else
+    {
+        if(m_soundAlarm.length() > 0)
+        {
+            // Bring in legacy values, if they're in config.
+            for(int i=0; i <= _alarmDistance; i++)
+            {
+                alarmModel->insertAlarm(m_soundAlarm, _volume/100.0f);
+            }
+        }
+        else
+        {
+            // New Default
+            alarmModel->insertAlarm("red-alert.wav", 1.0f);
+            alarmModel->insertAlarm("Danger.wav", 1.0f);
+        }
+    }
+
+
     cacheSettings();
+}
+
+QList<Alarm> Options::readAlarms(QXmlStreamReader& reader)
+{
+    QList<Alarm> alarms;
+
+    while (!reader.atEnd() && !reader.hasError())
+    {
+        reader.readNext();
+        if (reader.isStartElement())
+        {
+            if (reader.name() == "Alarm")
+            {
+                Alarm alarm;
+                readAlarmTextElements(reader, alarm);
+                alarms.append(alarm);
+            }
+        }
+    }
+
+    return alarms;
 }
 
 QList<Rule> Options::readRules(QXmlStreamReader& reader)
 {
     QList<Rule> rules;
-
 
     while (!reader.atEnd() && !reader.hasError())
     {
@@ -431,7 +497,7 @@ QList<Rule> Options::readRules(QXmlStreamReader& reader)
                     }
                 }
 
-                readTextElements(reader, rule);
+                readRuleTextElements(reader, rule);
                 rules.append(rule);
             }
         }
@@ -440,7 +506,31 @@ QList<Rule> Options::readRules(QXmlStreamReader& reader)
     return rules;
 }
 
-void Options::readTextElements(QXmlStreamReader& reader, Rule& rule)
+void Options::readAlarmTextElements(QXmlStreamReader& reader, Alarm& rule)
+{
+    while (!reader.atEnd() && !reader.hasError())
+    {
+        reader.readNext();
+        if (reader.isStartElement())
+        {
+            if (reader.name() == "Jumps")
+            {
+                rule.jumps = reader.readElementText().toInt();
+            }
+            else if (reader.name() == "Sound")
+            {
+                rule.file = reader.readElementText();
+            }
+            else if (reader.name() == "Volume")
+            {
+                rule.volume = reader.readElementText().toFloat();
+                return;
+            }
+        }
+    }
+
+}
+void Options::readRuleTextElements(QXmlStreamReader& reader, Rule& rule)
 {
     while (!reader.atEnd() && !reader.hasError())
     {
@@ -463,6 +553,7 @@ void Options::readTextElements(QXmlStreamReader& reader, Rule& rule)
         }
     }
 }
+
 void Options::saveSettings() //QSettings& settings)
 {
     QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
@@ -479,10 +570,8 @@ void Options::saveSettings() //QSettings& settings)
         settings.setValue("intelChannels", getIntelChannels());
 
         settings.setValue("avatarExpiration", getAvatarExpiration());
-        settings.setValue("alarmDistance", getAlarmDistance());
         settings.setValue("themeName", getThemeName());
         settings.setValue("themeType", getThemeType());
-        settings.setValue("volume", getAlarmVolume());
         settings.setValue("historyCount", getHistoryMax());
         settings.setValue("autoPeriod", getAutoPeriod());
         settings.setValue("autoRefresh", getAutoRefresh());
@@ -499,7 +588,7 @@ void Options::saveSettings() //QSettings& settings)
         settings.setValue("smoothAutofollow", getSmoothAutofollow());
         settings.setValue("essAndKos", getEssAndKos());
 
-        settings.setValue("soundAlarm", getSoundAlarm());
+        //settings.setValue("soundAlarm", getSoundAlarm());
         settings.setValue("soundStatus", getSoundStatus());
         settings.setValue("soundIncomplete", getSoundIncompleteKos());
         settings.setValue("soundIsKos", getSoundIsKos());
@@ -516,18 +605,19 @@ void Options::saveSettings() //QSettings& settings)
 
         settings.setValue("style", getStyle());
 
-        // Save rules
         QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
         QDir dataDir{dataPath};
-        QFile file(dataDir.absoluteFilePath("imp_rules"));
 
-        if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        // Save rules
+        QFile ruleFile(dataDir.absoluteFilePath("imp_rules"));
+
+        if (!ruleFile.open(QFile::WriteOnly | QFile::Text)) {
             QMessageBox::warning(NULL, "Error Opening File", "Could not open output file " +
-                                 file.fileName() + ".", QMessageBox::Ok);
+                                 ruleFile.fileName() + ".", QMessageBox::Ok);
             return;
         }
 
-        QXmlStreamWriter xmlWriter(&file);
+        QXmlStreamWriter xmlWriter(&ruleFile);
         xmlWriter.setAutoFormatting(true);
         xmlWriter.writeStartDocument();
         xmlWriter.writeStartElement("Rules");
@@ -543,9 +633,34 @@ void Options::saveSettings() //QSettings& settings)
             xmlWriter.writeTextElement("Action", rules[i].action);
             xmlWriter.writeEndElement();
         }
-
         xmlWriter.writeEndDocument();
-        file.close();
+        ruleFile.close();
+
+        // Save alarms
+        QFile alarmFile(dataDir.absoluteFilePath("imp_alarms"));
+
+        if (!alarmFile.open(QFile::WriteOnly | QFile::Text)) {
+            QMessageBox::warning(NULL, "Error Opening File", "Could not open output file " +
+                                 alarmFile.fileName() + ".", QMessageBox::Ok);
+            return;
+        }
+
+        QXmlStreamWriter alarmXmlWriter(&alarmFile);
+        alarmXmlWriter.setAutoFormatting(true);
+        alarmXmlWriter.writeStartDocument();
+        alarmXmlWriter.writeStartElement("Alarms");
+
+        QList<Alarm> alarms = alarmModel->getAlarms();
+        for (int i = 0; i < alarms.count(); ++i)
+        {
+            alarmXmlWriter.writeStartElement("Alarm");
+            alarmXmlWriter.writeTextElement("Jumps", QString::number(alarms[i].jumps));
+            alarmXmlWriter.writeTextElement("Sound", alarms[i].file);
+            alarmXmlWriter.writeTextElement("Volume", QString::number(alarms[i].volume));
+            alarmXmlWriter.writeEndElement();
+        }
+        alarmXmlWriter.writeEndDocument();
+        alarmFile.close();
     }
 }
 
@@ -557,11 +672,6 @@ void Options::setAudio(ImpAudio* impAudio)
 int Options::getAvatarExpiration()
 {
     return ui->avatarBox->value();
-}
-
-int Options::getAlarmDistance()
-{
-    return ui->distanceSpinBox->value();
 }
 
 bool Options::getCheckForUpdate()
@@ -577,11 +687,6 @@ bool Options::getEssAndKos()
 int Options::getHistoryMax()
 {
     return ui->historySpinBox->value();
-}
-
-int Options::getAlarmVolume()
-{
-    return ui->volume->value();
 }
 
 bool Options::getAutofollow()
@@ -671,11 +776,6 @@ bool Options::getSmoothAutofollow()
     return ui->smoothCheck->isChecked();
 }
 
-QString Options::getSoundAlarm()
-{
-    return ui->alarmCombo->currentText();
-}
-
 QString Options::getSoundEss()
 {
     return ui->essCombo->currentText();
@@ -714,11 +814,6 @@ void Options::setRegion(QString regionName)
 QString Options::getSoundStatus()
 {
     return ui->statusCombo->currentText();
-}
-
-void Options::on_alarmTestButton_clicked()
-{
-    audio->playLocalFile(getSoundAlarm());
 }
 
 void Options::on_buttonBox_accepted()
@@ -774,11 +869,6 @@ void Options::on_statusTestButton_clicked()
     audio->playLocalFile(getSoundStatus());
 }
 
-void Options::on_volume_sliderReleased()
-{
-    audio->setVolume(ui->volume->value());
-}
-
 void Options::on_clipKosTestButton_clicked()
 {
     audio->playLocalFile(getSoundIsKos());
@@ -796,12 +886,18 @@ void Options::on_incompleteTestButton_clicked()
 
 void Options::on_ruleInsertButton_clicked()
 {
-    ruleModel->insertRule(ui->tableView->selectionModel()->selectedIndexes());
+    //ruleModel->insertRule(ui->tableView->selectionModel()->selectedIndexes());
+    QModelIndexList list = ui->tableProxAlarms->selectionModel()->selectedIndexes();
+    int i = list.count() < 1 ? -1 : list[0].row();
+    ruleModel->insertRow(i);
 }
 
 void Options::on_ruleRemoveButton_clicked()
 {
-    ruleModel->removeRule(ui->tableView->selectionModel()->selectedIndexes());
+    //ruleModel->removeRule(ui->tableView->selectionModel()->selectedIndexes());
+    QModelIndexList list = ui->tableProxAlarms->selectionModel()->selectedIndexes();
+    int i = list.count() < 1 ? -1 : list[0].row();
+    ruleModel->removeRow(i);
 }
 
 void Options::on_essTestButton_clicked()
@@ -932,4 +1028,34 @@ QStringList Options::getDisabledPilots()
 void Options::on_buttonCheck_clicked()
 {
     emit checkForUpdate();
+}
+
+void Options::on_btnInsertProx_clicked()
+{
+    QModelIndexList list = ui->tableProxAlarms->selectionModel()->selectedIndexes();
+    int i = list.count() < 1 ? -1 : list[0].row();
+    alarmModel->insertRow(i);
+}
+
+void Options::on_btnRemoveProx_clicked()
+{
+    QModelIndexList list = ui->tableProxAlarms->selectionModel()->selectedIndexes();
+    int i = list.count() < 1 ? -1 : list[0].row();
+    alarmModel->removeRow(i);
+}
+
+void Options::testSound(const QString& soundFileName, float volume)
+{
+    audio->playLocalFile(soundFileName, volume);
+}
+
+bool Options::withinAlarmDistance(int distance)
+{
+    qDebug() << "Options::withinAlarmDistance : " << alarmModel->count() << " / " << distance;
+    return alarmModel->count() > distance;
+}
+
+const Alarm& Options::getAlarmForDistance(int distance)
+{
+    return alarmModel->at(distance);
 }

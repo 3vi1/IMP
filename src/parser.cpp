@@ -263,7 +263,7 @@ QList<MessageInfo> Parser::parseLine(const QString& line)
         }
 
         impWord.raw = text.mid(currentPos, nextSpace-currentPos);
-        qDebug() << "Parser::identifyObjects - raw =" << impWord.raw;
+        //qDebug() << "Parser::identifyObjects - raw =" << impWord.raw;
 
         if (puncPostExp.indexIn(impWord.raw) != -1)
             impWord.postfix = puncPostExp.cap();
@@ -281,15 +281,15 @@ QList<MessageInfo> Parser::parseLine(const QString& line)
         }
         impWord.prefixStart = currentPos;
 
-        qDebug() << "Parser::identifyObjects - prefix =" << impWord.prefix <<
+        /*qDebug() << "Parser::identifyObjects - prefix =" << impWord.prefix <<
                     ", prefixStart =" << impWord.prefixStart <<
                     ", postfix =" << impWord.postfix <<
                     ", postfixStart =" << impWord.postfixStart;
-
+*/
         impWord.actual = impWord.raw.mid(impWord.prefix.length(),
                                   impWord.raw.length()-impWord.postfix.length());
 
-        qDebug() << "Parser::identifyObjects - actual =" << impWord.actual;
+        //qDebug() << "Parser::identifyObjects - actual =" << impWord.actual;
 
         currentPos = nextSpace + 1;
         impSentence->append(impWord);
@@ -312,10 +312,10 @@ QList<MessageInfo> Parser::parseLine(const QString& line)
     QString markedUpText = "";
     foreach(QList<ImpWord> s, impSentences)
     {
-        qDebug() << "impSentence:";
+        /*qDebug() << "impSentence:";
         foreach (ImpWord iw, s) {
             qDebug() << '\t' << iw.prefix << iw.actual << iw.postfix;
-        }
+        }*/
 
         MessageInfo messageInfo;
         messageInfo.originalLine = line;
@@ -358,7 +358,7 @@ QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &senten
     QStringList theseGates;
 
     // New parsing
-    qDebug() << "Parser::identifyObjects - Parsing sentence in: " << messageInfo.text;
+    //qDebug() << "Parser::identifyObjects - Parsing sentence in: " << messageInfo.text;
 
     for(int i=0; i<sentence.length(); i++)
     {
@@ -402,7 +402,7 @@ QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &senten
                     // Fall out and let normal processing light up the system.
                     handled = false;
                 }
-                else if(sentence[i-1].actual.toLower() != "gate")
+                else if(sentence[i-1].actual.toLower() == "gate")
                 {
                     // We don't want to clear a system if someone says a gate is clear
                     //    "> KBP Dital gate clr!"

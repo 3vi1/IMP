@@ -64,10 +64,25 @@ void ImpAudio::playLocalFile(const QString& fileName)
         effects.insert(fileName, effect);
     }
 
+    effects[fileName]->setVolume(m_volume);
+    effects[fileName]->play();
+}
+
+void ImpAudio::playLocalFile(const QString& fileName, float volume)
+{
+    if(!effects.contains(fileName))
+    {
+        QString path = appFilesPath() + "/audio/" + fileName;
+        QSoundEffect* effect = new QSoundEffect(this);
+        effect->setSource(QUrl::fromLocalFile(path));
+        effects.insert(fileName, effect);
+    }
+
     effects[fileName]->setVolume(volume);
     effects[fileName]->play();
 }
 
+/*
 QSoundEffect* ImpAudio::oldPlayLocalFile(const QString& fileName)
 {
     QString path = appFilesPath() + "/audio/" + fileName;
@@ -86,7 +101,7 @@ QSoundEffect* ImpAudio::oldPlayLocalFile(const QString& fileName)
     qDebug() << "ImpAudio::playLocalFile - played " << &effect;
     return effect;
 }
-
+*/
 void ImpAudio::playingChanged()
 {
     QSoundEffect *s = qobject_cast<QSoundEffect *> (sender());
@@ -106,8 +121,8 @@ void ImpAudio::setVolume(int i)
                                    QAudio::LogarithmicVolumeScale,
                                    QAudio::LinearVolumeScale);
 */
-    volume = i / qreal(100.0);
-    qDebug() << "Volume changed to " << QString::number(volume, 'g', 2);
+    m_volume = i / qreal(100.0);
+    qDebug() << "Volume changed to " << QString::number(m_volume, 'g', 2);
 }
 
 void ImpAudio::playLocalMedia(const QString& fileName)
