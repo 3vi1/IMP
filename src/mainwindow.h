@@ -115,11 +115,9 @@ private slots:
     void on_action_Overlay_Mode_triggered();
     void on_action_Frameless_Window_triggered();
     void on_action_Menu_Toggle_triggered();
-    void on_action_Messages_triggered();
-
     void updateChangelog (const QString& url);
     void displayAppcast (QString s, QByteArray ba);
-
+    void on_actionToggle_Message_List_triggered();
 
 private:
     void checkForUpdate();

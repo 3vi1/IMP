@@ -18,15 +18,19 @@
  *
  */
 
+#include "logcatcher.h"
+#include "utility.h"
+
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
 #include <QFileInfo>
-#include "logcatcher.h"
 
 LogCatcher::LogCatcher(Options* options, QObject *parent) : QObject(parent)
 {
     m_options = options;
+
+    localChannels = QSet<QString>::fromList(fromFile("local"));
 }
 
 void LogCatcher::setLogDir(QString logDir)
@@ -124,11 +128,12 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
 
             if (fileInfo.lastModified() > (QDateTime::currentDateTime().addDays(-1))) {
 
-                // We only put intel channels in the list once, no matter how many pilots
+                // We only put non-local channels in the list once, no matter how many pilots
                 // are in them.
 
                 QString channelName = logNameRegEx.cap(1);
-                if(m_options->getIntelChannels().contains(channelName))
+                //if(m_options->getIntelChannels().contains(channelName))
+                if(!localChannels.contains(channelName))
                 {
                     QMutableListIterator<QFileInfo> i(infoList);
                     while (i.hasNext()) {
@@ -136,6 +141,8 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
                         QString iChanName = iFileName.left(iFileName.length() - 20);
                         if (iChanName == channelName) {
                             if (i.value().lastModified() < fileInfo.lastModified()) {
+                                qDebug() << "LogCatcher::findCurrentLogs:  Found newer log for " << iChanName;
+                                qDebug() << "                              ignoring " << iFileName;
                                 i.remove();
                             }
                         }

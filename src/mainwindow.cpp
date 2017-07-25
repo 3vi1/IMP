@@ -143,7 +143,7 @@ MainWindow::MainWindow(QWidget *parent) :
     menuShortcut = new QShortcut(QKeySequence(Qt::Key_M), this, SLOT(on_action_Menu_Toggle_triggered()));
     overlayShortcut = new QShortcut(QKeySequence(Qt::Key_O), this, SLOT(on_action_Overlay_Mode_triggered()));
     alwaysOnTopShortcut = new QShortcut(QKeySequence(Qt::Key_T), this, SLOT(on_action_Always_on_Top_triggered()));
-    messagesShortcut = new QShortcut(QKeySequence(Qt::Key_L), this, SLOT(on_action_Messages_triggered()));
+    messagesShortcut = new QShortcut(QKeySequence(Qt::Key_L), this, SLOT(on_actionToggle_Message_List_triggered()));
 
 #ifndef QT_DEBUG
     ui->menuDebug->menuAction()->setVisible(false);
@@ -543,7 +543,7 @@ void MainWindow::gotRblReply(QString name, bool rbl, int corpNum)
 
         if(corpNum > 1)
         {
-            info.text = name + " RED BY LAST (" + name +")!";
+            info.text = " RED BY LAST (" + name +")!";
             info.markedUpText = " <warn>RED BY LAST (" + name + ") !";
         }
         else
@@ -813,14 +813,17 @@ void MainWindow::failedGettingBridgeFile(QNetworkReply::NetworkError err)
     {
         bridgeMap->init(inFile, regionMap);
     }
-    else
+/*    else
     {
         QMessageBox::warning(NULL, "Error Opening File",
                               "Could not download bridge data, and could not find cached version of " +
                               inFile.fileName() + ".", QMessageBox::Ok);
     }
 
-    reply->deleteLater();
+    reply->deleteLater(); */
+
+    // TODO:  ^ WTF.  Get/check sender object?
+
     errorRetrievingBridgeFile = true;
 }
 
@@ -846,10 +849,8 @@ void MainWindow::gotBridgeFile()
 
         reply->deleteLater();
     }
-    else
-    {
-        errorRetrievingBridgeFile = false;
-    }
+
+    errorRetrievingBridgeFile = false;
 
     ui->mapView->clearBridges();
     foreach(QGraphicsLineItem* arrow, bridgeMap->arrows)
@@ -858,7 +859,6 @@ void MainWindow::gotBridgeFile()
     }
 
     bridgeLoading = false;
-
     ui->mapView->showBridges(true);
 }
 
@@ -1580,7 +1580,6 @@ void MainWindow::buildMapMenu()
 
         foreach(QAction* action, ui->menuMap->actions())
         {
-            qDebug() << action->text();
             if(action->text() == key)
             {
                 // Map was already in menu
@@ -1889,14 +1888,6 @@ void MainWindow::gotStyleSheetChange(const QString styleName)
     }
 }
 
-void MainWindow::on_action_Messages_triggered()
-{
-    if(ui->dockWidget->isVisible())
-        ui->dockWidget->hide();
-    else
-        ui->dockWidget->show();
-}
-
 void MainWindow::linkActivated(QString link)
 {
     qDebug() << "MainWindow::linkActivated - " << link;
@@ -1917,3 +1908,10 @@ void MainWindow::displayAppcast (QString s, QByteArray ba)
     qDebug() << "MainWindow::displayAppcast(" << s << ", " << ba << ")";
 }
 
+void MainWindow::on_actionToggle_Message_List_triggered()
+{
+    if(ui->dockWidget->isVisible())
+        ui->dockWidget->hide();
+    else
+        ui->dockWidget->show();
+}
