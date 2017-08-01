@@ -1,12 +1,15 @@
-0.9.3.1 - Fixed crash when jump bridges fail to load.  Also suppressed
-          the error message, since most systems won't have jump bridges.
+0.9.4 - Fixed crash when jump bridges fail to load.  Also suppressed
+        the error message, since most systems won't have jump bridges.
 
-          Corrected an issue where logcatcher could watch some duplicate
-          log files unnecessarily.
+        Corrected an issue where logcatcher could watch some duplicate
+        log files unnecessarily.
 
-          Added menu option (to Windows menu) for toggling message
-          list off and on so that people don't need to know shortcut
-          key.
+        Added menu option (to Windows menu) for toggling message
+        list off and on so that people don't need to know shortcut
+        key.
+
+        New feature:  Wormhole report tracking.  "wormhole in xx-xxxx."
+        or "wh in xx-xxxx collapsed".
 
 0.9.3 - New feature:  Instead of one alert sound, you can now configure
         differing sounds (or the same sound) at differing (or the same)
@@ -351,5 +354,4 @@ Coming soon:
 - Add some intelligence to handle dumb names like R3 Clear
 - Add option to autobuild jumpbridge list from dotlan instead of files.
 - Break follow transistion mode on screen reposition.
-- two clients logged in, double messages
 - Don't cache every potential sound.

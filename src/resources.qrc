@@ -7,5 +7,6 @@
         <file>graphics/triangle_orange.svg</file>
         <file>graphics/volume-icon.png</file>
         <file>graphics/impicon.png</file>
+        <file>graphics/wormhole.svg</file>
     </qresource>
 </RCC>

@@ -58,6 +58,13 @@ const QMap<QString,QVariant> defaults = {
     {"pilotYOffset", 0},
     {"pilotZ", -0.5},
 
+    {"wormholeGraphic", ":/graphics/wormhole.svg"},
+    {"wormholeOpacity", 0.8},
+    {"wormholeScale", 0.05},
+    {"wormholeXOffset", 23.0},
+    {"wormholeYOffset", 10.0},
+    {"wormholeZ", 1},
+
     {"defaultNameFont", QStringList({"Tahoma", QString::number(6)}) },
     {"defaultTimeFont", QStringList({"Arial", QString::number(6)}) }
 };
@@ -113,13 +120,19 @@ void Theme::load(const QString& name, ThemeType themeType)
     setAttribute("lineYOffset", LINES, "line", "yOffset", defaults["lineYOffset"]);
     setAttribute("lineZ",       LINES, "line", "z", defaults["lineZ"]);
 
-    // Set default attributes
     setAttribute("pilotGraphic",    PILOT, "pilot", "graphic", defaults["pilotGraphic"]);
     setAttribute("pilotOpacity",    PILOT, "pilot", "opacity", defaults["pilotOpacity"]);
     setAttribute("pilotScale",      PILOT, "pilot", "scale", defaults["pilotScale"]);
     setAttribute("pilotXOffset",    PILOT, "pilot", "xOffset", defaults["pilotXOffset"]);
     setAttribute("pilotYOffset",    PILOT, "pilot", "yOffset", defaults["pilotYOffset"]);
     setAttribute("pilotZ",          PILOT, "pilot", "z", defaults["pilotZ"]);
+
+    setAttribute("wormholeGraphic",    WORMHOLES, "wormhole", "graphic", defaults["wormholeGraphic"]);
+    setAttribute("wormholeOpacity",    WORMHOLES, "wormhole", "opacity", defaults["wormholeOpacity"]);
+    setAttribute("wormholeScale",      WORMHOLES, "wormhole", "scale", defaults["wormholeScale"]);
+    setAttribute("wormholeXOffset",    WORMHOLES, "wormhole", "xOffset", defaults["wormholeXOffset"]);
+    setAttribute("wormholeYOffset",    WORMHOLES, "wormhole", "yOffset", defaults["wormholeYOffset"]);
+    setAttribute("wormholeZ",          WORMHOLES, "wormhole", "z", defaults["wormholeZ"]);
 
     setAttribute("defaultNameFont", SYSTEM, "font", "name", defaults["defaultNameFont"] );
     setAttribute("defaultTimeFont", SYSTEM, "font", "time", defaults["defaultTimeFont"] );
@@ -165,6 +178,7 @@ bool Theme::save(const QString &m_name)
 
     // Copy in any non-local assets and update the links to them
     packageImage(themePath, "pilotGraphic");
+    packageImage(themePath, "wormholeGraphic");
     packageImage(themePath, "findGraphic");
     packageImage(themePath, "backGraphic");
 

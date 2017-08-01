@@ -1189,6 +1189,22 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
                     regionMap->update();
                 break;
 
+            case MessageFlag::WORMHOLE:
+//                if (options.getIntelChannels().contains(message.logInfo->channel))
+//                    toBeAddedToList = true;
+                if(message.systems.count() > 0 and !message.flags.contains(MessageFlag::QUERY))
+                {
+                    if(message.flags.contains(MessageFlag::CLOSED))
+                    {
+                        ui->mapView->closeWormhole(message.systems[0]);
+                    }
+                    else
+                    {
+                        ui->mapView->openWormhole(message.systems[0]);
+                    }
+                }
+                break;
+
             case MessageFlag::WARNING:
                 if (options.getIntelChannels().contains(message.logInfo->channel))
                 {

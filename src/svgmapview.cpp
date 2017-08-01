@@ -370,6 +370,14 @@ void SvgMapView::clearShapes()
         s->deleteLater();
     }
     systemShapes.clear();
+
+    foreach(MapShape* s, wormholes.values())
+    {
+        mapScene.removeItem(s);
+        s->deleteLater();
+    }
+    wormholes.clear();
+
 }
 
 void SvgMapView::findLocation(const QString &systemName)
@@ -609,6 +617,13 @@ void SvgMapView::receiveThemeUpdate(ThemeStorage& ts)
             }
         }
         break;
+    case WORMHOLES:
+        foreach(MapShape* shape, wormholes)
+        {
+            handleShape(shape, ts.member, ts.data);;
+        }
+        break;
+
     case PILOT:
         foreach(MapShape* shape, pilotShapes)
         {
@@ -784,6 +799,14 @@ void SvgMapView::resetRotation()
         outlineItem->setRotation(0);
     }
 
+    for(int j=0; j<wormholes.count(); j++)
+    {
+        MapShape* item = wormholes.values().at(j);
+        item->setTransformOriginPoint(item->boundingRect().width() * .5,
+                                      item->boundingRect().height() * .5);
+        item->setRotation(0);
+    }
+
     foreach(QGraphicsTextItem* t, m_texts.values())
     {
         t->setRotation(0);
@@ -866,4 +889,41 @@ void SvgMapView::disableBackgroundDraw(bool disable)
         setBackgroundBrush(backgroundColor);
     else
         setBackgroundBrush(Qt::transparent);
+}
+
+void SvgMapView::openWormhole(const QString &systemName)
+{
+    if(!m_map->contains(systemName))
+        return;
+
+    if(!wormholes.contains(systemName))
+    {
+        MapShape* shape = new MapShape();
+        if(m_theme)
+        {
+            shape->load(m_theme->getAttribute("wormholeGraphic").toString());
+            shape->setOpacity(m_theme->getAttribute("wormholeOpacity").toDouble());
+            shape->setScale(m_theme->getAttribute("wormholeScale").toDouble());
+            shape->setZValue(m_theme->getAttribute("wormholeZ").toDouble());
+            shape->setXOffset(m_theme->getAttribute("wormholeXOffset").toDouble());
+            shape->setYOffset(m_theme->getAttribute("wormholeYOffset").toDouble());
+        }
+        wormholes.insert(systemName, shape);
+        shape->setPos(m_map->getCoordinates(systemName));
+        mapScene.addItem(wormholes[systemName]);
+    }
+}
+
+void SvgMapView::closeWormhole(const QString &systemName)
+{
+    if(!m_map->contains(systemName))
+        return;
+
+    if(wormholes.contains(systemName))
+    {
+        MapShape* shape = wormholes[systemName];
+        mapScene.removeItem(shape);
+        wormholes.remove(systemName);
+        delete shape;
+    }
 }

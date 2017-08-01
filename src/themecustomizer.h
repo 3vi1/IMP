@@ -70,6 +70,12 @@ private slots:
     void on_spinPilotX_valueChanged(double x);
     void on_spinPilotY_valueChanged(double y);
     void on_spinPilotZ_valueChanged(double z);
+    void on_buttonWormholeImage_clicked();
+    void on_spinWormholeScale_valueChanged(double scale);
+    void on_spinWormholeOpacity_valueChanged(double opacity);
+    void on_spinWormholeX_valueChanged(double x);
+    void on_spinWormholeY_valueChanged(double y);
+    void on_spinWormholeZ_valueChanged(double z);
 
 private:
     Ui::ThemeCustomizer *ui;

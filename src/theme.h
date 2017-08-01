@@ -36,7 +36,8 @@ enum ThemeObject {
     FIND,
     LINES,
     SYSTEM,
-    MAP
+    MAP,
+    WORMHOLES
 };
 Q_DECLARE_METATYPE(ThemeObject)
 
@@ -132,10 +133,6 @@ public:
     bool attributeExists(const QString &name);
 
 signals:
-    // Legacy.  I'm removing all these except sendUpdate, in favor of attributes.
-    //void backColorChanged(const QColor&);
-    //void lineColorChanged(const QColor&);
-
     void sendUpdate(ThemeStorage& a);
 
 public slots:
