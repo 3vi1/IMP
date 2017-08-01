@@ -84,6 +84,15 @@ void ThemeCustomizer::loadValues(Theme *theme)
     ui->spinPilotX->setValue(theme->getAttribute("pilotXOffset").toDouble());
     ui->spinPilotY->setValue(theme->getAttribute("pilotYOffset").toDouble());
     ui->spinPilotZ->setValue(theme->getAttribute("pilotZ").toDouble());
+
+    // Wormhole attributes
+    ui->labelWormholeFile->setText(theme->getAttribute("wormholeGraphic").toString());
+    ui->spinWormholeScale->setValue(theme->getAttribute("wormholeScale").toDouble());
+    ui->spinWormholeOpacity->setValue(theme->getAttribute("wormholeOpacity").toDouble());
+    ui->spinWormholeX->setValue(theme->getAttribute("wormholeXOffset").toDouble());
+    ui->spinWormholeY->setValue(theme->getAttribute("wormholeYOffset").toDouble());
+    ui->spinWormholeZ->setValue(theme->getAttribute("wormholeZ").toDouble());
+
 }
 
 void ThemeCustomizer::on_buttonBackColor_clicked()
@@ -146,6 +155,22 @@ void ThemeCustomizer::on_buttonPilotImage_clicked()
         m_theme->setAttribute("pilotGraphic", PILOT, "pilot", "graphic", fileName);
     }
 }
+
+void ThemeCustomizer::on_buttonWormholeImage_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(
+                this, tr("Wormhole Image"),
+                QString(),
+                tr("Image Files (*.svg)") );
+
+    if(fileName.length() > 0)
+    {
+        ui->labelWormholeFile->setText(fileName);
+
+        m_theme->setAttribute("wormholeGraphic", WORMHOLES, "wormhole", "graphic", fileName);
+    }
+}
+
 
 void ThemeCustomizer::on_buttonLineColor_clicked()
 {
@@ -295,4 +320,29 @@ void ThemeCustomizer::on_spinPilotY_valueChanged(double y)
 void ThemeCustomizer::on_spinPilotZ_valueChanged(double z)
 {
     m_theme->setAttribute("pilotZ", PILOT, "pilot", "z", z);
+}
+
+void ThemeCustomizer::on_spinWormholeScale_valueChanged(double scale)
+{
+    m_theme->setAttribute("wormholeScale", WORMHOLES, "wormhole", "scale", scale);
+}
+
+void ThemeCustomizer::on_spinWormholeOpacity_valueChanged(double opacity)
+{
+    m_theme->setAttribute("wormholeOpacity", WORMHOLES, "wormhole", "opacity", opacity);
+}
+
+void ThemeCustomizer::on_spinWormholeX_valueChanged(double x)
+{
+    m_theme->setAttribute("wormholeXOffset", WORMHOLES, "wormhole", "xOffset", x);
+}
+
+void ThemeCustomizer::on_spinWormholeY_valueChanged(double y)
+{
+    m_theme->setAttribute("wormholeYOffset", WORMHOLES, "wormhole", "yOffset", y);
+}
+
+void ThemeCustomizer::on_spinWormholeZ_valueChanged(double z)
+{
+    m_theme->setAttribute("wormholeZ", WORMHOLES, "wormhole", "z", z);
 }

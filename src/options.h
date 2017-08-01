@@ -119,8 +119,7 @@ public:
 
     QString getThemeName(){ return m_themeName; }
     ThemeType getThemeType(){ return m_themeType; }
-    void setTheme(const QString& n, ThemeType t){
-        m_themeName = n; m_themeType = t; }
+    void setTheme(const QString& n, ThemeType t){ m_themeName = n; m_themeType = t; }
 
     bool withinAlarmDistance(int distance);
     const Alarm& getAlarmForDistance(int distance);

@@ -330,9 +330,14 @@ void AsyncInfo::rblInfoRetrieved()
         QStringList entry = result.split(',');
         if(entry[0].toInt() > 2000000)
         {
-            // Found last NPC corp
+            // Found last PC corp
+            qDebug() << "  Last PC corp ID =" << entry[0] << ", corp Name =" << entry[1];
             kosCheck(entry[1], SLOT(gotKosCheckCorpReply()), "corp");
             return;
+        }
+        else
+        {
+            qDebug() << "  NPC corp ID =" << entry[0] << ", corp Name =" << entry[1];
         }
     }
 
@@ -362,8 +367,6 @@ void AsyncInfo::gotKosCheckCorpReply()
             KosEntry kosEntry;
             foreach (const QJsonValue& value, jsonArray) {
                 QJsonObject obj = value.toObject();
-
-                // Most of these are unused right now, but I've got plans
 
                 kosEntry.corp.eveId = obj["eveid"].toInt();
                 kosEntry.corp.icon = obj["icon"].toString();

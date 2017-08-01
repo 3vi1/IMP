@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = imp
 TEMPLATE = app
 
-VERSION = 0.9.3
+VERSION = 0.9.4
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
 QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton
@@ -113,7 +113,10 @@ DISTFILES += \
     ../docs/CREDITS \
     ../docs/DICTIONARIES \
     ../INSTALL.md \
-    ../data/dictionaries/dumbnames
+    ../data/dictionaries/dumbnames \
+    ../data/dictionaries/wormhole \
+    ../data/dictionaries/closed \
+    ../data/dictionaries/open
     
 RESOURCES += \
     resources.qrc

@@ -88,6 +88,9 @@ public:
 
     void resetCtrl(){controlKeyDown = false;}
 
+    void openWormhole(const QString &systemName);
+    void closeWormhole(const QString &systemName);
+
 signals:
     void systemClicked(const QString& name);
     void sendOpacity(int delta);
@@ -167,6 +170,7 @@ private:
     QSet<QGraphicsSvgItem*> svgItems;
     QMap<QString, SystemShape*> systemShapes;
     QMap<QString, MapShape*> systemOutlines;
+    QMap<QString, MapShape*> wormholes;
 
     QMap<QString, QGraphicsTextItem*> m_texts;
     QFont nameFont;

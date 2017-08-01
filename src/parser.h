@@ -34,10 +34,13 @@
 
 #include "map.h"
 
-enum MessageFlag { UNKNOWN = 0, CLEAR, ESS,
+enum MessageFlag { UNKNOWN = 0,
+                   CLEAR, CLOSED,
+                   ESS,
                    LEFT, LINK, LOCATION,
-                   MOTD, POCKET, QUERY,
-                   STATUS, SYSTEM_CHANGE, WARNING
+                   MOTD, OPEN, POCKET, QUERY,
+                   STATUS, SYSTEM_CHANGE,
+                   WARNING, WORMHOLE
                  };
 
 struct LogInfo
@@ -111,12 +114,15 @@ private:
 
     QString ignoreChars;
     QSet<QString> clearWords;
+    QSet<QString> closedWords;
     QSet<QString> ignoreWords;
     QSet<QString> left;
     QSet<QString> localChannels;
     QSet<QString> locationWords;
+    QSet<QString> openWords;
     QSet<QString> statusWords;
     QSet<QString> ships;
+    QSet<QString> wormholeWords;
 
     QMap<QString, LogInfo> fileMap;
     Map* regionMap;

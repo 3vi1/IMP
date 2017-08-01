@@ -42,11 +42,14 @@ Parser::Parser(uint generation, QObject *parent) : QObject(parent)
     // Load words, channels, and ships from files
     ignoreWords = QSet<QString>::fromList(fromFile("common"));
     clearWords = QSet<QString>::fromList(fromFile("clear"));
+    closedWords = QSet<QString>::fromList(fromFile("closed"));
     left = QSet<QString>::fromList(fromFile("left"));
     localChannels = QSet<QString>::fromList(fromFile("local"));
     locationWords = QSet<QString>::fromList(fromFile("location"));
+    openWords = QSet<QString>::fromList(fromFile("open"));
     statusWords = QSet<QString>::fromList(fromFile("status"));
     ships = QSet<QString>::fromList(fromFile("ships"));
+    wormholeWords = QSet<QString>::fromList(fromFile("wormhole"));
 }
 
 void Parser::setMap(Map &map)
@@ -388,6 +391,36 @@ QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &senten
             markedUpText += "<location>";
             markedUpText += sentence[i].actual;
             markedUpText += "<info>";
+            markedUpText += sentence[i].postfix;
+            handled = true;
+        }
+        else if (wormholeWords.contains(lowerWord))
+        {
+            messageInfo.flags.append(MessageFlag::WORMHOLE);
+            markedUpText += sentence[i].prefix;
+//            markedUpText += "<wormhole>";          //Unique color later?
+            markedUpText += sentence[i].actual;
+//            markedUpText += "<info>";
+            markedUpText += sentence[i].postfix;
+            handled = true;
+        }
+        else if (closedWords.contains(lowerWord))
+        {
+            messageInfo.flags.append(MessageFlag::CLOSED);
+            markedUpText += sentence[i].prefix;
+//            markedUpText += "<state>";             //Unique color later?
+            markedUpText += sentence[i].actual;
+//            markedUpText += "<info>";
+            markedUpText += sentence[i].postfix;
+            handled = true;
+        }
+        else if (openWords.contains(lowerWord))
+        {
+            messageInfo.flags.append(MessageFlag::OPEN);
+            markedUpText += sentence[i].prefix;
+//            markedUpText += "<state>";             //Unique color later?
+            markedUpText += sentence[i].actual;
+//            markedUpText += "<info>";
             markedUpText += sentence[i].postfix;
             handled = true;
         }
