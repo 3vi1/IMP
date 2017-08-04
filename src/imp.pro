@@ -97,14 +97,18 @@ FORMS    += \
     
 DISTFILES += \
     ../data/dictionaries/clear \
+    ../data/dictionaries/closed \
     ../data/dictionaries/common \
+    ../data/dictionaries/dumbnames \
     ../data/dictionaries/left \
     ../data/dictionaries/local \
     ../data/dictionaries/location \
     ../data/dictionaries/maps \
+    ../data/dictionaries/open \
     ../data/dictionaries/pockets \
     ../data/dictionaries/ships \
     ../data/dictionaries/status \
+    ../data/dictionaries/wormhole \
     ../styles/* \
     ../docs/FAQ \
     ../docs/RELEASES \
@@ -112,11 +116,7 @@ DISTFILES += \
     ../docs/THEMES \
     ../docs/CREDITS \
     ../docs/DICTIONARIES \
-    ../INSTALL.md \
-    ../data/dictionaries/dumbnames \
-    ../data/dictionaries/wormhole \
-    ../data/dictionaries/closed \
-    ../data/dictionaries/open
+    ../INSTALL.md
     
 RESOURCES += \
     resources.qrc
