@@ -132,8 +132,8 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
                 // are in them.
 
                 QString channelName = logNameRegEx.cap(1);
-                if(m_options->getIntelChannels().contains(channelName))
-                //if(!localChannels.contains(channelName))
+                //if(m_options->getIntelChannels().contains(channelName))
+                if(!localChannels.contains(channelName))
                 {
                     QMutableListIterator<QFileInfo> i(infoList);
                     while (i.hasNext()) {

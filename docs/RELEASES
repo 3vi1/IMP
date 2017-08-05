@@ -1,3 +1,8 @@
+0.9.4.1 - Fixed bug where #defines were not working with newest qt/gcc.
+          (thanks Hibasnev!)
+
+          Fixed bug where Windows build would assert setting alarms.
+
 0.9.4 - Fixed crash when jump bridges fail to load.  Also suppressed
         the error message, since most systems won't have jump bridges.
 

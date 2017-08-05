@@ -21,18 +21,6 @@
 #ifndef LOGCATCHER_H
 #define LOGCATCHER_H
 
-/* On Linux, QFileSystemWatcher works fine.  On Windows, it works 50% (dirs only) thanks to
- * the way Windows doesn't update the file modified time on flush().  See the bug report at
- * https://bugreports.qt.io/browse/QTBUG-41119 for more details.
- *
- * So... On Windows we currently need to use a timer-based hack to check the individual
- * files.
- */
-
-#ifdef Q_OS_WIN32 // Q_OS_LINUX
-#define USE_FALLBACK_POLLER
-#endif
-
 /* For some reason, actually using the above define in this same file ends up with the
  * QTimer not firing?!?!  At least it does when testing with gcc on Linux.  That's why I
  * do not use the flag below to optimize what's built on Linux.
@@ -46,6 +34,18 @@
 #include <QTimer>
 
 #include "options.h"
+
+/* On Linux, QFileSystemWatcher works fine.  On Windows, it works 50% (dirs only) thanks to
+ * the way Windows doesn't update the file modified time on flush().  See the bug report at
+ * https://bugreports.qt.io/browse/QTBUG-41119 for more details.
+ *
+ * So... On Windows we currently need to use a timer-based hack to check the individual
+ * files.
+ */
+
+#ifdef Q_OS_WIN32 // Q_OS_LINUX
+#define USE_FALLBACK_POLLER
+#endif
 
 using namespace std;
 

@@ -231,9 +231,13 @@ void AlarmModel::setAlarms(QList<Alarm> newAlarms)
     if(newAlarms.count() <= 0)
         return;
 
-    beginRemoveRows(QModelIndex(), 0, alarms.count()-1);
-    alarms.clear();
-    endRemoveRows();
+    if(alarms.count() > 0)
+    {
+        beginRemoveRows(QModelIndex(), 0, alarms.count()-1);
+        alarms.clear();
+        endRemoveRows();
+    }
+
     beginInsertRows(QModelIndex(), 0, newAlarms.count()-1);
     alarms = newAlarms;
     endInsertRows();
