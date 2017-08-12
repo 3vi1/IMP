@@ -1627,7 +1627,7 @@ void MainWindow::mapSelected()
     QAction *s = qobject_cast<QAction *> (sender());
     qDebug() << "MainWindow::mapSelected - for " << s->text();
 
-    switchToRegion(s->text());
+    switchToRegion(withoutShortcutAmpersands(s->text()));
 }
 
 void MainWindow::gotNewPilot(const QString& pilotName)
@@ -1672,19 +1672,20 @@ void MainWindow::pilotSelected()
 {
     QAction *s = qobject_cast<QAction *> (sender());
 
-    qDebug() << "MainWindow::pilotSelected - for " << s->text();
+    QString pilotName = withoutShortcutAmpersands(s->text());
+    qDebug() << "MainWindow::pilotSelected - for " << pilotName;
 
     if(s->isChecked())
     {
         // Add pilot back to map
-        ui->mapView->enablePilot(s->text());
-        options.enablePilot(s->text());
+        ui->mapView->enablePilot(pilotName);
+        options.enablePilot(pilotName);
     }
     else
     {
         // Remove pilot from map
-        ui->mapView->disablePilot(s->text());
-        options.disablePilot(s->text());
+        ui->mapView->disablePilot(pilotName);
+        options.disablePilot(pilotName);
     }
 }
 

@@ -302,7 +302,7 @@ QString Map::getSystemByAbbreviation(const QString& word)
 
     QString upperWord = word.toUpper();
 
-    if(m_systemMap.keys().contains(upperWord))
+    if(m_systemMap.contains(upperWord))
     {
         // Not abbreviated at all.
         return upperWord;
