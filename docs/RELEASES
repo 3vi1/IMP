@@ -6,6 +6,9 @@
           didn't show itself when using Qt with Unity, but it does with
           KDE (and presumably Windows).
 
+          Change handling of ctrl/alt keys so that their up/down states
+          can no longer get out of sync when swapping between windows.
+
 0.9.4.1 - Fixed bug where #defines were not working with newest qt/gcc.
           (thanks Hibasnev!)
 

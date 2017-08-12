@@ -1537,7 +1537,6 @@ void MainWindow::findLocation(const QString& location)
     QString fullName = regionMap->getSystemByAbbreviation(location.toUpper());
     ui->mapView->findLocation(fullName);
     positionTo(regionMap->getSystemByAbbreviation(location));
-    ui->mapView->resetCtrl();
 }
 
 void MainWindow::logDirChanged(const QString& dir)

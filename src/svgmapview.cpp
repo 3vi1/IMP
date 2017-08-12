@@ -19,6 +19,7 @@
  */
 
 #include "svgmapview.h"
+#include <QApplication>  // for queryKeyboardModifiers
 #include <QBuffer>
 #include <QDebug>
 #include <QFile>
@@ -147,29 +148,11 @@ void SvgMapView::setLoadText(const QString text)
 
 void SvgMapView::keyPressEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key::Key_Control)
-    {
-        controlKeyDown = true;
-    }
-    else if(event->key() == Qt::Key::Key_Alt)
-    {
-        altKeyDown = true;
-    }
-
     QGraphicsView::keyPressEvent(event);
 }
 
 void SvgMapView::keyReleaseEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key::Key_Control)
-    {
-        controlKeyDown = false;
-    }
-    else if(event->key() == Qt::Key::Key_Alt)
-    {
-        altKeyDown = false;
-    }
-
     QGraphicsView::keyReleaseEvent(event);
 }
 
@@ -180,8 +163,6 @@ void SvgMapView::mouseMoveEvent(QMouseEvent *event)
 
 void SvgMapView::mousePressEvent(QMouseEvent *event)
 {
-
-
     return QGraphicsView::mousePressEvent(event);
 }
 
@@ -193,11 +174,13 @@ void SvgMapView::mouseReleaseEvent(QMouseEvent *event)
 
 void SvgMapView::wheelEvent(QWheelEvent *event)
 {
-    if(altKeyDown == true && controlKeyDown == true)
+    Qt::KeyboardModifiers mods = QApplication::queryKeyboardModifiers();
+
+    if(mods.testFlag(Qt::AltModifier) && mods.testFlag(Qt::ControlModifier))
     {
         emit sendOpacity(event->delta());
     }
-    else if(controlKeyDown)
+    else if(mods.testFlag(Qt::ControlModifier))
     {
         setTransformationAnchor(AnchorViewCenter);
         qreal angle = event->delta() * .025f;

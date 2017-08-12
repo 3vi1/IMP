@@ -86,8 +86,6 @@ public:
     void addLine(QGraphicsLineItem *line);
     void updateLinesColor(QColor color);
 
-    void resetCtrl(){controlKeyDown = false;}
-
     void openWormhole(const QString &systemName);
     void closeWormhole(const QString &systemName);
 
@@ -144,8 +142,6 @@ private:
     QString                     m_pilotGraphic;
     QColor                      m_linesColor;
 
-    bool altKeyDown = false;
-    bool controlKeyDown = false;
     bool drawBridges = false;
     float zoom = 1;
 
