@@ -92,6 +92,7 @@ public:
 signals:
     void systemClicked(const QString& name);
     void sendOpacity(int delta);
+    void mapMoved();
 
 public slots:
     void showMap(bool enable);

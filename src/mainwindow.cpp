@@ -684,6 +684,7 @@ void MainWindow::initParsing()
     }
     parser = new Parser(++parserGeneration, this);
     parser->setMap(*regionMap);
+    connect(parser, &Parser::newMessages, this, &MainWindow::receiveMessages);
 
     if(lc != NULL)
     {
@@ -1007,42 +1008,8 @@ QString MainWindow::shortName(const QString &absoluteFilePath)
     return fileName.left(fileName.length()-20);
 }
 
-void MainWindow::fileChanged(const QString &absoluteFilePath)
+void MainWindow::receiveMessages(QList<MessageInfo> messages)
 {
-    // TODO:  Move handling to separate thread?
-
-    QList<MessageInfo> messages;
-
-    if(mapLoading && !parser->getLocalChannels().contains(shortName(absoluteFilePath)))
-    {
-        // We're loading, and this isn't a local channel.  Load last 50 or so entries.
-
-        messages = parser->fileChanged(absoluteFilePath, options.getMaxEntries());
-    }
-    else
-    {
-        // Either we're not loading, or this is a local channel, so read all changes.
-
-        messages = parser->fileChanged(absoluteFilePath, 0, mapLoading);
-    }
-
-    QString status = "Parsing " + QString::number(messages.count());
-
-    if(messages.count() <= 0)
-    {
-        return;
-    }
-    else if(messages.count() == 1)
-    {
-        status += " new message";
-    }
-    else
-    {
-        status += " messages";
-    }
-    status += " from " + messages[0].logInfo->channel;
-    ui->mapView->setLoadText(status);
-
     foreach (MessageInfo message, messages)
     {
         // If they switch regions while parsing messages,
@@ -1068,7 +1035,7 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
                 // Someone may respond to a status message without naming the system
                 // i.e. "soandso > clr"
-                if(message.systems.length() == 0 && message.text.count(" ") == 0)
+                if(message.systems.length() == 0 && message.text.trimmed().count(" ") == 0)
                 {
                     message.systems.append(message.logInfo->systemLastMentioned);
                 }
@@ -1281,6 +1248,46 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
         // events to keep the gui responsive until we rewrite multi-threaded.
         QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
     }
+
+}
+
+void MainWindow::fileChanged(const QString &absoluteFilePath)
+{
+    // TODO:  Move handling to separate thread?
+
+    QList<MessageInfo> messages;
+
+    if(mapLoading && !parser->getLocalChannels().contains(shortName(absoluteFilePath)))
+    {
+        // We're loading, and this isn't a local channel.  Load last 50 or so entries.
+
+        messages = parser->fileChanged(absoluteFilePath, options.getMaxEntries());
+    }
+    else
+    {
+        // Either we're not loading, or this is a local channel, so read all changes.
+
+        messages = parser->fileChanged(absoluteFilePath, 0, mapLoading);
+    }
+
+    QString status = "Parsing " + QString::number(messages.count());
+
+    if(messages.count() <= 0)
+    {
+        return;
+    }
+    else if(messages.count() == 1)
+    {
+        status += " new message";
+    }
+    else
+    {
+        status += " messages";
+    }
+    status += " from " + messages[0].logInfo->channel;
+    ui->mapView->setLoadText(status);
+
+    receiveMessages(messages);
 }
 
 void MainWindow::doUserActions(const MessageInfo& message)
@@ -1416,6 +1423,9 @@ void MainWindow::positionTo(const QString& systemName)
         return;
     }
 
+    connect(ui->mapView, &SvgMapView::mapMoved, this, &MainWindow::mapMoved);
+
+    repositioning = true;
     QPoint systemPos = regionMap->getCoordinates(systemName);
 
     destinationPos = systemPos;
@@ -1452,27 +1462,35 @@ void MainWindow::updatePosition()
     }
 
     qint64 msecPassed = (QDateTime::currentMSecsSinceEpoch() - startTime);
-    float percentToward = (float)msecPassed / (float)timeToScroll;
+    if(repositioning)
+    {
+        float percentToward = (float)msecPassed / (float)timeToScroll;
 
-    QPoint nextPos;
-    int diffX = std::abs(destinationPos.x() - (int)startPos.x()) * percentToward;
-    int diffY = std::abs(destinationPos.y() - (int)startPos.y()) * percentToward;
-    int newX = destinationPos.x() > startPos.x() ? startPos.x() + diffX : startPos.x() - diffX;
-    int newY = destinationPos.y() > startPos.y() ? startPos.y() + diffY : startPos.y() - diffY;
-    nextPos.setX(newX);
-    nextPos.setY(newY);
+        QPoint nextPos;
+        int diffX = std::abs(destinationPos.x() - (int)startPos.x()) * percentToward;
+        int diffY = std::abs(destinationPos.y() - (int)startPos.y()) * percentToward;
+        int newX = destinationPos.x() > startPos.x() ? startPos.x() + diffX : startPos.x() - diffX;
+        int newY = destinationPos.y() > startPos.y() ? startPos.y() + diffY : startPos.y() - diffY;
+        nextPos.setX(newX);
+        nextPos.setY(newY);
 
-    ui->mapView->centerOn(nextPos);
-    //qDebug() << "Updated position to "<< nextPos;
+        ui->mapView->centerOn(nextPos);
+        //qDebug() << "Updated position to "<< nextPos;
+    }
 
     if(msecPassed >= timeToScroll)
     {
+        repositioning = false;
         positionTimer->stop();
         positionTimer->deleteLater();
         positionTimer = NULL;
-
         //qDebug() << "positionTimer expired for"<< destinationPos;
     }
+}
+
+void MainWindow::mapMoved()
+{
+    repositioning = false;
 }
 
 void MainWindow::on_actionAuto_follow_triggered()
@@ -1558,28 +1576,6 @@ void MainWindow::on_actionShow_Bridges_triggered(bool checked)
         ui->mapView->showBridges(false);
 }
 
-
-// Debug Stuff.  To be removed: -----------------------------------------------
-
-void MainWindow::on_actionF_YH5B_triggered()
-{
-    // For debug testing only, remove later...
-
-    regionMap->setPilotLocation("Khasm Kaotiqa", "F-YH5B");
-    positionTo("F-YH5B");
-    lc->files();
-}
-
-void MainWindow::on_actionN_RMSH_triggered()
-{
-    // For debug testing only...
-
-    regionMap->setPilotLocation("Khasm Kaotiqa", "N-RMSH");
-    positionTo("N-RMSH");
-    lc->files();
-}
-
-// ------------------------------------------------------------------------------
 
 void MainWindow::buildMapMenu()
 {
@@ -1931,3 +1927,20 @@ void MainWindow::on_actionToggle_Message_List_triggered()
     else
         ui->dockWidget->show();
 }
+
+void MainWindow::on_actionTest_Message_triggered()
+{
+    connect(&dialog, &DebugMessage::testMessage, parser, &Parser::processLine);
+    dialog.show();
+}
+
+/*
+void MainWindow::on_actionTest_Location_triggered(QString pilotName, QString location)
+{
+    // For debug testing only...
+    location = location.toUpper();
+    regionMap->setPilotLocation(pilotName, location);
+    positionTo(location);
+    lc->files();
+}
+*/

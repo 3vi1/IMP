@@ -34,6 +34,7 @@
 #include "bridgemap.h"
 #include "chatitemdelegate.h"
 #include "chatmodel.h"
+#include "debugmessage.h"
 #include "info.h"
 #include "finddialog.h"
 #include "logcatcher.h"
@@ -85,6 +86,7 @@ public slots:
     void linkActivated(QString link);
     void logDirChanged(const QString& dir);
     void gotOpacity(int delta);
+    void mapMoved();
     void saveSettings();
 
 protected:
@@ -94,15 +96,10 @@ protected:
 private slots:
     void changeFont(const QString& fontName, int fontSize);
     void clipboardUpdated();
+    void displayAppcast (QString s, QByteArray ba);
     void mapSelected();
-    void pilotSelected();
-    void themeSelected();
-    void updatePosition();
-    void onPilotLocation(const QString &pilotName, const QString &systemName);
     void on_actionAbout_triggered();
     void on_actionOptions_triggered();
-    void on_actionF_YH5B_triggered();
-    void on_actionN_RMSH_triggered();
     void on_actionAuto_follow_triggered();
     void on_actionFindSystem_triggered();
     void on_actionShow_Bridges_triggered(bool checked);
@@ -111,13 +108,18 @@ private slots:
     void on_actionCustomize_triggered();
     void on_actionReset_Rotation_triggered();
     void on_action_Always_on_Top_triggered();
-    void on_listView_doubleClicked(const QModelIndex &index);
     void on_action_Overlay_Mode_triggered();
     void on_action_Frameless_Window_triggered();
     void on_action_Menu_Toggle_triggered();
-    void updateChangelog (const QString& url);
-    void displayAppcast (QString s, QByteArray ba);
     void on_actionToggle_Message_List_triggered();
+    void on_actionTest_Message_triggered();
+    void on_listView_doubleClicked(const QModelIndex &index);
+    void onPilotLocation(const QString &pilotName, const QString &systemName);
+    void pilotSelected();
+    void receiveMessages(QList<MessageInfo> messages);
+    void themeSelected();
+    void updateChangelog (const QString& url);
+    void updatePosition();
 
 private:
     void checkForUpdate();
@@ -157,11 +159,14 @@ private:
     bool                    alwaysOnTop = false;
     bool                    overlayMode = false;
 
+    bool                    repositioning = false;
+
     QSimpleUpdater*         m_updater;
     const QString           DEFS_URL = "http://eternaldusk.com/imp/imp_update.json";
 
     ThemeCustomizer         themeCustomizer;
     QDockWidget             *tdw = NULL;
+    DebugMessage            dialog;
 
     QShortcut*              alwaysOnTopShortcut = NULL;
     QShortcut*              framelessShortcut = NULL;

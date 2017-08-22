@@ -12,7 +12,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = imp
 TEMPLATE = app
 
-VERSION = 0.9.4.2
+VERSION = 0.9.5
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
 QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton
@@ -52,7 +52,8 @@ SOURCES += \
     alarmmodel.cpp \
     combodelegate.cpp \
     volumedelegate.cpp \
-    playdelegate.cpp
+    playdelegate.cpp \
+    debugmessage.cpp
     
 HEADERS  += \
     mainwindow.h \
@@ -84,7 +85,8 @@ HEADERS  += \
     alarmmodel.h \
     combodelegate.h \
     volumedelegate.h \
-    playdelegate.h
+    playdelegate.h \
+    debugmessage.h
     
 FORMS    += \
     mainwindow.ui \
@@ -93,7 +95,8 @@ FORMS    += \
     info.ui \
     themedialog.ui \
     findmessagesdialog.ui \
-    themecustomizer.ui
+    themecustomizer.ui \
+    debugmessage.ui
     
 DISTFILES += \
     ../data/dictionaries/clear \

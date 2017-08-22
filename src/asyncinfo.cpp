@@ -156,7 +156,7 @@ void AsyncInfo::kosCheck(const QString &reqNames,
     names.replace('\n',',');
     qDebug() << "* kosCheck requested for " << names;
 
-    QUrl url("http://kos.cva-eve.org/api/");
+    QUrl url("https://kos.cva-eve.org/api/");
     QUrlQuery query;
     query.addQueryItem("c", "json");
     query.addQueryItem("type", queryType);
@@ -362,6 +362,7 @@ void AsyncInfo::gotKosCheckCorpReply()
         QJsonObject jsonObject = jsonResponse.object();
         QJsonArray jsonArray = jsonObject["results"].toArray();
 
+        bool found = false;
         if(jsonArray.count() > 0)
         {
             KosEntry kosEntry;
@@ -383,11 +384,18 @@ void AsyncInfo::gotKosCheckCorpReply()
                 kosEntry.alliance.kos = allianceObj["kos"].toBool();
                 kosEntry.alliance.name = allianceObj["label"].toString();
                 kosEntry.alliance.ticker = allianceObj["ticker"].toString();
+
+                if(kosEntry.corp.name.toLower() == checkNames.toLower())
+                    found = true;
             }
 
-            emit rblResultReady(checkNames, kosEntry.corp.kos | kosEntry.alliance.kos, m_corpNum);
+            if(found)
+            {
+                emit rblResultReady(checkNames, kosEntry.corp.kos | kosEntry.alliance.kos, m_corpNum);
+            }
         }
-        else
+
+        if(found == false)
         {
             emit rblResultReady(checkNames, false);
         }

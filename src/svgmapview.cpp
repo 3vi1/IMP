@@ -158,6 +158,10 @@ void SvgMapView::keyReleaseEvent(QKeyEvent *event)
 
 void SvgMapView::mouseMoveEvent(QMouseEvent *event)
 {
+    if(event->buttons() == Qt::LeftButton)
+    {
+        emit mapMoved();
+    }
     return QGraphicsView::mouseMoveEvent(event);
 }
 

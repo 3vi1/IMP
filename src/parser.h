@@ -96,15 +96,17 @@ public:
     QSet<QString> getLocalChannels();
 
 signals:
-
     // This class has been backported to QObject inheritance.
     // Maybe I should now look at using signals to fire off the
     // messages in a more timely manner.
+    void newMessages(QList<MessageInfo> messageInfoList);
 
 public slots:
+    void processLine(const QString& line);    // For the debugging option
 
 private:
     uint    generation = 0;
+    LogInfo debugLogInfo;   // logInfo used for debugging messages
 
     //QRegExp listener = QRegExp("^\\[ (.{19}) \\] ([^>]+) > ([^\\.\\?!]*)(.*)$");
     QRegExp listener = QRegExp("^\\[ (.{19}) \\] ([^>]+) > (.*)$");

@@ -726,7 +726,9 @@ int Options::getFontSize()
 
 QStringList Options::getIntelChannels()
 {
-    return _intelChannels;
+    QStringList channels = _intelChannels;
+    channels.append("*Debugging*");
+    return channels;
 }
 
 QString Options::getLogPath()

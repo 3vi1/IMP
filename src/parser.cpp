@@ -33,6 +33,8 @@ using namespace std;
 
 Parser::Parser(uint generation, QObject *parent) : QObject(parent)
 {
+    debugLogInfo.channel = "*Debugging*";
+
     this->generation = generation;
     
     listener.setMinimal(true);
@@ -166,6 +168,25 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
     fileMap[path].position = input.pos();
 
     return messageInfoList;
+}
+
+// For debug testing
+void Parser::processLine(const QString& line)
+{
+    QList<MessageInfo> messageList = parseLine(line);
+
+    for(int i = 0; i < messageList.count(); i++)
+    {
+        messageList[i].logInfo = &debugLogInfo;
+        messageList[i].parserGeneration = generation;
+
+        if(messageList[i].systems.length() > 0)
+        {
+            messageList[i].logInfo->systemLastMentioned = messageList[i].systems[0];
+        }
+    }
+
+    emit newMessages(messageList);
 }
 
 QList<MessageInfo> Parser::parseLine(const QString& line)
@@ -426,8 +447,14 @@ QString Parser::identifyObjects(MessageInfo& messageInfo, QList<ImpWord> &senten
         }
         else if (clearWords.contains(lowerWord))
         {
-            if(i > 0)
+            if(i == 0)  // Just "... > clr"
             {
+                messageInfo.flags.append(MessageFlag::CLEAR);
+                markedUpText += sentence[i].prefix;
+                markedUpText += "<clear>";
+                handled = true;
+            }
+            else {
                 if(sentence[i-1].actual.toLower() == "not")
                 {
                     // This isn't a clear message at all.

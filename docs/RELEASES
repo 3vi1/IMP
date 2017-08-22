@@ -1,3 +1,17 @@
+0.9.5 - If the map is autoscrolling its focus to a system and you
+        move it yourself, it will no longer fight you and jump
+        back to focusing on the first system.
+
+        Fix red-by-last check to not misreport partial matches.
+
+        Fix kos checks now that CVA uses https.
+
+        Improve parsing of messages that are responses to system
+        status queries.  (i.e. one player says "KBP status?",
+        and another responds with only "clr".
+
+        Added test message dialog to debug menu.
+
 0.9.4.2 - Fixed crash when map was left in invalid state after failed
           load.
 
@@ -356,7 +370,7 @@
 
 Coming soon:
 
-- fix heimatar loading &Heimatar
+- right-click to copy system name.
 - kos msg for red by last should show person and corp.
 - fix display of messages with backslashes.
 - better pilot cache/cleanup.
@@ -371,3 +385,4 @@ Coming soon:
 - Add option to autobuild jumpbridge list from dotlan instead of files.
 - Break follow transistion mode on screen reposition.
 - Don't cache every potential sound.
+

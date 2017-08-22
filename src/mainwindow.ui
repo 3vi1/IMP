@@ -120,14 +120,7 @@
     <property name="title">
      <string>Debug</string>
     </property>
-    <widget class="QMenu" name="menuSet_Location">
-     <property name="title">
-      <string>Set Location</string>
-     </property>
-     <addaction name="actionF_YH5B"/>
-     <addaction name="actionN_RMSH"/>
-    </widget>
-    <addaction name="menuSet_Location"/>
+    <addaction name="actionTest_Message"/>
    </widget>
    <widget class="QMenu" name="menuMap">
     <property name="title">
@@ -389,6 +382,11 @@
   <action name="actionToggle_Message_List">
    <property name="text">
     <string>Toggle Message List (L)</string>
+   </property>
+  </action>
+  <action name="actionTest_Message">
+   <property name="text">
+    <string>Test Message</string>
    </property>
   </action>
  </widget>
