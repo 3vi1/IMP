@@ -1,3 +1,15 @@
+0.9.6 - Fixes following for users of the German-language client.
+
+        Fix KOS check bug for some corps where there are partial
+        matches on the corp name.
+
+        Added the ability to set custom system graphics per theme.
+        This requires specially formatted SVGs with specific shape
+        group names.  Documentation, plus some examples of how to
+        create them will be added in a release in the near
+        future.  Opacity, scaling, and position attributes are
+        also customizable.
+
 0.9.5 - If the map is autoscrolling its focus to a system and you
         move it yourself, it will no longer fight you and jump
         back to focusing on the first system.
@@ -375,14 +387,13 @@ Coming soon:
 - fix display of messages with backslashes.
 - better pilot cache/cleanup.
 - if at war, and going hisec, play a "bad idea" sound.
-- theme customization for system images
 - TTS support
 - Maybe an option to auto-change region?
-- Poll/repoll pilots option?
-- Bubble icons?
+- Bubble icons
 - Make mini militia faction count (RBL npc corps)?
 - Add some intelligence to handle dumb names like R3 Clear
 - Add option to autobuild jumpbridge list from dotlan instead of files.
 - Break follow transistion mode on screen reposition.
 - Don't cache every potential sound.
-
+- Add queue-play option to queue sounds.
+- Reload internal list when rules updated.

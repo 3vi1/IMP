@@ -359,9 +359,9 @@ QString Map::getSystemByAbbreviation(const QString& word)
     }
 
     // Still no match?  Maybe they mispelled it, like people do with 9-F0B2 (9-fob)
-    if(upperWord.contains('-') && upperWord.contains('0'))
+    if(upperWord.contains('-') && upperWord.contains('O'))
     {
-        upperWord.replace('0', 'O');
+        upperWord.replace('O', '0');
         return getSystemByAbbreviation(upperWord);
     }
 

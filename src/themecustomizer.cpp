@@ -85,6 +85,14 @@ void ThemeCustomizer::loadValues(Theme *theme)
     ui->spinPilotY->setValue(theme->getAttribute("pilotYOffset").toDouble());
     ui->spinPilotZ->setValue(theme->getAttribute("pilotZ").toDouble());
 
+    // System attributes
+    ui->labelSystemFile->setText(theme->getAttribute("systemGraphic").toString());
+    ui->spinSystemScale->setValue(theme->getAttribute("systemScale").toDouble());
+    ui->spinSystemOpacity->setValue(theme->getAttribute("systemOpacity").toDouble());
+    ui->spinSystemX->setValue(theme->getAttribute("systemXOffset").toDouble());
+    ui->spinSystemY->setValue(theme->getAttribute("systemYOffset").toDouble());
+    ui->spinSystemZ->setValue(theme->getAttribute("systemZ").toDouble());
+
     // Wormhole attributes
     ui->labelWormholeFile->setText(theme->getAttribute("wormholeGraphic").toString());
     ui->spinWormholeScale->setValue(theme->getAttribute("wormholeScale").toDouble());
@@ -168,6 +176,21 @@ void ThemeCustomizer::on_buttonWormholeImage_clicked()
         ui->labelWormholeFile->setText(fileName);
 
         m_theme->setAttribute("wormholeGraphic", WORMHOLES, "wormhole", "graphic", fileName);
+    }
+}
+
+void ThemeCustomizer::on_buttonSystemImage_clicked()
+{
+    QString fileName = QFileDialog::getOpenFileName(
+                this, tr("Systems File"),
+                QString(),
+                tr("Systems Files (*.svg)") );
+
+    if(fileName.length() > 0)
+    {
+        ui->labelSystemFile->setText(fileName);
+
+        m_theme->setAttribute("systemGraphic", SYSTEM, "system", "graphic", fileName);
     }
 }
 
@@ -345,4 +368,29 @@ void ThemeCustomizer::on_spinWormholeY_valueChanged(double y)
 void ThemeCustomizer::on_spinWormholeZ_valueChanged(double z)
 {
     m_theme->setAttribute("wormholeZ", WORMHOLES, "wormhole", "z", z);
+}
+
+void ThemeCustomizer::on_spinSystemScale_valueChanged(double scale)
+{
+    m_theme->setAttribute("systemScale", SYSTEM, "system", "scale", scale);
+}
+
+void ThemeCustomizer::on_spinSystemOpacity_valueChanged(double opacity)
+{
+    m_theme->setAttribute("systemOpacity", SYSTEM, "system", "opacity", opacity);
+}
+
+void ThemeCustomizer::on_spinSystemX_valueChanged(double x)
+{
+    m_theme->setAttribute("systemXOffset", SYSTEM, "system", "xOffset", x);
+}
+
+void ThemeCustomizer::on_spinSystemY_valueChanged(double y)
+{
+    m_theme->setAttribute("systemYOffset", SYSTEM, "system", "yOffset", y);
+}
+
+void ThemeCustomizer::on_spinSystemZ_valueChanged(double z)
+{
+    m_theme->setAttribute("systemZ", SYSTEM, "system", "z", z);
 }

@@ -386,7 +386,10 @@ void AsyncInfo::gotKosCheckCorpReply()
                 kosEntry.alliance.ticker = allianceObj["ticker"].toString();
 
                 if(kosEntry.corp.name.toLower() == checkNames.toLower())
+                {
                     found = true;
+                    break;
+                }
             }
 
             if(found)

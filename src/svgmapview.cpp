@@ -69,6 +69,8 @@ SvgMapView::SvgMapView(QWidget *parent) : QGraphicsView(parent)
     timeFont = QFont("Arial", 6);
 
     setStyleSheet("background-color: transparent;");
+
+    gotSystemShapesFile(":/graphics/systems.svg");
 }
 
 SvgMapView::~SvgMapView()
@@ -429,13 +431,22 @@ void SvgMapView::gotSystemShapesFile(QString shapesFile)
     qDebug() << "SvgMapView::gotSystemShapesFile(" << shapesFile <<
                 ") - systemRenderer = " << systemRenderer;
 
-    if(systemRenderer != NULL)
+    if(systemRenderer == NULL)
+    {
+        systemRenderer = new QSvgRenderer(shapesFile, this);
+    }
+    else
+    {
+        systemRenderer->load(shapesFile);
+    }
+
+/*    if(systemRenderer != NULL)
     {
         systemRenderer->deleteLater();
         systemRenderer = NULL;
     }
 
-    systemRenderer = new QSvgRenderer(shapesFile, this);
+    systemRenderer = new QSvgRenderer(shapesFile, this);*/
 }
 
 void SvgMapView::handleShape(MapShape* shape, const QString& member, QVariant& data)
@@ -630,6 +641,22 @@ void SvgMapView::receiveThemeUpdate(ThemeStorage& ts)
             {
                 setTimeFont(QFont(fontAttributes[0], fontAttributes[1].toInt()));
             }
+        }
+        else if(ts.member == "graphic")
+        {
+            gotSystemShapesFile(ts.data.toString());
+        }
+        else
+        {
+            foreach(SystemShape* shape, systemShapes)
+            {
+                handleShape(shape, ts.member, ts.data);;
+            }
+            foreach(MapShape* shape, systemOutlines)
+            {
+                handleShape(shape, ts.member, ts.data);;
+            }
+
         }
         break;
     }

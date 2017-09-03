@@ -46,7 +46,7 @@ void messageHandler(QtMsgType, const QMessageLogContext &, const QString & msg)
 
         ts << txt << endl;
     }
-    std::cout << txt.toStdString() <<endl;
+    std::cout << txt.toStdString() << endl;
 }
 
 int main(int argc, char *argv[])

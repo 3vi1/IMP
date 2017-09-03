@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
     initThemes();
 
     ui->mapView->setFocus();
-    ui->mapView->gotSystemShapesFile(":/graphics/systems.svg");
+//    ui->mapView->gotSystemShapesFile(":/graphics/systems.svg");
 
     QApplication::setWindowIcon(QIcon(":/graphics/impicon.png"));
     options.setAudio(&audio);

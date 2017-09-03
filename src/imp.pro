@@ -5,14 +5,14 @@
 #-------------------------------------------------
 
 QT       += core gui multimedia #opengl
-QT       += xml xmlpatterns svg
+QT       += xml xmlpatterns svg widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = imp
 TEMPLATE = app
 
-VERSION = 0.9.5
+VERSION = 0.9.6
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
 QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton

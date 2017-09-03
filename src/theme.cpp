@@ -58,6 +58,13 @@ const QMap<QString,QVariant> defaults = {
     {"pilotYOffset", 0},
     {"pilotZ", -0.5},
 
+    {"systemGraphic", ":/graphics/systems.svg"},
+    {"systemOpacity", 1.0},
+    {"systemScale", 1.0},
+    {"systemXOffset", 0.0},
+    {"systemYOffset", 0.0},
+    {"systemZ", 0},
+
     {"wormholeGraphic", ":/graphics/wormhole.svg"},
     {"wormholeOpacity", 0.8},
     {"wormholeScale", 0.05},
@@ -127,15 +134,21 @@ void Theme::load(const QString& name, ThemeType themeType)
     setAttribute("pilotYOffset",    PILOT, "pilot", "yOffset", defaults["pilotYOffset"]);
     setAttribute("pilotZ",          PILOT, "pilot", "z", defaults["pilotZ"]);
 
+    setAttribute("defaultNameFont", SYSTEM, "font", "name", defaults["defaultNameFont"] );
+    setAttribute("defaultTimeFont", SYSTEM, "font", "time", defaults["defaultTimeFont"] );
+    setAttribute("systemGraphic",   SYSTEM, "system", "graphic", defaults["systemGraphic"]);
+    setAttribute("systemOpacity",   SYSTEM, "system", "opacity", defaults["systemOpacity"]);
+    setAttribute("systemScale",     SYSTEM, "system", "scale", defaults["systemScale"]);
+    setAttribute("systemXOffset",   SYSTEM, "system", "xOffset", defaults["systemXOffset"]);
+    setAttribute("systemYOffset",   SYSTEM, "system", "yOffset", defaults["systemYOffset"]);
+    setAttribute("systemZ",         SYSTEM, "system", "z", defaults["systemZ"]);
+
     setAttribute("wormholeGraphic",    WORMHOLES, "wormhole", "graphic", defaults["wormholeGraphic"]);
     setAttribute("wormholeOpacity",    WORMHOLES, "wormhole", "opacity", defaults["wormholeOpacity"]);
     setAttribute("wormholeScale",      WORMHOLES, "wormhole", "scale", defaults["wormholeScale"]);
     setAttribute("wormholeXOffset",    WORMHOLES, "wormhole", "xOffset", defaults["wormholeXOffset"]);
     setAttribute("wormholeYOffset",    WORMHOLES, "wormhole", "yOffset", defaults["wormholeYOffset"]);
     setAttribute("wormholeZ",          WORMHOLES, "wormhole", "z", defaults["wormholeZ"]);
-
-    setAttribute("defaultNameFont", SYSTEM, "font", "name", defaults["defaultNameFont"] );
-    setAttribute("defaultTimeFont", SYSTEM, "font", "time", defaults["defaultTimeFont"] );
 
     if(m_name != "-Default-")
     {
