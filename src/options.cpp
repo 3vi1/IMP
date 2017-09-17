@@ -42,8 +42,6 @@ Options::Options(QWidget *parent) :
     comboDelegate = new ComboDelegate(this);
     volumeDelegate = new VolumeDelegate(this);
     playDelegate = new PlayDelegate(this);
-    connect(playDelegate, &PlayDelegate::playSound,
-            this, &Options::testSound);
 
     rebuildAudioFileList();
     rebuildStyleFileList();
@@ -246,6 +244,13 @@ void Options::loadSettings(QSettings& settings)
     QStringList dpList = settings.value("disabledPilots", QStringList()).toStringList();
     m_disabledPilots = m_disabledPilots.fromList(dpList);
 
+    AudioEngine ae = settings.value("audioEngine", AudioEngine::AE_SFML).value<AudioEngine>();
+    emit changeAudio(ae);
+    if(ae == AudioEngine::AE_Qt)
+    {
+        ui->radioAudioQt->setChecked(true);
+    }
+
     ui->avatarBox->setValue(settings.value("avatarExpiration", 0).toInt());
 
     ui->historySpinBox->setValue(settings.value("historyCount", 0).toInt());
@@ -265,11 +270,11 @@ void Options::loadSettings(QSettings& settings)
     ui->checkOldIntel->setChecked(settings.value("initOldIntel", true).toBool());
 
     // Deprecated - remove after a few versions
-    _alarmDistance = settings.value("alarmDistance", 1).toInt();
+/*    _alarmDistance = settings.value("alarmDistance", 1).toInt();
     _volume = settings.value("volume", 100).toInt();
     audio->setVolume(_volume);
     m_soundAlarm = settings.value("soundAlarm", "red-alert.wav").toString();
-
+*/
     // On Linux, you can just setCurrentText(), but there appears to be a Qt bug on Windows
     // such that it doesn't update the index.
     ui->essCombo->setCurrentIndex(
@@ -588,7 +593,8 @@ void Options::saveSettings() //QSettings& settings)
         settings.setValue("smoothAutofollow", getSmoothAutofollow());
         settings.setValue("essAndKos", getEssAndKos());
 
-        //settings.setValue("soundAlarm", getSoundAlarm());
+        settings.setValue("audioEngine", audio->getEngine());
+
         settings.setValue("soundStatus", getSoundStatus());
         settings.setValue("soundIncomplete", getSoundIncompleteKos());
         settings.setValue("soundIsKos", getSoundIsKos());
@@ -667,6 +673,11 @@ void Options::saveSettings() //QSettings& settings)
 void Options::setAudio(ImpAudio* impAudio)
 {
     audio = impAudio;
+    playDelegate->connect(playDelegate, &PlayDelegate::playSound,
+            audio, &ImpAudio::playLocalFile);
+    connect(this, &Options::changeAudio,
+            audio, &ImpAudio::changeAudio);
+
 }
 
 int Options::getAvatarExpiration()
@@ -1060,4 +1071,14 @@ bool Options::withinAlarmDistance(int distance)
 const Alarm& Options::getAlarmForDistance(int distance)
 {
     return alarmModel->at(distance);
+}
+
+void Options::on_radioAudioQt_clicked()
+{
+    emit changeAudio(AudioEngine::AE_Qt);
+}
+
+void Options::on_radioAudioSFML_clicked()
+{
+    emit changeAudio(AudioEngine::AE_SFML);
 }

@@ -3,7 +3,7 @@
 You will need the following dependencies (Ubuntu, Debian):
 
     sudo apt-get update -qq
-    sudo apt-get install -y build-essential g++ qt5-default qt5-qmake qtmultimedia5-dev libqt5xmlpatterns5-dev libqt5svg5-dev qttools5-dev-tools
+    sudo apt-get install -y build-essential g++ qt5-default qt5-qmake qtmultimedia5-dev libqt5xmlpatterns5-dev libqt5svg5-dev qttools5-dev-tools libsfml-dev
 
 # Compiling on Linux
 

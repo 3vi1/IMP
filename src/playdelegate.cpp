@@ -21,6 +21,7 @@
 #include "playdelegate.h"
 
 #include <QApplication>
+#include <QDebug>
 #include <QMouseEvent>
 
 PlayDelegate::PlayDelegate(QObject *parent) : QStyledItemDelegate(parent)
@@ -35,7 +36,6 @@ void PlayDelegate::paint(QPainter *painter,
      QStyleOptionButton button;
      button.rect = option.rect;
      button.icon = QIcon(":/graphics/volume-icon.png");
-     //button.text = "=^.^=";
      button.state = QStyle::State_Enabled;
      QApplication::style()->drawControl( QStyle::CE_PushButton, &button, painter);
  }
@@ -50,6 +50,8 @@ void PlayDelegate::paint(QPainter *painter,
          QMouseEvent * e = (QMouseEvent *)event;
          if (option.rect.contains(e->x(),e->y()))
          {
+             qDebug() << "PlayDelegate signaling" << model->index(index.row(), 1).data(Qt::DisplayRole).toString()
+                      << "@" << model->index(index.row(), 2).data(Qt::DisplayRole).toFloat();
              emit playSound(model->index(index.row(), 1).data(Qt::DisplayRole).toString(),
                             model->index(index.row(), 2).data(Qt::DisplayRole).toFloat());
              return true;

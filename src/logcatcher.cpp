@@ -47,7 +47,7 @@ void LogCatcher::setLogDir(QString logDir)
     lastSizes = new QMap<QString, qint64>;
 
     fallbackPollTimer = new QTimer(this);
-    fallbackPollTimer->setInterval(1000);
+    fallbackPollTimer->setInterval(pollerInterval);
     connect(fallbackPollTimer, &QTimer::timeout,
             this, &LogCatcher::fallbackPoller);
     fallbackPollTimer->start();
@@ -132,7 +132,6 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
                 // are in them.
 
                 QString channelName = logNameRegEx.cap(1);
-                //if(m_options->getIntelChannels().contains(channelName))
                 if(!localChannels.contains(channelName))
                 {
                     QMutableListIterator<QFileInfo> i(infoList);

@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia #opengl
+QT       += core gui #opengl
+QT       += multimedia  # Qt audio engine
 QT       += xml xmlpatterns svg widgets
 
 #greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -12,7 +13,7 @@ QT       += xml xmlpatterns svg widgets
 TARGET = imp
 TEMPLATE = app
 
-VERSION = 0.9.6
+VERSION = 0.9.6.1
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
 QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton
@@ -21,6 +22,21 @@ QMAKE_TARGET_PRODUCT = IMP
 DEFINES += VERSION=\\\"$VERSION\\\"
 
 include(../ThirdParty/QSimpleUpdater/QSimpleUpdater.pri)
+
+win32 {
+    LIBS += -LC:/SFML/lib
+
+    CONFIG(release, debug|release): LIBS += -lsfml-audio -lsfml-graphics -lsfml-main -lsfml-network -lsfml-window -lsfml-system
+    CONFIG(debug, debug|release): LIBS += -lsfml-audio-d -lsfml-graphics-d -lsfml-main-d -lsfml-network-d -lsfml-window-d -lsfml-system-d
+
+    INCLUDEPATH += C:/SFML/include
+    DEPENDPATH += C:/SFML/include
+}
+unix {
+    CONFIG(release, debug|release): LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-window -lsfml-system
+    CONFIG(debug, debug|release): LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-window -lsfml-system
+    #CONFIG(debug, debug|release): LIBS += -lsfml-audio-d -lsfml-graphics-d -lsfml-network-d -lsfml-window-d -lsfml-system-d
+}
 
 SOURCES += \
     main.cpp\
