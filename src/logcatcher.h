@@ -43,7 +43,7 @@
  * files.
  */
 
-#ifdef Q_OS_WIN32 // Q_OS_LINUX
+#ifdef Q_OS_WIN32
 #define USE_FALLBACK_POLLER
 #endif
 
@@ -78,7 +78,7 @@ private:
     QTimer* fallbackPollTimer;
     QMap<QString, qint64>* fileSizes;
     QMap<QString, qint64>* lastSizes;
-    int pollerInterval;
+    int pollerInterval = 1000;
     bool rebuilding = false;
     bool firstPass = true;
 };

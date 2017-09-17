@@ -136,12 +136,15 @@ signals:
     void fontChanged(const QString& fontName, int fontSize);
     void styleChanged(const QString styleName);
     void okayPressed();
+    void changeAudio(AudioEngine);
+
+public slots:
+    void testSound(const QString& soundFileName, float volume);
 
 protected:
     bool eventFilter(QObject *, QEvent *evt);
 
 private slots:
-    void testSound(const QString& soundFileName, float volume);
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
     void on_statusTestButton_clicked();
@@ -160,6 +163,8 @@ private slots:
     void on_buttonCheck_clicked();
     void on_btnInsertProx_clicked();
     void on_btnRemoveProx_clicked();
+    void on_radioAudioQt_clicked();
+    void on_radioAudioSFML_clicked();
 
 private:
     Ui::Options *ui;

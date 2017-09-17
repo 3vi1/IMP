@@ -47,7 +47,7 @@ private slots:
 private:
     Ui::Info *ui;
 
-    QSoundEffect* music;
+    //QSoundEffect* music;
     ImpAudio* m_audio = NULL;
 };
 

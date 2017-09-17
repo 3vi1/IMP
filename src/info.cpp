@@ -58,5 +58,5 @@ void Info::reject()
 void Info::startMusic(ImpAudio *audio)
 {
     m_audio = audio;
-    audio->playLocalMedia("info/1 dont kn0w.m4a");
+    audio->playLocalMedia("info/1 dont kn0w.ogg", 0.6);
 }

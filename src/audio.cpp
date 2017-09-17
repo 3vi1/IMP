@@ -21,7 +21,6 @@
 #include "audio.h"
 #include "abstract_os.h"
 
-//#include <QAudio>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -30,46 +29,96 @@
 
 ImpAudio::ImpAudio(QObject *parent) : QObject(parent)
 {
-    cacheSounds();
 }
 
-void ImpAudio::cacheSounds()
+bool ImpAudio::cacheEffect(const QString& fileName)
 {
-    QString path = appFilesPath() + "/audio/";
-
-    QDir audioDir(path);
-    audioDir.setFilter(QDir::Files);
-
-    // Load up style combo
-    foreach(QFileInfo fileInfo, audioDir.entryInfoList())
+    if(!buffers.contains(fileName))
     {
-        if(fileInfo.fileName().endsWith(".dll"))
-            continue;
+        QString fullPath = appFilesPath() + "/audio/" + fileName;
 
-        QSoundEffect* effect = new QSoundEffect(this);
-        effect->setSource(QUrl::fromLocalFile(fileInfo.absoluteFilePath()));
+        qDebug() << "   Sound not in buffer, caching" << fullPath;
 
-        if(!effects.contains(fileInfo.fileName()))
-            effects.insert(fileInfo.fileName(), effect);
+        if(!buffers[fileName].loadFromFile(fullPath.toStdString()))
+            return false;
     }
+
+    return true;
 }
 
-void ImpAudio::playLocalFile(const QString& fileName)
+QVector<sf::Sound>::iterator ImpAudio::allocateSound(const QString& fileName)
 {
-    if(!effects.contains(fileName))
+    QVector<sf::Sound>::iterator i = sounds.end();
+    if(sounds.count() > 0)
     {
-        QString path = appFilesPath() + "/audio/" + fileName;
-        QSoundEffect* effect = new QSoundEffect(this);
-        effect->setSource(QUrl::fromLocalFile(path));
-        effects.insert(fileName, effect);
+        for(i = sounds.begin(); i < sounds.end(); i++)
+        {
+            // Reuse a sound if a previous one is free
+            if((*i).getStatus() != sf::Sound::Playing)
+            {
+                qDebug() << "   Reusing existing sf::Sound.";
+                (*i).setBuffer(buffers[fileName]);
+                break;
+            }
+        }
     }
 
-    effects[fileName]->setVolume(m_volume);
-    effects[fileName]->play();
+    if(i == sounds.end())
+    {
+        // No free sound in the set, add a new one.
+        qDebug() << "   Adding new sound to set.";
+        sounds.append(sf::Sound(buffers[fileName]));
+
+        // Reinitialize iterator to point to last item in set.
+        i = sounds.end();
+        --i;
+    }
+
+    return i;
+}
+
+void ImpAudio::changeAudio(AudioEngine ae)
+{
+    engine = ae;
+    qDebug() << "ImpAudio::changeAudio(" << ae << ")";
+}
+
+AudioEngine ImpAudio::getEngine()
+{
+    return engine;
 }
 
 void ImpAudio::playLocalFile(const QString& fileName, float volume)
 {
+    switch(engine)
+    {
+    case AudioEngine::AE_Qt:
+        playLocalFileQt(fileName, volume);
+        break;
+    default:    // case AudioEngine::AE_SFML:
+        playLocalFileSFML(fileName, volume);
+    }
+}
+
+void ImpAudio::playLocalFileSFML(const QString& fileName, float volume)
+{
+    qDebug() << "ImpAudio::playLocalFileSFML(" << fileName << "," << volume << ")";
+    if(!cacheEffect(fileName))
+    {
+        qDebug() << "   Caching failed for " << fileName;
+        return;
+    }
+
+    qDebug() << "   Setting buffer and playing.";
+    QVector<sf::Sound>::iterator i = allocateSound(fileName);
+    (*i).setVolume(volume * 100);
+    (*i).play();
+}
+
+
+void ImpAudio::playLocalFileQt(const QString& fileName, float volume)
+{
+    qDebug() << "ImpAudio::playLocalFileQt(" << fileName << "," << volume << ")";
     if(!effects.contains(fileName))
     {
         QString path = appFilesPath() + "/audio/" + fileName;
@@ -82,65 +131,42 @@ void ImpAudio::playLocalFile(const QString& fileName, float volume)
     effects[fileName]->play();
 }
 
-/*
-QSoundEffect* ImpAudio::oldPlayLocalFile(const QString& fileName)
-{
-    QString path = appFilesPath() + "/audio/" + fileName;
-
-    qDebug() << "ImpAudio::playLocalFile - Playing " << path;
-
-
-    QSoundEffect* effect = new QSoundEffect(this);
-    effect->setSource(QUrl::fromLocalFile(path));
-
-    qDebug() << "ImpAudio::playLocalFile - Setting volume on effect to " << QString::number(volume, 'g', 2);
-    effect->setVolume(volume);
-    connect(effect, &QSoundEffect::playingChanged, this, &ImpAudio::playingChanged);
-    effect->play();
-
-    qDebug() << "ImpAudio::playLocalFile - played " << &effect;
-    return effect;
-}
-*/
-void ImpAudio::playingChanged()
-{
-    QSoundEffect *s = qobject_cast<QSoundEffect *> (sender());
-    if (!s->isPlaying())
-    {
-        qDebug() << "ImpAudio::playingChanged - cleaning up " << &s;
-        s->deleteLater();
-    }
-}
-
-void ImpAudio::setVolume(int i)
-{
-    // Docs said Qt supports logarithmic volume scale...
-    // but doesn't appear implemented.
-
-/*    volume = QAudio::convertVolume(i / qreal(100.0),
-                                   QAudio::LogarithmicVolumeScale,
-                                   QAudio::LinearVolumeScale);
-*/
-    m_volume = i / qreal(100.0);
-    qDebug() << "Volume changed to " << QString::number(m_volume, 'g', 2);
-}
-
-void ImpAudio::playLocalMedia(const QString& fileName)
+void ImpAudio::playLocalMedia(const QString& fileName, float volume)
 {
     QString path = appFilesPath() + "/audio/" + fileName;
 
     qDebug() << "Playing " << path;
 
-    player = new QMediaPlayer;
-    player->setMedia(QUrl::fromLocalFile(path));
-    player->setVolume(50);
-    player->play();
+    switch(engine) {
+        case AudioEngine::AE_Qt:
+            player = new QMediaPlayer;
+            player->setMedia(QUrl::fromLocalFile(path));
+            player->setVolume(50);
+            player->play();
+            break;
+
+        default:
+            if (!music.openFromFile(path.toStdString()))
+                return; // error
+
+            music.setVolume(volume*100);
+            music.play();
+            break;
+    }
 }
 
 void ImpAudio::stopMusic()
 {
-    if(player != NULL && player->state() == player->PlayingState)
-    {
-        player->stop();
+    switch(engine) {
+        case AudioEngine::AE_Qt:
+            if(player != NULL && player->state() == player->PlayingState)
+            {
+                player->stop();
+            }
+        break;
+
+        case AudioEngine::AE_SFML:
+            music.stop();
+        break;
     }
 }

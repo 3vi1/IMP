@@ -22,9 +22,15 @@
 #define IMPAUDIO_H
 
 #include <QFile>
+#include <QMap>
 #include <QObject>
-#include <QMediaPlayer>
-#include <QSoundEffect>
+#include <QVector>
+#include <QMediaPlayer>     // Qt engine
+#include <QSoundEffect>     // Qt engine
+#include <SFML/Audio.hpp>   // SFML engine
+
+enum AudioEngine { AE_SFML, AE_Qt };
+Q_DECLARE_METATYPE(AudioEngine)
 
 class ImpAudio : public QObject
 {
@@ -32,28 +38,38 @@ class ImpAudio : public QObject
 public:
     explicit ImpAudio(QObject *parent = 0);
 
-    void playLocalFile(const QString& fileName);
-    void playLocalFile(const QString& fileName, float volume);
+    AudioEngine getEngine();
 
-    //QSoundEffect* oldPlayLocalFile(const QString& fileName);
-
-    void playLocalMedia(const QString& fileName);
+    void playLocalMedia(const QString& fileName, float volume = 1.0);
     void stopMusic();
 
     void setVolume(int i);
 
-    void cacheSounds();
-
 signals:
 
 public slots:
-    void playingChanged();
+    //void playingChanged();
+    void playLocalFile(const QString& fileName, float volume = 1.0);
+    void changeAudio(AudioEngine);
 
 private:
+    void playLocalFileSFML(const QString& fileName, float volume);
+    void playLocalFileQt(const QString& fileName, float volume);
+
+    QVector<sf::Sound>::iterator allocateSound(const QString& fileName);
+    bool cacheEffect(const QString& fileName);
+
+    AudioEngine engine = AudioEngine::AE_SFML;
     qreal m_volume = 1.0f;
 
     QMediaPlayer* player;
     QMap<QString, QSoundEffect*> effects;
+
+    // SFML sound structures
+    QMap<QString, sf::SoundBuffer> buffers;
+    QVector<sf::Sound> sounds;
+
+    sf::Music music;
 };
 
 #endif // AUDIO_H

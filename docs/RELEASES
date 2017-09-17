@@ -1,3 +1,11 @@
+0.9.7 - Switched to SFML/OpenAL for the audio engine.  WAV,
+        OGG/Vorbis and FLAC sounds are currently supported.  MP3
+        is not yet supported due to licensing issues with the
+        underlying library, but I expect it to be implemented in
+        the near future now that the patents have expired.
+
+
+
 0.9.6 - Fixes following for users of the German-language client.
 
         Fix KOS check bug for some corps where there are partial
@@ -397,3 +405,4 @@ Coming soon:
 - Don't cache every potential sound.
 - Add queue-play option to queue sounds.
 - Reload internal list when rules updated.
+- Doublecheck windows file update hook
