@@ -1,8 +1,17 @@
-0.9.7 - Switched to SFML/OpenAL for the audio engine.  WAV,
-        OGG/Vorbis and FLAC sounds are currently supported.  MP3
-        is not yet supported due to licensing issues with the
-        underlying library, but I expect it to be implemented in
-        the near future now that the patents have expired.
+0.9.7 - Changed log watching logic to further work around the
+        post-Vista behavior where NTFS does not update file
+        modification times until the handle is closed.  Hopefully
+        this fixes the problems where updates would not be seen
+        if additional characters were logged on/off or if IMP
+        were left open for extended periods.
+
+        Updated Qt libraries in Windows build to v5.9.2.
+
+0.9.6.1 - Switched to SFML/OpenAL for the audio engine.  WAV,
+          OGG/Vorbis and FLAC sounds are currently supported.  MP3
+          is not yet supported due to licensing issues with the
+          underlying library, but I expect it to be implemented in
+          the near future now that the patents have expired.
 
 
 
@@ -391,18 +400,16 @@
 Coming soon:
 
 - right-click to copy system name.
-- kos msg for red by last should show person and corp.
+- Rework KOS Checking:  kos msg for red by last should show person and corp.
 - fix display of messages with backslashes.
 - better pilot cache/cleanup.
-- if at war, and going hisec, play a "bad idea" sound.
+- if at war (determine from corp/alliance message), and going hisec, play a "bad idea" sound.
 - TTS support
 - Maybe an option to auto-change region?
-- Bubble icons
+- Bubble indicators
 - Make mini militia faction count (RBL npc corps)?
 - Add some intelligence to handle dumb names like R3 Clear
 - Add option to autobuild jumpbridge list from dotlan instead of files.
-- Break follow transistion mode on screen reposition.
-- Don't cache every potential sound.
 - Add queue-play option to queue sounds.
 - Reload internal list when rules updated.
-- Doublecheck windows file update hook
+- Laugh at people reporting themselves

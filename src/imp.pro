@@ -1,4 +1,4 @@
-#-------------------------------------------------
+d#-------------------------------------------------
 #
 # Project created by QtCreator 2016-09-06T09:06:05
 #
@@ -13,7 +13,7 @@ QT       += xml xmlpatterns svg widgets
 TARGET = imp
 TEMPLATE = app
 
-VERSION = 0.9.6.1
+VERSION = 0.9.7
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
 QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton

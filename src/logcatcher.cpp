@@ -105,15 +105,43 @@ void LogCatcher::fallbackPoller()
     }
 }
 
+int LogCatcher::compareLastFileSize(QFileInfo fileInfo, QFileInfoList oldList)
+{
+    foreach(QFileInfo oldInfo, oldList)
+    {
+        if(oldInfo.absoluteFilePath() == fileInfo.absoluteFilePath())
+        {
+            // Return the number of bytes different in file size
+            return fileInfo.size() - oldInfo.size();
+        }
+    }
+
+    // Files are the same, or file was not found in old list.
+    return 0;
+}
+
 void LogCatcher::findCurrentLogs(const QString& dirName)
 {
 #ifdef USE_FALLBACK_POLLER
-    //fallbackPollTimer->stop();
     rebuilding = true;
 #endif
 
+    // TOFIX:  On Windows, timestamps don't change until the file is flushed.  So, if
+    //          someone logs on a second character which has the same open channels,
+    //          that characters channel files will start to get used.  Then, if they
+    //          log that character off, it still has the newer timestamps and IMP
+    //          will look at the non-changing file rather than go back to looking
+    //          at the one from the first character.
+    //
+    //          Solution:  Cache the timestamp, size, and line position of the files
+    //          on Windows.  Use newest file where size has changed.
+
+    QFileInfoList lastInfoList;
     if(infoList.count() > 0)
+    {
+        lastInfoList = infoList;
         infoList.clear();
+    }
 
     QRegExp logNameRegEx("(.*)_[0-9]+_[0-9]+\\.txt$");
 
@@ -126,10 +154,17 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
                 continue;
             }
 
-            if (fileInfo.lastModified() > (QDateTime::currentDateTime().addDays(-1))) {
+            // All files that have changed since last pass or were created in the last day.
+            if (fileInfo.lastModified() > (QDateTime::currentDateTime().addDays(-1))
+                    || (lastInfoList.count() > 0 && compareLastFileSize(fileInfo, lastInfoList) > 0))
+            {
 
                 // We only put non-local channels in the list once, no matter how many pilots
                 // are in them.
+                //
+                // The exception is when the older file is growing and the newer one is
+                // not - which means they logged on a second character, creating a newer
+                // file, then logged that character out.
 
                 QString channelName = logNameRegEx.cap(1);
                 if(!localChannels.contains(channelName))
@@ -138,23 +173,28 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
                     while (i.hasNext()) {
                         QString iFileName = i.next().fileName();
                         QString iChanName = iFileName.left(iFileName.length() - 20);
-                        if (iChanName == channelName) {
-                            if (i.value().lastModified() < fileInfo.lastModified()) {
-                                qDebug() << "LogCatcher::findCurrentLogs:  Found newer log for " << iChanName;
+                        if (iChanName == channelName)
+                        {
+                            // If file has changed and file is newer than what we already
+                            // have in list, remove what we previously put in list.
+                            if ((lastInfoList.size() == 0 ||
+                                     compareLastFileSize(fileInfo, lastInfoList)) &&
+                                    (i.value().lastModified() < fileInfo.lastModified()))
+                            {
+                                qDebug() << "LogCatcher::findCurrentLogs:  Found newer or changed log for " << iChanName;
                                 qDebug() << "                              ignoring " << iFileName;
+                                qDebug() << "                              in favor of " << fileInfo.fileName();
                                 i.remove();
                             }
                         }
                     }
                 }
-
                 infoList.append(fileInfo);
             }
         }
     }
 
 #ifdef USE_FALLBACK_POLLER
-    //fallbackPollTimer->start(pollerInterval);
     rebuilding = false;
 #else
 

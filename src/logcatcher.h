@@ -81,6 +81,8 @@ private:
     int pollerInterval = 1000;
     bool rebuilding = false;
     bool firstPass = true;
+
+    int compareLastFileSize(QFileInfo fileInfo, QFileInfoList oldList);
 };
 
 #endif // LOGCATCHER_H

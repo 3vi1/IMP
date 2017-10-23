@@ -27,8 +27,8 @@ static const struct Version
 {
     Version(){}
 
-    QString release = "0.9.6.1"; //VERSION;
-    QString name = "SFML OpenAL FML";
+    QString release = "0.9.7"; //VERSION;
+    QString name = "Black Exoplanet";
 
     QString styleHeader1 = "<span style=\" color:#0000ff;\">";
     QString styleFooter1 = "</span>";
