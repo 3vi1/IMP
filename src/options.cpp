@@ -738,7 +738,7 @@ int Options::getFontSize()
 QStringList Options::getIntelChannels()
 {
     QStringList channels = _intelChannels;
-    channels.append("*Debugging*");
+    //channels.append("*Debugging*");
     return channels;
 }
 

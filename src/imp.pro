@@ -13,7 +13,7 @@ QT       += xml xmlpatterns svg widgets
 TARGET = imp
 TEMPLATE = app
 
-VERSION = 0.9.7
+VERSION = 0.9.7.2
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
 QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton
@@ -69,7 +69,8 @@ SOURCES += \
     combodelegate.cpp \
     volumedelegate.cpp \
     playdelegate.cpp \
-    debugmessage.cpp
+    debugmessage.cpp \
+    eventthread.cpp
     
 HEADERS  += \
     mainwindow.h \
@@ -102,7 +103,9 @@ HEADERS  += \
     combodelegate.h \
     volumedelegate.h \
     playdelegate.h \
-    debugmessage.h
+    debugmessage.h \
+    eventthread.h \
+    msg.h
     
 FORMS    += \
     mainwindow.ui \
@@ -135,7 +138,8 @@ DISTFILES += \
     ../docs/THEMES \
     ../docs/CREDITS \
     ../docs/DICTIONARIES \
-    ../INSTALL.md
+    ../INSTALL.md \
+    ../docs/JUMPBRIDGES
     
 RESOURCES += \
     resources.qrc

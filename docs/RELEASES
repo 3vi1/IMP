@@ -1,3 +1,13 @@
+0.9.7.1 - Fixed playing a sound at double volume (actually
+          playing it twice overlapping) when you have two chars
+          in local seeing the same alert.
+
+          Fixed misparsing of questions that included 'clear' in
+          them, such as "Is KBP clr?".  BTW, KBP is never clear.
+
+          Fixed "*DEBUGGING*" entries accidentally inserted in
+          channel list.
+
 0.9.7 - Changed log watching logic to further work around the
         post-Vista behavior where NTFS does not update file
         modification times until the handle is closed.  Hopefully

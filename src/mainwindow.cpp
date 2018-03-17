@@ -533,7 +533,7 @@ void MainWindow::gotRblReply(QString name, bool rbl, int corpNum)
 
     if(rbl)
     {
-        audio.playLocalFile(options.getSoundIsKos());
+        playLocalFileDeduped(options.getSoundIsKos());
         kosSoundPlayed = true;
 
         MessageInfo info;
@@ -565,7 +565,7 @@ void MainWindow::gotRblReply(QString name, bool rbl, int corpNum)
         }
         else
         {
-            audio.playLocalFile(options.getSoundNoKos());
+            playLocalFileDeduped(options.getSoundNoKos());
         }
     }
 }
@@ -575,7 +575,7 @@ void MainWindow::gotKosError(const QString& pilotNames)
     QSet<QString> pilots = pilotNames.split(',').toSet();
 
     pilotsBeingChecked -= pilots.count();
-    audio.playLocalFile(options.getSoundIncompleteKos());
+    playLocalFileDeduped(options.getSoundIncompleteKos());
 }
 
 void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& entries)
@@ -641,12 +641,12 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
 
     if(playKos && kosSoundPlayed != true)
     {
-        audio.playLocalFile(options.getSoundIsKos());
+        playLocalFileDeduped(options.getSoundIsKos());
         kosSoundPlayed = true;
     }
     else if(pilotsBeingChecked == 0)
     {
-        audio.playLocalFile(options.getSoundNoKos());
+        playLocalFileDeduped(options.getSoundNoKos());
     }   
 }
 
@@ -670,7 +670,7 @@ void MainWindow::gotEssReply(const QString&, const QList<KosEntry>& entries)
     }
     if(playKos)
     {
-        audio.playLocalFile(options.getSoundEss());
+        playLocalFileDeduped(options.getSoundEss());
     }
 }
 
@@ -1008,247 +1008,279 @@ QString MainWindow::shortName(const QString &absoluteFilePath)
     return fileName.left(fileName.length()-20);
 }
 
-void MainWindow::receiveMessages(QList<MessageInfo> messages)
+void MainWindow::playLocalFileDeduped(const QString &fileName, float volume)
 {
-    foreach (MessageInfo message, messages)
+    qint64 currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
+    if(!soundLastPlayed.contains(fileName))
     {
-        // If they switch regions while parsing messages,
-        // discard the ones on the queue.
-        if(message.parserGeneration != parserGeneration)
-            break;
-
-        if(!mapLoading)
-            doUserActions(message);
-
-        bool toBeAddedToList = false;
-        foreach(MessageFlag flag, message.flags)
+        audio.playLocalFile(fileName, volume);
+    }
+    else
+    {
+        qint64 cutoffTime = soundLastPlayed[fileName] + 500;
+        if(cutoffTime < currentTime)
         {
-            switch(flag)
+            audio.playLocalFile(fileName, volume);
+        }
+    }
+
+    soundLastPlayed[fileName] = currentTime;
+}
+
+void MainWindow::processMessage(MessageInfo message)
+{
+    // If they switch regions while parsing messages,
+    // discard the ones on the queue.
+    if(message.parserGeneration != parserGeneration)
+        return;
+
+    if(!mapLoading)
+        doUserActions(message);
+
+    bool toBeAddedToList = false;
+    foreach(MessageFlag flag, message.flags)
+    {
+        switch(flag)
+        {
+
+        case MessageFlag::CLEAR:
+            if (!options.getIntelChannels().contains(message.logInfo->channel))
             {
-
-            case MessageFlag::CLEAR:
-                if (!options.getIntelChannels().contains(message.logInfo->channel))
-                {
-                    // Only accept clear messages from intel channels.
-                    break;
-                }
-
-                // Someone may respond to a status message without naming the system
-                // i.e. "soandso > clr"
-                if(message.systems.length() == 0 && message.text.trimmed().count(" ") == 0)
-                {
-                    message.systems.append(message.logInfo->systemLastMentioned);
-                }
-
-                foreach (QString system, message.systems)
-                {
-                    changeImpStatus("Clearing " + system + "...");
-                    regionMap->setSystemStatus(system, SystemStatus::clear, message.dateTime);
-
-                    if(system == lastAlertSystem)
-                    {
-                        lastAlertSystem = "";
-                    }
-                }
-                toBeAddedToList = true;
-
-                break;
-
-            case MessageFlag::ESS:
-            {
-                QString pilot = message.logInfo->pilot;
-                if(pilotIsEnabled(pilot))
-                {
-                    if(options.getEssAndKos())
-                    {
-                        AsyncInfo* kosInfo = new AsyncInfo(manager, this);
-                        connect(kosInfo, &AsyncInfo::kosResultReady,
-                                this, &MainWindow::gotEssReply);
-                        kosInfo->kosCheck(message.related[0]);
-                    }
-                    else
-                    {
-                        audio.playLocalFile(options.getSoundEss());
-                    }
-                    break;
-                }
+                // Only accept clear messages from intel channels.
                 break;
             }
 
-            case MessageFlag::LEFT:
-                break;
-
-            case MessageFlag::LOCATION:
-                break;
-
-            case MessageFlag::MOTD:
-                break;
-
-            case MessageFlag::POCKET:
-                // Handled by STATUS.
-                break;
-
-            case MessageFlag::QUERY:
-            case MessageFlag::STATUS:
+            if (message.flags.contains(MessageFlag::QUERY))
             {
-                if (!options.getIntelChannels().contains(message.logInfo->channel))
-                {
-                    break;
-                }
+                // "Is jeiv clr?"
+                break;
+            }
 
-                // Expand pockets, if necessary
-                if (message.flags.contains(MessageFlag::POCKET) &&
-                        message.systems.count() >= 1 &&
-                        pockets.contains(message.systems[0]))
-                {
-                    message.systems.append(pockets[message.systems[0]]);
-                }
+            // Someone may respond to a status message without naming the system
+            // i.e. "soandso > clr"
+            if(message.systems.length() == 0 && message.text.trimmed().count(" ") == 0)
+            {
+                message.systems.append(message.logInfo->systemLastMentioned);
+            }
 
-                bool play = false;
+            foreach (QString system, message.systems)
+            {
+                changeImpStatus("Clearing " + system + "...");
+                regionMap->setSystemStatus(system, SystemStatus::clear, message.dateTime);
+
+                if(system == lastAlertSystem)
+                {
+                    lastAlertSystem = "";
+                }
+            }
+            toBeAddedToList = true;
+
+            break;
+
+        case MessageFlag::ESS:
+        {
+            QString pilot = message.logInfo->pilot;
+            if(pilotIsEnabled(pilot))
+            {
+                if(options.getEssAndKos())
+                {
+                    AsyncInfo* kosInfo = new AsyncInfo(manager, this);
+                    connect(kosInfo, &AsyncInfo::kosResultReady,
+                            this, &MainWindow::gotEssReply);
+                    kosInfo->kosCheck(message.related[0]);
+                }
+                else
+                {
+                    playLocalFileDeduped(options.getSoundEss());
+                }
+                break;
+            }
+            break;
+        }
+
+        case MessageFlag::LEFT:
+            break;
+
+        case MessageFlag::LOCATION:
+            break;
+
+        case MessageFlag::MOTD:
+            break;
+
+        case MessageFlag::POCKET:
+            // Handled by STATUS.
+            break;
+
+        case MessageFlag::QUERY:
+        case MessageFlag::STATUS:
+        {
+            if (!options.getIntelChannels().contains(message.logInfo->channel))
+            {
+                break;
+            }
+
+            // Expand pockets, if necessary
+            if (message.flags.contains(MessageFlag::POCKET) &&
+                    message.systems.count() >= 1 &&
+                    pockets.contains(message.systems[0]))
+            {
+                message.systems.append(pockets[message.systems[0]]);
+            }
+
+            bool play = false;
+            foreach (QString system, message.systems)
+            {
+                qint64 secondsDiff = message.dateTime.msecsTo(
+                            QDateTime::currentDateTimeUtc()
+                            ) / 1000;
+                if(secondsDiff < 10)
+                {
+                    // Test each pilot's location to see if we're in one of the systems.
+                    QStringList pilots = regionMap->pilotsIn(system);
+                    foreach(QString pilot, pilots)
+                    {
+                        if(pilotIsEnabled(pilot))
+                        {
+                           changeImpStatus("Status requested for " + system + ".");
+                            play = true;
+                        }
+                    }
+                }
+            }
+            if (play)
+            {
+                playLocalFileDeduped(options.getSoundStatus());
+            }
+        }
+        break;
+
+        case MessageFlag::SYSTEM_CHANGE:
+            if(regionMap->pilotsIn(message.systems[0]).contains(message.logInfo->pilot))
+            {
+                break;
+
+                // We were already in that system - this is probably just a log file update.
+            }
+            changeImpStatus("Updating local system to " + message.systems[0] + "...");
+
+            regionMap->setPilotLocation(message.logInfo->pilot, message.systems[0]);
+
+            if(!pilotIsEnabled(message.logInfo->pilot))
+            {
+                break;
+            }
+
+            if(options.getAutofollow())
+            {
+                positionTo(message.systems[0]);
+            }
+
+            if(!mapLoading)
+                regionMap->update();
+            break;
+
+        case MessageFlag::WORMHOLE:
+//                if (options.getIntelChannels().contains(message.logInfo->channel))
+//                    toBeAddedToList = true;
+            if(message.systems.count() > 0 and !message.flags.contains(MessageFlag::QUERY))
+            {
+                if(message.flags.contains(MessageFlag::CLOSED))
+                {
+                    ui->mapView->closeWormhole(message.systems[0]);
+                }
+                else
+                {
+                    ui->mapView->openWormhole(message.systems[0]);
+                }
+            }
+            break;
+
+        case MessageFlag::WARNING:
+            if (options.getIntelChannels().contains(message.logInfo->channel))
+            {
                 foreach (QString system, message.systems)
                 {
+                    regionMap->setSystemStatus(system, SystemStatus::red, message.dateTime);
                     qint64 secondsDiff = message.dateTime.msecsTo(
                                 QDateTime::currentDateTimeUtc()
                                 ) / 1000;
                     if(secondsDiff < 10)
                     {
-                        // Test each pilot's location to see if we're in one of the systems.
-                        QStringList pilots = regionMap->pilotsIn(system);
-                        foreach(QString pilot, pilots)
+                        foreach(QString system, message.systems)
                         {
-                            if(pilotIsEnabled(pilot))
+                            // Test each pilot location to see if it is near affected system
+                            foreach(QString pilot, regionMap->pilotsAndLocation().keys())
                             {
-                               changeImpStatus("Status requested for " + system + ".");
-                                play = true;
-                            }
-                        }
-                    }
-                }
-                if (play)
-                {
-                    audio.playLocalFile(options.getSoundStatus());
-                }
-            }
-            break;
+                                // Skip pilots that have been disabled from menu.
+                                if(!pilotIsEnabled(pilot))
+                                    continue;
 
-            case MessageFlag::SYSTEM_CHANGE:
-                if(regionMap->pilotsIn(message.systems[0]).contains(message.logInfo->pilot))
-                {
-                    break;
-
-                    // We were already in that system - this is probably just a log file update.
-                }
-                changeImpStatus("Updating local system to " + message.systems[0] + "...");
-
-                regionMap->setPilotLocation(message.logInfo->pilot, message.systems[0]);
-
-                if(!pilotIsEnabled(message.logInfo->pilot))
-                {
-                    break;
-                }
-
-                if(options.getAutofollow())
-                {
-                    positionTo(message.systems[0]);
-                }
-
-                if(!mapLoading)
-                    regionMap->update();
-                break;
-
-            case MessageFlag::WORMHOLE:
-//                if (options.getIntelChannels().contains(message.logInfo->channel))
-//                    toBeAddedToList = true;
-                if(message.systems.count() > 0 and !message.flags.contains(MessageFlag::QUERY))
-                {
-                    if(message.flags.contains(MessageFlag::CLOSED))
-                    {
-                        ui->mapView->closeWormhole(message.systems[0]);
-                    }
-                    else
-                    {
-                        ui->mapView->openWormhole(message.systems[0]);
-                    }
-                }
-                break;
-
-            case MessageFlag::WARNING:
-                if (options.getIntelChannels().contains(message.logInfo->channel))
-                {
-                    foreach (QString system, message.systems)
-                    {
-                        regionMap->setSystemStatus(system, SystemStatus::red, message.dateTime);
-                        qint64 secondsDiff = message.dateTime.msecsTo(
-                                    QDateTime::currentDateTimeUtc()
-                                    ) / 1000;
-                        if(secondsDiff < 10)
-                        {
-                            foreach(QString system, message.systems)
-                            {
-                                // Test each pilot location to see if it is near affected system
-                                foreach(QString pilot, regionMap->pilotsAndLocation().keys())
+                                QString pilotLoc = regionMap->pilotsSystem(pilot);
+                                if(regionMap->contains(pilotLoc) &&
+                                   options.withinAlarmDistance(regionMap->distanceBetween(pilotLoc, system))
+                                  )
                                 {
-                                    // Skip pilots that have been disabled from menu.
-                                    if(!pilotIsEnabled(pilot))
-                                        continue;
+                                    changeImpStatus("Setting " + system + " to red.");
 
-                                    QString pilotLoc = regionMap->pilotsSystem(pilot);
-                                    if(regionMap->contains(pilotLoc) &&
-                                       options.withinAlarmDistance(regionMap->distanceBetween(pilotLoc, system))
-                                      )
+                                    secondsDiff = lastAlertTime.msecsTo(
+                                                QDateTime::currentDateTimeUtc()
+                                                ) / 1000;
+                                    if(!(regionMap->ourCurrentPilots().contains(message.sender) &&
+                                         options.getSelfSuppress() == true) &&
+                                         (secondsDiff > options.getRedundantSuppress() ||
+                                          system != lastAlertSystem))
                                     {
-                                        changeImpStatus("Setting " + system + " to red.");
+                                        qDebug() << "-Alarming for: " << message.originalLine;
+                                        qDebug() << "-pilotLoc: " << pilotLoc << "  system: " << system;
+                                        lastAlertTime = QDateTime::currentDateTimeUtc();
+                                        lastAlertSystem = system;
 
-                                        secondsDiff = lastAlertTime.msecsTo(
-                                                    QDateTime::currentDateTimeUtc()
-                                                    ) / 1000;
-                                        if(!(regionMap->ourCurrentPilots().contains(message.sender) &&
-                                             options.getSelfSuppress() == true) &&
-                                             (secondsDiff > options.getRedundantSuppress() ||
-                                              system != lastAlertSystem))
-                                        {
-                                            qDebug() << "-Alarming for: " << message.originalLine;
-                                            qDebug() << "-pilotLoc: " << pilotLoc << "  system: " << system;
-                                            lastAlertTime = QDateTime::currentDateTimeUtc();
-                                            lastAlertSystem = system;
-
-                                            Alarm alarm = options.getAlarmForDistance(regionMap->distanceBetween(pilotLoc, system));
-                                            audio.playLocalFile(alarm.file, alarm.volume);
-                                        }
-
-                                        // If this is within alarm distance, let's update the map NOW.
-                                        if(!mapLoading)
-                                            regionMap->update();
+                                        Alarm alarm = options.getAlarmForDistance(regionMap->distanceBetween(pilotLoc, system));
+                                        playLocalFileDeduped(alarm.file, alarm.volume);
                                     }
+
+                                    // If this is within alarm distance, let's update the map NOW.
+                                    if(!mapLoading)
+                                        regionMap->update();
                                 }
                             }
                         }
                     }
-                    toBeAddedToList = true;
                 }
-                break;
-
-            case MessageFlag::LINK:
-                if (options.getIntelChannels().contains(message.logInfo->channel))
-                    toBeAddedToList = true;
-                break;
-
-            default:
-                qDebug() << "Unhandled flag " << flag << " found for message: " << message.text;
-                break;
-
+                toBeAddedToList = true;
             }
-        }
-        if(toBeAddedToList && message.skipOutput != true)
-        {
-            addMessage(message);
-        }
+            break;
 
-        // If we just reloaded, there may be a lot of these, so let's process other
-        // events to keep the gui responsive until we rewrite multi-threaded.
-        QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
+        case MessageFlag::LINK:
+            if (options.getIntelChannels().contains(message.logInfo->channel))
+                toBeAddedToList = true;
+            break;
+
+        default:
+            qDebug() << "Unhandled flag " << flag << " found for message: " << message.text;
+            break;
+
+        }
+    }
+    if(toBeAddedToList && message.skipOutput != true)
+    {
+        addMessage(message);
+    }
+}
+
+void MainWindow::receiveMessages(QList<MessageInfo> messages)
+{
+    // This processes a single parsed log line, which may have been broken into
+    // multiple messages.
+
+    foreach (MessageInfo message, messages)
+    {
+        processMessage(message);
     }
 
+    // If we just reloaded, there may be a lot of these, so let's process other
+    // events to keep the gui responsive until we rewrite multi-threaded.
+    QCoreApplication::processEvents(QEventLoop::AllEvents, 10);
 }
 
 void MainWindow::fileChanged(const QString &absoluteFilePath)
@@ -1288,6 +1320,7 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
     ui->mapView->setLoadText(status);
 
     receiveMessages(messages);
+    //eventThread.handleEvents(messages);
 }
 
 void MainWindow::doUserActions(const MessageInfo& message)
@@ -1320,7 +1353,7 @@ void MainWindow::doUserActions(const MessageInfo& message)
                 if(playExp.indexIn(rule.action) != -1)
                 {
                     // This is a sound-playing rule.
-                    audio.playLocalFile(playExp.cap(1).trimmed());
+                    playLocalFileDeduped(playExp.cap(1).trimmed());
                 }
                 else {
                     QRegExp launchExp("^launch ([^ ]+) *(.*)$");

@@ -1,0 +1,25 @@
+Jumpbridge data should be stored in a plain text file, named the same as the
+map (except all lowercase).  The file should be placed in the directory
+pointed to in settings|options|map(tab)|"Bridge Data".
+
+For instance, if your bridge data directory is set to
+"http://eternaldusk.com/imp/jb/", a map for Providence would be located in
+the file at "http://eternaldusk.com/imp/jb/providence".
+
+The contents of the file should follow this format:
+
+FirstSystem=SecondSystem:#RGBcolorInHex
+
+
+Example:
+
+3D-CQU=9UY4-H:#0F00FF
+3KB-J0=AY-YCU:#804030
+49GC-R=8B-VLX:#1F00EF
+5KG-PY=QBL-BV:#2F00DF
+7YWV-S=N8XA-L:#3F00CF
+...
+
+You can "comment-out" bridges that are temporarily down by replacing the
+'=' with another character, like '?'.  For instance "3D-CQU?9UY4-H:#0F00FF"
+would not be shown on the map and would be ignored.

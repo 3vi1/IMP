@@ -35,6 +35,7 @@
 #include "chatitemdelegate.h"
 #include "chatmodel.h"
 #include "debugmessage.h"
+//#include "eventthread.h"
 #include "info.h"
 #include "finddialog.h"
 #include "logcatcher.h"
@@ -116,6 +117,7 @@ private slots:
     void on_listView_doubleClicked(const QModelIndex &index);
     void onPilotLocation(const QString &pilotName, const QString &systemName);
     void pilotSelected();
+    void processMessage(MessageInfo message);
     void receiveMessages(QList<MessageInfo> messages);
     void themeSelected();
     void updateChangelog (const QString& url);
@@ -230,6 +232,10 @@ private:
     // how to pull it out of the transform matrix and level systems at
     // restart.
     qreal m_savedSystemRotation = 0;
+
+    //EventThread eventThread;                      // Not currently used
+    QMap<QString, qint64> soundLastPlayed;
+    void playLocalFileDeduped(const QString &fileName, float volume = 1.0);
 };
 
 #endif // MAINWINDOW_H

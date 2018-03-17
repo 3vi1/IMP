@@ -33,48 +33,7 @@
 #include <QtGlobal>
 
 #include "map.h"
-
-enum MessageFlag { UNKNOWN = 0,
-                   CLEAR, CLOSED,
-                   ESS,
-                   LEFT, LINK, LOCATION,
-                   MOTD, OPEN, POCKET, QUERY,
-                   STATUS, SYSTEM_CHANGE,
-                   WARNING, WORMHOLE
-                 };
-
-struct LogInfo
-{
-    QString channel;
-    QFileInfo fileInfo;
-    QString pilot;
-    QString systemLastMentioned;
-    qint64 position;
-};
-
-struct MessageInfo
-{
-    uint    parserGeneration = 0;
-    bool    skipOutput = false;
-    
-    QString originalLine;
-    bool    indecipherable = false;
-
-    LogInfo* logInfo;
-
-    QString sender;
-    QDateTime dateTime;
-    QString text;
-    QString markedUpText;
-
-    QStringList systems;
-    QStringList gates;
-    QStringList ships;
-    QStringList related;
-    QStringList possiblePilots;
-
-    QList<MessageFlag> flags;
-};
+#include "msg.h"
 
 struct ImpWord
 {
@@ -96,10 +55,8 @@ public:
     QSet<QString> getLocalChannels();
 
 signals:
-    // This class has been backported to QObject inheritance.
-    // Maybe I should now look at using signals to fire off the
-    // messages in a more timely manner.
     void newMessages(QList<MessageInfo> messageInfoList);
+
 
 public slots:
     void processLine(const QString& line);    // For the debugging option
