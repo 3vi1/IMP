@@ -143,7 +143,7 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
         infoList.clear();
     }
 
-    QRegExp logNameRegEx("(.*)_[0-9]+_[0-9]+\\.txt$");
+    QRegExp logNameRegEx("(.*)( \\[[0-9]+\\])?_[0-9]+_[0-9]+\\.txt$");
 
     foreach (QFileInfo fileInfo, QDir(dirName).entryInfoList()) {
         if (fileInfo.isFile()) {

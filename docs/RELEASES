@@ -1,4 +1,6 @@
-0.9.7.1 - Fixed playing a sound at double volume (actually
+0.9.7.3 - Adjust to cope with CCP's new log naming schema.
+
+0.9.7.2 - Fixed playing a sound at double volume (actually
           playing it twice overlapping) when you have two chars
           in local seeing the same alert.
 
@@ -409,6 +411,7 @@
 
 Coming soon:
 
+- click user icon for zkillboard
 - right-click to copy system name.
 - Rework KOS Checking:  kos msg for red by last should show person and corp.
 - fix display of messages with backslashes.
@@ -423,3 +426,7 @@ Coming soon:
 - Add queue-play option to queue sounds.
 - Reload internal list when rules updated.
 - Laugh at people reporting themselves
+- KOS checker redirection?
+- Menu option to change transparency.
+- Stop music on about dialog with checkbox.
+- load last map used
