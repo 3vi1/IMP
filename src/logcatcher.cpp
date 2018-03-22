@@ -143,13 +143,16 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
         infoList.clear();
     }
 
-    QRegExp logNameRegEx("(.*)( \\[[0-9]+\\])?_[0-9]+_[0-9]+\\.txt$");
+    QRegularExpression logName_re("(.*?)( \\[\\d+\\])?_[0-9]+_[0-9]+\\.txt$");
 
     foreach (QFileInfo fileInfo, QDir(dirName).entryInfoList()) {
         if (fileInfo.isFile()) {
 
+            qDebug() << "LogCatcher::findCurrentLogs:  fileName = " << fileInfo.fileName();
+
             // If filename doesn't look like a log, skip it.
-            if (logNameRegEx.indexIn(fileInfo.fileName()) == -1)
+            QRegularExpressionMatch logMatch = logName_re.match(fileInfo.fileName());
+            if (!logMatch.hasMatch())
             {
                 continue;
             }
@@ -166,14 +169,15 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
                 // not - which means they logged on a second character, creating a newer
                 // file, then logged that character out.
 
-                QString channelName = logNameRegEx.cap(1);
+                QString channelName = logMatch.captured(1); //logNameRegEx.cap(1);
                 if(!localChannels.contains(channelName))
                 {
                     QMutableListIterator<QFileInfo> i(infoList);
                     while (i.hasNext()) {
                         QString iFileName = i.next().fileName();
-                        QString iChanName = iFileName.left(iFileName.length() - 20);
-                        if (iChanName == channelName)
+                        QRegularExpressionMatch match = logName_re.match(iFileName);
+
+                        if (match.hasPartialMatch() && match.captured(0) == channelName)
                         {
                             // If file has changed and file is newer than what we already
                             // have in list, remove what we previously put in list.
@@ -181,7 +185,7 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
                                      compareLastFileSize(fileInfo, lastInfoList)) &&
                                     (i.value().lastModified() < fileInfo.lastModified()))
                             {
-                                qDebug() << "LogCatcher::findCurrentLogs:  Found newer or changed log for " << iChanName;
+                                qDebug() << "LogCatcher::findCurrentLogs:  Found newer or changed log for " << match.captured(0);
                                 qDebug() << "                              ignoring " << iFileName;
                                 qDebug() << "                              in favor of " << fileInfo.fileName();
                                 i.remove();
