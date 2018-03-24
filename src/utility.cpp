@@ -58,3 +58,25 @@ QStringList fromFile(const QString& fileName)
 
     return stringList;
 }
+
+QRegularExpression logName_re("(?:.+/)?(.+?)(?: \\[\\d+\\])?_[0-9]+_[0-9]+\\.txt$");
+
+bool isLog(const QString &absoluteFilePath)
+{
+    QRegularExpressionMatch logMatch = logName_re.match(absoluteFilePath);
+    if (logMatch.hasMatch())
+    {
+        return true;
+    }
+
+    return false;
+}
+
+QString logChannelName(const QString &absoluteFilePath)
+{
+    QRegularExpressionMatch logMatch = logName_re.match(absoluteFilePath);
+    int lastCapturedIndex = logMatch.lastCapturedIndex();
+    QString captured = logMatch.captured(lastCapturedIndex);
+
+    return captured;
+}

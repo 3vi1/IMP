@@ -703,9 +703,9 @@ void MainWindow::initParsing()
     // Initialize with last session if not old...
     foreach(QString absoluteFilePath, lc->files())
     {
-        if((options.getIntelChannels().contains(shortName(absoluteFilePath)) &&
+        if((options.getIntelChannels().contains(logChannelName(absoluteFilePath)) &&
                 options.getInitOldIntel()) ||
-            parser->getLocalChannels().contains(shortName(absoluteFilePath)))
+            parser->getLocalChannels().contains(logChannelName(absoluteFilePath)))
         {
             fileChanged(absoluteFilePath);
         }
@@ -1000,14 +1000,6 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     }
 }
 
-QString MainWindow::shortName(const QString &absoluteFilePath)
-{
-    QString fileName = absoluteFilePath.right(absoluteFilePath.length() -
-                                              absoluteFilePath.lastIndexOf('/')
-                                              - 1);
-    return fileName.left(fileName.length()-20);
-}
-
 void MainWindow::playLocalFileDeduped(const QString &fileName, float volume)
 {
     qint64 currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
@@ -1289,10 +1281,10 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
 
     QList<MessageInfo> messages;
 
-    if(mapLoading && !parser->getLocalChannels().contains(shortName(absoluteFilePath)))
+    if(mapLoading && !parser->getLocalChannels().contains(logChannelName(absoluteFilePath)))
     {
         // We're loading, and this isn't a local channel.  Load last 50 or so entries.
-
+        qDebug() << "Loading previous messages for " << logChannelName(absoluteFilePath);
         messages = parser->fileChanged(absoluteFilePath, options.getMaxEntries());
     }
     else

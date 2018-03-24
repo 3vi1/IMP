@@ -71,7 +71,8 @@ public slots:
 private:
     Options* m_options;
     QFileSystemWatcher dirWatcher;
-    QFileInfoList infoList;
+    QFileInfoList watchList;
+    QFileInfoList lastAllFiles;
     QSet<QString> localChannels;
     QString logDir;
 

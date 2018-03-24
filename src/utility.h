@@ -21,8 +21,13 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
+#include <QRegularExpression>
 #include <QString>
 
 QStringList fromFile(const QString& fileName);
+QString logChannelName(const QString &absoluteFilePath);
+bool isLog(const QString &absoluteFilePath);
+
+extern QRegularExpression logName_re;
 
 #endif // UTILITY_H
