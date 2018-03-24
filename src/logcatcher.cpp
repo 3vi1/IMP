@@ -231,7 +231,7 @@ QStringList LogCatcher::files()
 
 #ifdef USE_FALLBACK_POLLER
     QStringList files;
-    foreach(QFileInfo fileInfo, infoList)
+    foreach(QFileInfo fileInfo, watchList)
     {
         files.append(fileInfo.absoluteFilePath());
     }
