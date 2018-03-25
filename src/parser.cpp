@@ -94,8 +94,7 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
 
         QFileInfo fileInfo(file);
 
-        QString baseName = fileInfo.fileName();
-        QString channel = baseName.left(baseName.length()-20);
+        QString channel = logChannelName(fileInfo.fileName());
         fileMap.insert(path, LogInfo{channel, fileInfo, "", "", 0}); //logInfo);
 
         lines = input.readAll().split("\n");
