@@ -1,8 +1,3 @@
-<H1>NOTE:</H1>
-On April 6th, 2018 CCP made a change to the game logging such that your location is never written.  Without this, IMP (and every other utility like it) cannot follow your system in game and update the map accordingly.
-<p>
-When I opened a ticket with CCP, they assured me this change is intentional.  So, at this moment IMP is broken and will not perform alerting for your current location.
-<p><p>
 <p align="center">
   <img align="middle" src="src/graphics/impicon.png" width="100" height="100">
   <img align="middle" src="src/graphics/Imp.png" height="100">
