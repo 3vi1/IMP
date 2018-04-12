@@ -21,11 +21,6 @@
 #ifndef LOGCATCHER_H
 #define LOGCATCHER_H
 
-/* For some reason, actually using the above define in this same file ends up with the
- * QTimer not firing?!?!  At least it does when testing with gcc on Linux.  That's why I
- * do not use the flag below to optimize what's built on Linux.
- */
-
 #include <QFileInfoList>
 #include <QFileSystemWatcher>
 #include <QMap>
@@ -76,8 +71,6 @@ private:
 
     Options* m_options;
     QFileSystemWatcher dirWatcher;
-//    QFileInfoList watchList;
-//    QFileInfoList lastAllFiles;
     QSet<QString> localChannels;
     QString logDir;
 
