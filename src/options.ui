@@ -1212,13 +1212,13 @@
       <attribute name="title">
        <string>Advanced</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_7">
-       <item row="0" column="0">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
           <string>Updates</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QCheckBox" name="checkUpdates">
             <property name="sizePolicy">
@@ -1245,26 +1245,42 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item>
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
-          <string>Audio Back-end</string>
+          <string>Audio</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QRadioButton" name="radioAudioSFML">
-            <property name="text">
-             <string>SFML (OpenAL)</string>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Backend:</string>
             </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QRadioButton" name="radioAudioSFML">
+               <property name="text">
+                <string>SFML (OpenAL)</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioAudioQt">
+               <property name="text">
+                <string>&amp;Qt</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
-           <widget class="QRadioButton" name="radioAudioQt">
+           <widget class="QCheckBox" name="checkDisableMusic">
             <property name="text">
-             <string>&amp;Qt</string>
+             <string>Disable music on About window</string>
             </property>
            </widget>
           </item>

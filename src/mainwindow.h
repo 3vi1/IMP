@@ -222,6 +222,7 @@ private:
     QPointF startPos;
     qint64 startTime = 0;
     int timeToScroll = 4000;
+    QMap<QString, QDateTime> lastMoved;
 
     LogInfo impLogInfo = { "*IMP*", QFileInfo(), "Khasm Kaotiqa", "None", 0 };
 

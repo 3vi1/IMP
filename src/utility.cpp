@@ -19,7 +19,9 @@
  */
 
 #include <QApplication>
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QTextStream>
 
@@ -59,11 +61,12 @@ QStringList fromFile(const QString& fileName)
     return stringList;
 }
 
+QRegularExpression loggish_re("[0-9]+_[0-9]+\\.txt$");
 QRegularExpression logName_re("(?:.+/)?(.+?)(?: \\[\\d+\\])?_[0-9]+_[0-9]+\\.txt$");
 
 bool isLog(const QString &absoluteFilePath)
 {
-    QRegularExpressionMatch logMatch = logName_re.match(absoluteFilePath);
+    QRegularExpressionMatch logMatch = loggish_re.match(absoluteFilePath);
     if (logMatch.hasMatch())
     {
         return true;
@@ -74,9 +77,17 @@ bool isLog(const QString &absoluteFilePath)
 
 QString logChannelName(const QString &absoluteFilePath)
 {
+    QString channelName;
     QRegularExpressionMatch logMatch = logName_re.match(absoluteFilePath);
-    int lastCapturedIndex = logMatch.lastCapturedIndex();
-    QString captured = logMatch.captured(lastCapturedIndex);
+    if(logMatch.hasMatch())
+    {
+        int lastCapturedIndex = logMatch.lastCapturedIndex();
+        channelName = logMatch.captured(lastCapturedIndex);
+    }
+    else
+    {
+        channelName = "*Gamelogs";
+    }
 
-    return captured;
+    return channelName;
 }

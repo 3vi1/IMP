@@ -37,7 +37,8 @@ void LogCatcher::setLogDir(QString logDir)
 {
     this->logDir = logDir;
 
-    dirWatcher.addPath(logDir);
+    dirWatcher.addPath(logDir + "/Chatlogs");
+    dirWatcher.addPath(logDir + "/Gamelogs");
     connect(&dirWatcher, &QFileSystemWatcher::directoryChanged,
             this, &LogCatcher::findCurrentLogs);
 
@@ -63,8 +64,8 @@ void LogCatcher::setLogDir(QString logDir)
 
 #endif
 
-    findCurrentLogs(logDir);
-
+    findCurrentLogs(logDir + "/Chatlogs");
+    findCurrentLogs(logDir + "/Gamelogs");
 }
 
 void LogCatcher::fallbackPoller()
@@ -77,10 +78,14 @@ void LogCatcher::fallbackPoller()
 
     // Build current file/size map
     fileSizes = new QMap<QString, qint64>;
-    foreach(QFileInfo fileInfo, watchList)
+
+    foreach(QString dir, dirWatchList.keys())
     {
-        QFileInfo updatedInfo(fileInfo.absoluteFilePath());
-        fileSizes->insert(fileInfo.absoluteFilePath(), updatedInfo.size());
+        foreach(QFileInfo fileInfo, dirWatchList[dir])
+        {
+            QFileInfo updatedInfo(fileInfo.absoluteFilePath());
+            fileSizes->insert(fileInfo.absoluteFilePath(), updatedInfo.size());
+        }
     }
 
     if(firstPass)
@@ -140,7 +145,7 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
     foreach (QFileInfo fileInfo, allFiles) {
 
         // If filename doesn't look like a log, skip it.
-        if (!fileInfo.isFile() || !isLog(fileInfo.fileName()))
+        if ( !fileInfo.isFile() || !isLog(fileInfo.fileName()) )
         {
             continue;
         }
@@ -149,7 +154,9 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
 
         // All files that have changed since last pass or were created in the last day.
         if (fileInfo.lastModified() > (QDateTime::currentDateTime().addDays(-1))
-                || (lastAllFiles.count() > 0 && compareLastFileSize(fileInfo, lastAllFiles) > 0))
+                || (dirLastAllFiles[dirName].count() > 0
+                    && compareLastFileSize(fileInfo, dirLastAllFiles[dirName]) > 0)
+                )
         {
             // We only put non-local channels in the list once, no matter how many pilots
             // are in them.
@@ -159,9 +166,10 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
             // file, then logged that character out.
 
             QString channelName = logChannelName(fileInfo.fileName());
-            if(!localChannels.contains(channelName))
+            if(!(channelName == "*Gamelogs") &&
+                    !localChannels.contains(channelName))
             {
-                QMutableListIterator<QFileInfo> i(watchList);
+                QMutableListIterator<QFileInfo> i(dirWatchList[dirName]);
                 while (i.hasNext()) {
                     QString iFileName = i.next().fileName();
 
@@ -169,12 +177,12 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
                     {
                         // If file has changed or file is newer than what we already
                         // have in list, remove what we previously put in list.
-                        bool clfs = compareLastFileSize(fileInfo, lastAllFiles);
+                        bool clfs = compareLastFileSize(fileInfo, dirLastAllFiles[dirName]);
                         QDateTime listLastModified = i.value().lastModified();
                         QDateTime fileLastModified = fileInfo.lastModified();
                         qDebug() << "inside match:  " << clfs << " - existing modified: " << listLastModified << ", this modified: " << fileLastModified;
 
-                        if (watchList.size() == 0 ||
+                        if (dirWatchList[dirName].size() == 0 ||
                             clfs ||
                             listLastModified < fileLastModified
                             )
@@ -189,20 +197,17 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
             }
 
             qDebug() << "LogCatcher::findCurrentLogs:  Appending " << fileInfo.absoluteFilePath();
-            watchList.append(fileInfo);
+            dirWatchList[dirName].append(fileInfo);
         }
     }
-    lastAllFiles = allFiles;
+    dirLastAllFiles[dirName] = allFiles;
 
 #ifdef USE_FALLBACK_POLLER
     rebuilding = false;
 #else
 
     // Emit changes for any new files that may have popped up
-    // This ensures newly logged in pilots will be seen when their
-    // Local_ file is created rather than waiting until someone
-    // says something in channel.
-    foreach (QFileInfo i, watchList)
+    foreach (QFileInfo i, dirWatchList[dirName])
     {
         if(!dirWatcher.files().contains(i.absoluteFilePath()))
             emit fileChanged(i.absoluteFilePath());
@@ -214,7 +219,7 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
         dirWatcher.removePaths(dirWatcher.files());
     }
 
-    foreach (QFileInfo i, watchList)
+    foreach (QFileInfo i, dirWatchList[dirName])
     {
         bool result = dirWatcher.addPath(i.absoluteFilePath());
         qDebug() << "LogCatcher::findCurrentLogs - Watching " << i.absoluteFilePath() << " = " << result;

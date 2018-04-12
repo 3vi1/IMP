@@ -22,6 +22,7 @@
 #include "ui_options.h"
 #include "abstract_os.h"
 #include "combodelegate.h"
+#include "meta.h"
 
 #include <QDebug>
 #include <QDir>
@@ -152,6 +153,7 @@ void Options::cacheSettings()
     _redundantSuppress = ui->redundantSpinBox->value();
 
     m_checkForUpdate = ui->checkUpdates->isChecked();
+    m_disableMusic = ui->checkDisableMusic->isChecked();
     _kosDouble = ui->checkKosDouble->isChecked();
     _selfSuppress = ui->selfSuppressCheck->isChecked();
     _smoothAutofollow = ui->smoothCheck->isChecked();
@@ -199,6 +201,7 @@ void Options::restoreSettings()
     ui->essBox->setChecked(_essAndKos);
     ui->checkKosDouble->setChecked(_kosDouble);
     ui->checkAvatar->setChecked(m_showAvatar);
+    ui->checkDisableMusic->setChecked(m_disableMusic);
     ui->checkOldIntel->setChecked(m_initOldIntel);
 
     ui->statusCombo->setCurrentIndex(ui->statusCombo->findText(m_soundStatus));
@@ -267,6 +270,7 @@ void Options::loadSettings(QSettings& settings)
     ui->essBox->setChecked(settings.value("essAndKos", true).toBool());
     ui->checkKosDouble->setChecked(settings.value("kosDouble", true).toBool());
     ui->checkAvatar->setChecked(settings.value("showAvatar", true).toBool());
+    ui->checkDisableMusic->setChecked(settings.value("disableMusic", false).toBool());
     ui->checkOldIntel->setChecked(settings.value("initOldIntel", true).toBool());
 
     // Deprecated - remove after a few versions
@@ -354,13 +358,21 @@ void Options::loadSettings(QSettings& settings)
     if(logDir.length() == 0)
     {
 #ifdef Q_OS_WIN32
-        logDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/EVE/logs/Chatlogs";
+        logDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/EVE/logs";
 #elif defined(Q_OS_MAC)
-        logDir = QDir::homePath() + "/Library/Application Support/Eve Online/p_drive/User/My Documents/EVE/logs/Chatlogs";
+        logDir = QDir::homePath() + "/Library/Application Support/Eve Online/p_drive/User/My Documents/EVE/logs";
 #else
         // Assume Q_OS_LINUX
-        logDir = QDir::homePath() + "/Documents/EVE/logs/Chatlogs";
+        logDir = QDir::homePath() + "/Documents/EVE/logs";
 #endif
+    }
+
+    // TEMP FIX FOR OLD INSTALLS
+    // Truncate /Chatlogs from directory name if it exist
+    QRegularExpression re("(.*)/Chatlogs/?$");
+    QRegularExpressionMatch match = re.match(logDir);
+    if(match.hasMatch()) {
+        logDir = match.captured(1);
     }
 
     ui->logsEdit->setText(logDir);
@@ -572,6 +584,7 @@ void Options::saveSettings() //QSettings& settings)
         QString fileName = "imp-settings";
         QSettings settings(fileName, QSettings::IniFormat);
 
+        settings.setValue("release", meta.release);
         settings.setValue("intelChannels", getIntelChannels());
 
         settings.setValue("avatarExpiration", getAvatarExpiration());
@@ -584,9 +597,9 @@ void Options::saveSettings() //QSettings& settings)
         settings.setValue("maxEntriesToLoad", getMaxEntries());
         settings.setValue("pollerRefresh", getPollerRefresh());
         settings.setValue("redundantSuppress", getRedundantSuppress());
-
         settings.setValue("checkForUpdate", m_checkForUpdate);
         settings.setValue("showAvatar", m_showAvatar);
+        settings.setValue("disableMusic", !musicEnabled());
         settings.setValue("initOldIntel", m_initOldIntel);
 
         settings.setValue("selfSuppress", getSelfSuppress());
@@ -725,6 +738,11 @@ QString Options::getBridgePath()
     return _bridgePath;
 }
 
+bool Options::musicEnabled()
+{
+    return !m_disableMusic;
+}
+
 QString Options::getFontName()
 {
     return _fontName;
@@ -738,7 +756,6 @@ int Options::getFontSize()
 QStringList Options::getIntelChannels()
 {
     QStringList channels = _intelChannels;
-    //channels.append("*Debugging*");
     return channels;
 }
 
@@ -822,6 +839,20 @@ QString Options::getRegion()
 void Options::setRegion(QString regionName)
 {
     _currentRegion = regionName;
+
+    QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    QDir configDir{configPath};
+    if (configDir.mkpath(configDir.absolutePath()) && QDir::setCurrent(configDir.absolutePath()))
+    {
+        // Save configuration options
+
+        qDebug() << "Settings in " << QDir::currentPath() << endl;
+
+        QString fileName = "imp-settings";
+        QSettings settings(fileName, QSettings::IniFormat);
+
+        settings.setValue("currentRegion", regionName);
+    }
 }
 
 QString Options::getSoundStatus()

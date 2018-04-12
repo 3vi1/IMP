@@ -1,3 +1,15 @@
+0.9.7.7 - Fixed following pilots, after more log breakage from
+          CCP.  As long as you've jumped systems in the last
+          day or so, the pilot should show up.  In the future,
+          this may be changed to use another method.
+
+          Now properly saves the last/current map on exit.
+
+          Fixed bug where pilot may be added to pilots list
+          twice when using some desktop managers.
+
+          Added option to disable music on About/Info dialog.
+
 0.9.7.3 - Adjust to cope with CCP's new log naming schema.
 
 0.9.7.2 - Fixed playing a sound at double volume (actually

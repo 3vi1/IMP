@@ -664,7 +664,7 @@ void SvgMapView::receiveThemeUpdate(ThemeStorage& ts)
 
 void SvgMapView::enablePilot(QString pilot)
 {
-    if(!mapScene.items().contains(pilotShapes[pilot]))
+    if(pilotShapes.contains(pilot) && !mapScene.items().contains(pilotShapes[pilot]))
     {
         mapScene.addItem(pilotShapes[pilot]);
     }

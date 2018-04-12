@@ -107,6 +107,8 @@ public:
     QString getSoundIsKos();
     QString getSoundNoKos();
 
+    bool musicEnabled();
+
     void rebuildAudioFileList();
     void rebuildStyleFileList();
 
@@ -183,6 +185,7 @@ private:
 
     bool _autofollow = true;
     bool m_checkForUpdate = true;
+    bool m_disableMusic = false;
     bool m_initOldIntel = true;
     bool m_showAvatar = true;
     bool m_showBridges = false;

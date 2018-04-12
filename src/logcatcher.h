@@ -64,15 +64,20 @@ signals:
     void fileChanged(const QString &absoluteFilePath);
 
 public slots:
-    void findCurrentLogs(const QString& dirName);
+    void findCurrentLogs(const QString& dirNames);
     void gotFileChanged(const QString& absoluteFilePath);
     void fallbackPoller();
 
 private:
+
+    // 180412
+    QMap<QString, QFileInfoList> dirLastAllFiles;
+    QMap<QString, QFileInfoList> dirWatchList;
+
     Options* m_options;
     QFileSystemWatcher dirWatcher;
-    QFileInfoList watchList;
-    QFileInfoList lastAllFiles;
+//    QFileInfoList watchList;
+//    QFileInfoList lastAllFiles;
     QSet<QString> localChannels;
     QString logDir;
 

@@ -27,6 +27,7 @@
 #include <QList>
 #include <QMap>
 #include <QRegExp>
+#include <QRegularExpression>
 #include <QSet>
 #include <QString>
 #include <QTextStream>
@@ -65,8 +66,8 @@ private:
     uint    generation = 0;
     LogInfo debugLogInfo;   // logInfo used for debugging messages
 
-    //QRegExp listener = QRegExp("^\\[ (.{19}) \\] ([^>]+) > ([^\\.\\?!]*)(.*)$");
     QRegExp listener = QRegExp("^\\[ (.{19}) \\] ([^>]+) > (.*)$");
+    QRegularExpression gameExp = QRegularExpression("^\\[ (.{19}) \\] \\(([^>]+)\\) (.*)$");
 
     QString lastListener;
     QString lastLocalSystem;
@@ -89,7 +90,8 @@ private:
     void loadSet(QSet<QString>& set, QString& string);
     QString identifyObjects(MessageInfo& messageInfo, QList<ImpWord>& sentence);
     QString systemAbbreviation(const QString& word);
-    QList<MessageInfo> parseLine(const QString& line);
+    QList<MessageInfo> parseGameLogLine(const QString& line);
+    QList<MessageInfo> parseChatLogLine(const QString& line);
 };
 
 #endif // PARSER_H

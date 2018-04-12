@@ -703,9 +703,12 @@ void MainWindow::initParsing()
     // Initialize with last session if not old...
     foreach(QString absoluteFilePath, lc->files())
     {
-        if((options.getIntelChannels().contains(logChannelName(absoluteFilePath)) &&
-                options.getInitOldIntel()) ||
-            parser->getLocalChannels().contains(logChannelName(absoluteFilePath)))
+        QFileInfo file(absoluteFilePath);
+        if( ( options.getIntelChannels().contains(logChannelName(absoluteFilePath)) &&
+                options.getInitOldIntel() )
+                || parser->getLocalChannels().contains(logChannelName(absoluteFilePath))
+                || file.path().endsWith("/Gamelogs")
+                )
         {
             fileChanged(absoluteFilePath);
         }
@@ -1133,7 +1136,7 @@ void MainWindow::processMessage(MessageInfo message)
                     {
                         if(pilotIsEnabled(pilot))
                         {
-                           changeImpStatus("Status requested for " + system + ".");
+                            changeImpStatus("Status requested for " + system + ".");
                             play = true;
                         }
                     }
@@ -1153,6 +1156,16 @@ void MainWindow::processMessage(MessageInfo message)
 
                 // We were already in that system - this is probably just a log file update.
             }
+
+            if(lastMoved.contains(message.logInfo->pilot)
+                    && message.dateTime <= lastMoved[message.logInfo->pilot]
+                    )
+            {
+                // Older message - a newer log has been processed
+                break;
+            }
+            lastMoved[message.logInfo->pilot] = message.dateTime;
+
             changeImpStatus("Updating local system to " + message.systems[0] + "...");
 
             regionMap->setPilotLocation(message.logInfo->pilot, message.systems[0]);
@@ -1290,7 +1303,6 @@ void MainWindow::fileChanged(const QString &absoluteFilePath)
     else
     {
         // Either we're not loading, or this is a local channel, so read all changes.
-
         messages = parser->fileChanged(absoluteFilePath, 0, mapLoading);
     }
 
@@ -1424,7 +1436,8 @@ void MainWindow::addMessage(const MessageInfo& message)
 void MainWindow::on_actionAbout_triggered()
 {
     info.show();
-    info.startMusic(&audio);
+    if(options.musicEnabled())
+        info.startMusic(&audio);
 }
 
 void MainWindow::on_actionOptions_triggered()
@@ -1663,7 +1676,7 @@ void MainWindow::gotNewPilot(const QString& pilotName)
     foreach(QAction* action, ui->menuPilots->actions())
     {
         qDebug() << action->text();
-        if(action->text() == pilotName)
+        if(action->text().replace("&", "") == pilotName)
         {
             // Pilot was already in menu
             return;

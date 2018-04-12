@@ -69,7 +69,15 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
 {
     QFile file(path);
     QTextStream input(&file);
-    input.setCodec("UTF-16");
+
+    bool isGameLog = false;
+    if(path.contains("/Gamelogs"))
+    {
+        isGameLog = true;
+    } else
+    {
+        input.setCodec("UTF-16");
+    }
 
     QList<MessageInfo> messageInfoList;
 
@@ -94,8 +102,15 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
 
         QFileInfo fileInfo(file);
 
-        QString channel = logChannelName(fileInfo.fileName());
-        fileMap.insert(path, LogInfo{channel, fileInfo, "", "", 0}); //logInfo);
+        QString channel;
+        if(isGameLog)
+        {
+            channel = "*Gamelog";
+        }
+        else {
+            channel = logChannelName(fileInfo.fileName());
+        }
+        fileMap.insert(path, LogInfo{channel, fileInfo, "", "", 0});
 
         lines = input.readAll().split("\n");
 
@@ -105,7 +120,18 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
         QRegExp listenerRegExp("Listener: +([^ ].*)");
         foreach (QString line, lines)
         {
-            if (sysIdRegExp.indexIn(line) != -1 && localChannels.contains(channel))
+            if (isGameLog)
+            {
+                if (listenerRegExp.indexIn(line) != -1)
+                {
+                    fileMap[path].pilot = listenerRegExp.cap(1);
+                    break;
+                }
+            }
+
+            if (sysIdRegExp.indexIn(line) != -1
+                    && (localChannels.contains(channel))
+                    )
             {
                 MessageInfo systemChange;
                 systemChange.parserGeneration = generation;
@@ -140,7 +166,16 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
 
     for (int i=startLine; i<lines.length()-1; i++) {
 
-        QList<MessageInfo> newMessages = parseLine(lines[i].trimmed().remove(0xfeff));
+        QList<MessageInfo> newMessages;
+
+        if(isGameLog)
+        {
+            newMessages = parseGameLogLine(lines[i].trimmed());
+        }
+        else
+        {
+            newMessages = parseChatLogLine(lines[i].trimmed().remove(0xfeff));
+        }
 
         // Okay, these aren't really separate user-messages...  they are
         // messages to be processed by main window... clean up later.
@@ -169,10 +204,10 @@ QList<MessageInfo> Parser::fileChanged(const QString& path, int maxEntries, bool
     return messageInfoList;
 }
 
-// For debug testing
+// Used by debug menu option to test a line
 void Parser::processLine(const QString& line)
 {
-    QList<MessageInfo> messageList = parseLine(line);
+    QList<MessageInfo> messageList = parseChatLogLine(line);
 
     for(int i = 0; i < messageList.count(); i++)
     {
@@ -188,7 +223,58 @@ void Parser::processLine(const QString& line)
     emit newMessages(messageList);
 }
 
-QList<MessageInfo> Parser::parseLine(const QString& line)
+QList<MessageInfo> Parser::parseGameLogLine(const QString& line)
+{
+    QList<MessageInfo> messages;
+
+    QDateTime dateTime;
+    QString sender, text;
+
+    QRegularExpressionMatch gameMatch = gameExp.match(line.trimmed());
+    if (gameMatch.hasMatch())
+    {
+        dateTime = QDateTime::fromString(gameMatch.captured(1), "yyyy.MM.dd HH:mm:ss");
+        dateTime.setTimeSpec(Qt::UTC);
+        sender = gameMatch.captured(2);
+        text = gameMatch.captured(3);
+
+        MessageInfo messageInfo;
+        messageInfo.originalLine = line;
+        messageInfo.dateTime = dateTime;
+        messageInfo.dateTime.setTimeSpec(Qt::UTC);
+        messageInfo.sender = sender;
+        messageInfo.text = text;
+
+        // Test to see if this is a system change message:
+        // [ 2018.04.11 10:37:04 ] (None) Jumping from Erkinen to Komaa
+        QRegularExpression jumpExp("Jumping from (.*) to (.*)");
+        QRegularExpressionMatch jumpMatch = jumpExp.match(text);
+        if (jumpMatch.hasMatch())
+        {
+            messageInfo.systems.append(jumpMatch.captured(2));
+            messageInfo.flags.append(MessageFlag::SYSTEM_CHANGE);
+            messages.append(messageInfo);
+            return messages;
+        }
+
+        // TODO:  Process any other interesting messages here
+    }
+    else
+    {
+        // indecipherable
+        MessageInfo messageInfo;
+        messageInfo.originalLine = line;
+        messageInfo.sender = sender;
+        messageInfo.text = text;
+        messageInfo.indecipherable = true;
+
+        messages.append(messageInfo);
+    }
+
+    return messages;
+}
+
+QList<MessageInfo> Parser::parseChatLogLine(const QString& line)
 {
     QList<MessageInfo> messages;
     
@@ -214,7 +300,7 @@ QList<MessageInfo> Parser::parseLine(const QString& line)
     }
 
 
-    // Is this a system message?
+    // DEPRECATED:  Is this a system message?
     if (sender == "EVE System" or sender == "EVE-System")
     {
         MessageInfo messageInfo;
