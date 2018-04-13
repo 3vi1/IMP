@@ -65,12 +65,12 @@ public slots:
 
 private:
 
-    // 180412
     QMap<QString, QFileInfoList> dirLastAllFiles;
     QMap<QString, QFileInfoList> dirWatchList;
+    QMap<QString, QFileSystemWatcher*> dirWatcher;
 
     Options* m_options;
-    QFileSystemWatcher dirWatcher;
+//    QFileSystemWatcher dirWatcher;
     QSet<QString> localChannels;
     QString logDir;
 

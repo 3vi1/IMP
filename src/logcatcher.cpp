@@ -37,9 +37,14 @@ void LogCatcher::setLogDir(QString logDir)
 {
     this->logDir = logDir;
 
-    dirWatcher.addPath(logDir + "/Chatlogs");
-    dirWatcher.addPath(logDir + "/Gamelogs");
-    connect(&dirWatcher, &QFileSystemWatcher::directoryChanged,
+    dirWatcher[logDir + "/Chatlogs"] = new QFileSystemWatcher();
+    dirWatcher[logDir + "/Chatlogs"]->addPath(logDir + "/Chatlogs");
+    connect(dirWatcher[logDir + "/Chatlogs"], &QFileSystemWatcher::directoryChanged,
+            this, &LogCatcher::findCurrentLogs);
+
+    dirWatcher[logDir + "/Gamelogs"] = new QFileSystemWatcher();
+    dirWatcher[logDir + "/Gamelogs"]->addPath(logDir + "/Gamelogs");
+    connect(dirWatcher[logDir + "/Gamelogs"], &QFileSystemWatcher::directoryChanged,
             this, &LogCatcher::findCurrentLogs);
 
 #ifdef USE_FALLBACK_POLLER
@@ -59,7 +64,9 @@ void LogCatcher::setLogDir(QString logDir)
     // Windows because they don't update the file modification time.  So on Linux we
     // can just do this:
 
-    connect(&dirWatcher, &QFileSystemWatcher::fileChanged,
+    connect(dirWatcher[logDir + "/Chatlogs"], &QFileSystemWatcher::fileChanged,
+            this, &LogCatcher::gotFileChanged);
+    connect(dirWatcher[logDir + "/Gamelogs"], &QFileSystemWatcher::fileChanged,
             this, &LogCatcher::gotFileChanged);
 
 #endif
@@ -126,7 +133,7 @@ int LogCatcher::compareLastFileSize(QFileInfo fileInfo, QFileInfoList oldList)
 }
 
 void LogCatcher::findCurrentLogs(const QString& dirName)
-{
+{    
 #ifdef USE_FALLBACK_POLLER
     rebuilding = true;
 #endif
@@ -140,6 +147,9 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
     //
     //          Solution:  Cache the timestamp, size, and line position of the files
     //          on Windows.  Use newest file where size has changed.
+
+    if(!dirWatcher.contains(dirName))
+        return;
 
     QFileInfoList allFiles =  QDir(dirName).entryInfoList();
     foreach (QFileInfo fileInfo, allFiles) {
@@ -209,19 +219,19 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
     // Emit changes for any new files that may have popped up
     foreach (QFileInfo i, dirWatchList[dirName])
     {
-        if(!dirWatcher.files().contains(i.absoluteFilePath()))
+        if(!dirWatcher[dirName]->files().contains(i.absoluteFilePath()))
             emit fileChanged(i.absoluteFilePath());
     }
 
     // Always rebuild watched files.  The actual underlying object may have changed,
     // even if the absolute path didn't.
-    if(dirWatcher.files().count() > 0) {
-        dirWatcher.removePaths(dirWatcher.files());
+    if(dirWatcher[dirName]->files().count() > 0) {
+        dirWatcher[dirName]->removePaths(dirWatcher[dirName]->files());
     }
 
     foreach (QFileInfo i, dirWatchList[dirName])
     {
-        bool result = dirWatcher.addPath(i.absoluteFilePath());
+        bool result = dirWatcher[dirName]->addPath(i.absoluteFilePath());
         qDebug() << "LogCatcher::findCurrentLogs - Watching " << i.absoluteFilePath() << " = " << result;
     }
 
@@ -231,8 +241,10 @@ void LogCatcher::findCurrentLogs(const QString& dirName)
 
 QStringList LogCatcher::files()
 {
-    qDebug() << "LogCatcher::files() dirs = " << dirWatcher.directories() << ", files = " <<
-                dirWatcher.files();
+    qDebug() << "LogCatcher::files() - " << (logDir + "/Chatlogs") << " - dirs = " << dirWatcher[(logDir + "/Chatlogs")]->directories() << ", files = " <<
+                dirWatcher[(logDir + "/Chatlogs")]->files();
+    qDebug() << "LogCatcher::files() - " << (logDir + "/Gamelogs") << " - dirs = " << dirWatcher[(logDir + "/Gamelogs")]->directories() << ", files = " <<
+                dirWatcher[(logDir + "/Gamelogs")]->files();
 
 #ifdef USE_FALLBACK_POLLER
     QStringList files;
@@ -245,7 +257,7 @@ QStringList LogCatcher::files()
     }
     return files;
 #else
-    return dirWatcher.files();
+    return dirWatcher[logDir + "/Chatlogs"]->files() + dirWatcher[logDir + "/Gamelogs"]->files();
 #endif
 }
 
