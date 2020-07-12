@@ -42,16 +42,16 @@ Parser::Parser(uint generation, QObject *parent) : QObject(parent)
     ignoreChars = "[\\\\_=!@#$%^&\\*,\\.\\[\\]\\(\\)\\{\\}\\?]";   // "\\_=!@#$%^&*,./[](){}?"
 
     // Load words, channels, and ships from files
-    ignoreWords = QSet<QString>::fromList(fromFile("common"));
-    clearWords = QSet<QString>::fromList(fromFile("clear"));
-    closedWords = QSet<QString>::fromList(fromFile("closed"));
-    left = QSet<QString>::fromList(fromFile("left"));
-    localChannels = QSet<QString>::fromList(fromFile("local"));
-    locationWords = QSet<QString>::fromList(fromFile("location"));
-    openWords = QSet<QString>::fromList(fromFile("open"));
-    statusWords = QSet<QString>::fromList(fromFile("status"));
-    ships = QSet<QString>::fromList(fromFile("ships"));
-    wormholeWords = QSet<QString>::fromList(fromFile("wormhole"));
+    ignoreWords = fromFile("common");
+    clearWords = fromFile("clear");
+    closedWords = fromFile("closed");
+    left = fromFile("left");
+    localChannels = fromFile("local");
+    locationWords = fromFile("location");
+    openWords = fromFile("open");
+    statusWords = fromFile("status");
+    ships = fromFile("ships");
+    wormholeWords = fromFile("wormhole");
 }
 
 void Parser::setMap(Map &map)
@@ -60,7 +60,7 @@ void Parser::setMap(Map &map)
 }
 
 
-QSet<QString> Parser::getLocalChannels()
+QStringList Parser::getLocalChannels()
 {
     return localChannels;
 }

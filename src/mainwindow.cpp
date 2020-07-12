@@ -387,7 +387,7 @@ void MainWindow::loadMap()
     regionMap = new Map(this);
     ui->mapView->setMap(regionMap);
 
-    QNetworkRequest request(QUrl(available_maps[options.getRegion()]));
+    QNetworkRequest request((QUrl(available_maps[options.getRegion()])));
 
     reply = manager.get(request);
     connect(reply, &QNetworkReply::finished,
@@ -418,7 +418,7 @@ void MainWindow::loadBridges()
 
     qDebug() << "Loading bridges from " << fullPath;
 
-    QNetworkRequest request(QUrl((QString)fullPath));
+    QNetworkRequest request((QUrl(static_cast<QString>(fullPath))));
     reply = manager.get(request);
     connect(reply, &QNetworkReply::finished,
             this, &MainWindow::gotBridgeFile);
@@ -572,15 +572,19 @@ void MainWindow::gotRblReply(QString name, bool rbl, int corpNum)
 
 void MainWindow::gotKosError(const QString& pilotNames)
 {
-    QSet<QString> pilots = pilotNames.split(',').toSet();
+    //QSet<QString> pilots = pilotNames.split(',').toSet();
+    QStringList names = pilotNames.split(',');
+    //x QSet<QString> pilots = names(names.begin(), names.end());
 
-    pilotsBeingChecked -= pilots.count();
+    //pilotsBeingChecked -= pilots.count();
+    pilotsBeingChecked -= names.count();
     playLocalFileDeduped(options.getSoundIncompleteKos());
 }
 
 void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& entries)
 {
-    QSet<QString> pilots = pilotNames.split(',').toSet();
+    //QSet<QString> pilots = pilotNames.split(',').toSet();
+    QStringList pilots = pilotNames.split(',');
 
     bool playKos = false;
     foreach(KosEntry e, entries)
@@ -598,7 +602,8 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
             playKos = true;
             addMessage(info);
             qDebug() << "MainWindow::gotKosReply - Finished checking" << e.pilot.name;
-            pilots.remove(e.pilot.name);
+            //pilots.remove(e.pilot.name);
+            pilots.removeOne(e.pilot.name);
             pilotsBeingChecked--;
         }
         else if(e.corp.kos)
@@ -608,7 +613,8 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
             playKos = true;
             addMessage(info);
             qDebug() << "MainWindow::gotKosReply - Finished checking" << e.pilot.name;
-            pilots.remove(e.pilot.name);
+            //pilots.remove(e.pilot.name);
+            pilots.removeOne(e.pilot.name);
             pilotsBeingChecked--;
         }
         else if(e.alliance.kos)
@@ -618,7 +624,8 @@ void MainWindow::gotKosReply(const QString& pilotNames, const QList<KosEntry>& e
             playKos = true;
             addMessage(info);
             qDebug() << "MainWindow::gotKosReply - Finished checking" << e.pilot.name;
-            pilots.remove(e.pilot.name);
+            //pilots.remove(e.pilot.name);
+            pilots.removeOne(e.pilot.name);
             pilotsBeingChecked--;
         }
         else

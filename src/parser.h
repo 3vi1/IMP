@@ -53,7 +53,7 @@ public:
     explicit Parser(uint generation, QObject *parent = 0);
     void setMap(Map& map);
     QList<MessageInfo> fileChanged(const QString& path, int maxEntries = 0, bool initialLoad = false);
-    QSet<QString> getLocalChannels();
+    QStringList getLocalChannels();
 
 signals:
     void newMessages(QList<MessageInfo> messageInfoList);
@@ -73,16 +73,17 @@ private:
     QString lastLocalSystem;
 
     QString ignoreChars;
-    QSet<QString> clearWords;
-    QSet<QString> closedWords;
-    QSet<QString> ignoreWords;
-    QSet<QString> left;
-    QSet<QString> localChannels;
-    QSet<QString> locationWords;
-    QSet<QString> openWords;
-    QSet<QString> statusWords;
-    QSet<QString> ships;
-    QSet<QString> wormholeWords;
+    QStringList clearWords;
+    QStringList closedWords;
+    QStringList ignoreWords;
+
+    QStringList left;
+    QStringList localChannels;
+    QStringList locationWords;
+    QStringList openWords;
+    QStringList statusWords;
+    QStringList ships;
+    QStringList wormholeWords;
 
     QMap<QString, LogInfo> fileMap;
     Map* regionMap;

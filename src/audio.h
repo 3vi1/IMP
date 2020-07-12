@@ -48,7 +48,6 @@ public:
 signals:
 
 public slots:
-    //void playingChanged();
     void playLocalFile(const QString& fileName, float volume = 1.0);
     void changeAudio(AudioEngine);
 
@@ -60,7 +59,7 @@ private:
     bool cacheEffect(const QString& fileName);
 
     AudioEngine engine = AudioEngine::AE_SFML;
-    qreal m_volume = 1.0f;
+    qreal m_volume = static_cast<qreal>(1.0f);
 
     QMediaPlayer* player;
     QMap<QString, QSoundEffect*> effects;

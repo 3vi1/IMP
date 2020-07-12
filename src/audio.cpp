@@ -127,7 +127,7 @@ void ImpAudio::playLocalFileQt(const QString& fileName, float volume)
         effects.insert(fileName, effect);
     }
 
-    effects[fileName]->setVolume(volume);
+    effects[fileName]->setVolume(static_cast<qreal>(volume));
     effects[fileName]->play();
 }
 

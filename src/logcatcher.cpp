@@ -30,7 +30,9 @@ LogCatcher::LogCatcher(Options* options, QObject *parent) : QObject(parent)
 {
     m_options = options;
 
-    localChannels = QSet<QString>::fromList(fromFile("local"));
+    // localChannels = QSet<QString>::fromList(fromFile("local"));
+    QStringList list = fromFile("local");
+    localChannels = QSet<QString>(list.begin(), list.end());
 }
 
 void LogCatcher::setLogDir(QString logDir)
@@ -117,7 +119,7 @@ void LogCatcher::fallbackPoller()
     }
 }
 
-int LogCatcher::compareLastFileSize(QFileInfo fileInfo, QFileInfoList oldList)
+long int LogCatcher::compareLastFileSize(QFileInfo fileInfo, QFileInfoList oldList)
 {
     foreach(QFileInfo oldInfo, oldList)
     {

@@ -244,8 +244,9 @@ void Options::loadSettings(QSettings& settings)
           "North Catch Intel", "North Querious Intel" })
                                              ).toStringList());
 
-    QStringList dpList = settings.value("disabledPilots", QStringList()).toStringList();
-    m_disabledPilots = m_disabledPilots.fromList(dpList);
+    //QStringList dpList = settings.value("disabledPilots", QStringList()).toStringList();
+    //m_disabledPilots = m_disabledPilots.fromList(dpList);
+    m_disabledPilots = settings.value("disabledPilots", QStringList()).toStringList();
 
     AudioEngine ae = settings.value("audioEngine", AudioEngine::AE_SFML).value<AudioEngine>();
     emit changeAudio(ae);
@@ -532,7 +533,7 @@ void Options::readAlarmTextElements(QXmlStreamReader& reader, Alarm& rule)
         {
             if (reader.name() == "Jumps")
             {
-                rule.jumps = reader.readElementText().toInt();
+                rule.jumps = reader.readElementText().toUInt();
             }
             else if (reader.name() == "Sound")
             {
@@ -675,7 +676,7 @@ void Options::saveSettings() //QSettings& settings)
             alarmXmlWriter.writeStartElement("Alarm");
             alarmXmlWriter.writeTextElement("Jumps", QString::number(alarms[i].jumps));
             alarmXmlWriter.writeTextElement("Sound", alarms[i].file);
-            alarmXmlWriter.writeTextElement("Volume", QString::number(alarms[i].volume));
+            alarmXmlWriter.writeTextElement("Volume", QString::number(static_cast<double>(alarms[i].volume)));
             alarmXmlWriter.writeEndElement();
         }
         alarmXmlWriter.writeEndDocument();
@@ -930,7 +931,6 @@ void Options::on_incompleteTestButton_clicked()
 
 void Options::on_ruleInsertButton_clicked()
 {
-    //ruleModel->insertRule(ui->tableView->selectionModel()->selectedIndexes());
     QModelIndexList list = ui->tableProxAlarms->selectionModel()->selectedIndexes();
     int i = list.count() < 1 ? -1 : list[0].row();
     ruleModel->insertRow(i);
@@ -938,7 +938,6 @@ void Options::on_ruleInsertButton_clicked()
 
 void Options::on_ruleRemoveButton_clicked()
 {
-    //ruleModel->removeRule(ui->tableView->selectionModel()->selectedIndexes());
     QModelIndexList list = ui->tableProxAlarms->selectionModel()->selectedIndexes();
     int i = list.count() < 1 ? -1 : list[0].row();
     ruleModel->removeRow(i);
@@ -1051,12 +1050,12 @@ bool Options::getKosOnDouble()
 
 void Options::disablePilot(const QString& pilotName)
 {
-    m_disabledPilots.insert(pilotName);
+    m_disabledPilots.append(pilotName);
 }
 
 void Options::enablePilot(const QString& pilotName)
 {
-    m_disabledPilots.remove(pilotName);
+    m_disabledPilots.removeAll(pilotName);
 }
 
 bool Options::pilotIsDisabled(const QString &pilotName)
@@ -1066,7 +1065,7 @@ bool Options::pilotIsDisabled(const QString &pilotName)
 
 QStringList Options::getDisabledPilots()
 {
-    return m_disabledPilots.toList();
+    return m_disabledPilots;
 }
 
 void Options::on_buttonCheck_clicked()

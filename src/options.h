@@ -217,7 +217,8 @@ private:
     ThemeType   m_themeType;
 
     QStringList _intelChannels;
-    QSet<QString> m_disabledPilots;
+    //QSet<QString> m_disabledPilots;
+    QStringList m_disabledPilots;
 
     QList<Rule> _rules;
     QList<Alarm> m_alarms;

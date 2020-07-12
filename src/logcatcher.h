@@ -80,7 +80,7 @@ private:
     bool rebuilding = false;
     bool firstPass = true;
 
-    int compareLastFileSize(QFileInfo fileInfo, QFileInfoList oldList);
+    long int compareLastFileSize(QFileInfo fileInfo, QFileInfoList oldList);
 };
 
 #endif // LOGCATCHER_H
