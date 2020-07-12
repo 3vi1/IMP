@@ -1,5 +1,3 @@
-<p align="center"><b>This project is no longer under development as I have won EVE thanks to Blackout running off most of my friends and a reinforced lack of confidence in CCP.</b></p>
-<hr />
 <p align="center">
   <img align="middle" src="src/graphics/impicon.png" width="100" height="100">
   <img align="middle" src="src/graphics/Imp.png" height="100">
