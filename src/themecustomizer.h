@@ -40,7 +40,6 @@ public:
     ~ThemeCustomizer();
 
     void loadValues(Theme* theme);
-//    void sendChanges(Theme *theme);
 
 private slots:
     void on_buttonBackColor_clicked();

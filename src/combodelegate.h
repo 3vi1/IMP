@@ -34,9 +34,6 @@ public:
 
     void setItems(QStringList items);
 
-//    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-//    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
-
     // Create Editor when we construct MyDelegate
     QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 

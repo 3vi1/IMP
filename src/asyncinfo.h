@@ -22,6 +22,7 @@
 #define ASYNCINFO_H
 
 #include <QDateTime>
+#include <QList>
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -128,6 +129,8 @@ private:
 
     QString checkNames = "";
     int m_corpNum = 0;
+
+    QList<QString> checkList;
 
     void requestId(const QString& name, const char* slot);
     void kosCheck(const QString &reqNames, const char* slot, QString queryType  = "unit");

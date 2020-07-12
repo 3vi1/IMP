@@ -78,7 +78,15 @@ void MapShape::load(const QString& fileName)
 {
     QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
     QDir dataDir{dataPath};
-    QFile file(dataDir.absoluteFilePath(fileName));
+
+    //QFile file(dataDir.absoluteFilePath(fileName));
+    QFile file;
+    if(fileName.length() > 0 && fileName.startsWith(':')) {
+        file.setFileName(fileName);
+    }
+    else {
+        file.setFileName(dataDir.absoluteFilePath(fileName));
+    }
 
     // Open file and set DOM
     if (!file.open(QIODevice::ReadOnly))

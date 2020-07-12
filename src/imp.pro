@@ -16,7 +16,7 @@ TEMPLATE = app
 VERSION = 0.9.7.7
 QMAKE_TARGET_COMPANY = EternalDusk
 QMAKE_TARGET_DESCRIPTION = Eve Online Intelligence Management Program
-QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2017 Jesse Litton
+QMAKE_TARGET_COPYRIGHT = (c) Copyright 2016-2019 Jesse Litton
 QMAKE_TARGET_PRODUCT = IMP
 
 DEFINES += VERSION=\\\"$VERSION\\\"
@@ -70,7 +70,8 @@ SOURCES += \
     volumedelegate.cpp \
     playdelegate.cpp \
     debugmessage.cpp \
-    eventthread.cpp
+    eventthread.cpp \
+    singlesignonmanager.cpp
     
 HEADERS  += \
     mainwindow.h \
@@ -105,7 +106,8 @@ HEADERS  += \
     playdelegate.h \
     debugmessage.h \
     eventthread.h \
-    msg.h
+    msg.h \
+    singlesignonmanager.h
     
 FORMS    += \
     mainwindow.ui \

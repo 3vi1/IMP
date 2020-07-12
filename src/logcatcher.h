@@ -70,7 +70,6 @@ private:
     QMap<QString, QFileSystemWatcher*> dirWatcher;
 
     Options* m_options;
-//    QFileSystemWatcher dirWatcher;
     QSet<QString> localChannels;
     QString logDir;
 

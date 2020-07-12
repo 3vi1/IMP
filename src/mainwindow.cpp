@@ -337,7 +337,7 @@ void MainWindow::initThemes()
 {
     // Add default theme to menu
     addThemeToMenu("-Default-", ThemeType::THEME_DEFAULT);
-            ;
+
     // Add default themes to menu
     addThemesFromSubdirectories(QDir(appFilesPath() + "/themes"),
                   ThemeType::THEME_DEFAULT);

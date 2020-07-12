@@ -54,9 +54,14 @@ void AsyncInfo::requestId(const QString &name, const char* slot)
     qDebug() << "AsyncInfo::requestId() - " << name;
 
     // Request the Pilot ID
-    QUrl url("https://api.eveonline.com/eve/CharacterID.xml.aspx");
+    //QUrl url("https://api.eveonline.com/eve/CharacterID.xml.aspx");
+    QUrl url("https://esi.evetech.net/latest/search/");
     QUrlQuery query;
-    query.addQueryItem("names", name);
+    query.addQueryItem("categories", "character");
+    query.addQueryItem("datasource", "tranquility");
+    query.addQueryItem("language", "en-us");
+    query.addQueryItem("search", name);
+    query.addQueryItem("strict", "true");
     url.setQuery(query);
 
     //qDebug() << "AsyncInfo::requestId() - after query";
@@ -79,17 +84,25 @@ void AsyncInfo::idRetrieved()
     QByteArray b = idReply->readAll();
     idReply->deleteLater();
 
-    QXmlQuery query;
-    query.setFocus(b);
-    query.setQuery("//*:row/@characterID/string()");
+//    QXmlQuery query;
+//    query.setFocus(b);
+    //query.setQuery("//*:row/@characterID/string()");
     QString results;
-    query.evaluateTo(&results);
+//    query.evaluateTo(&results);
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(b);
+    QJsonObject jsonObject = jsonResponse.object();
+    QJsonArray jsonArray = jsonObject["character"].toArray();
 
-    pilot->id = results.toInt();
+    if (jsonArray.count() > 0)
+        pilot->id = jsonArray[0].toInt();
+    else
+        pilot->id = 0;
 
-    QUrl imageUrl("http://image.eveonline.com/Character/" +
+//    pilot->id = results.toInt();
+
+    QUrl imageUrl("https://images.evetech.net/characters/" +
                   QString::number(pilot->id) +
-                  "_64.jpg");
+                  "/portrait?size=64");
     QNetworkRequest request(imageUrl);
     request.setRawHeader("User-Agent", meta.agentString.toUtf8());
     QNetworkReply* pixmapReply = manager->get(request);
